@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Espace Professionnels | Rivières Libres</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&amp;family=Hanken+Grotesk:wght@400;600&amp;family=Source+Sans+3:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#001431",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#b1f0ce",
+                    "sediment": "#8D99AE",
+                    "risk-moderate": "#FFD166",
+                    "on-error-container": "#93000a",
+                    "audience-municipality": "#002856",
+                    "on-tertiary-fixed": "#002114",
+                    "stone": "#4A4E69",
+                    "on-primary-fixed-variant": "#284776",
+                    "on-secondary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "primary-container": "#002856",
+                    "surface-container": "#eeeeee",
+                    "surface": "#f9f9f9",
+                    "audience-professional": "#0081A7",
+                    "risk-high": "#F77F00",
+                    "inverse-on-surface": "#f1f1f1",
+                    "secondary": "#00658e",
+                    "on-primary-container": "#7490c4",
+                    "on-surface-variant": "#43474f",
+                    "inverse-surface": "#2f3131",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#aac7fe",
+                    "on-secondary-container": "#005072",
+                    "surface-variant": "#e2e2e2",
+                    "surface-tint": "#415f8f",
+                    "secondary-fixed": "#c7e7ff",
+                    "tertiary-fixed-dim": "#95d4b3",
+                    "error-container": "#ffdad6",
+                    "outline-variant": "#c4c6d0",
+                    "surface-container-high": "#e8e8e8",
+                    "surface-container-highest": "#e2e2e2",
+                    "risk-low": "#BDD5EA",
+                    "on-surface": "#1a1c1c",
+                    "on-primary-fixed": "#001b3e",
+                    "on-secondary-fixed": "#001e2e",
+                    "tertiary-container": "#00301e",
+                    "surface-bright": "#f9f9f9",
+                    "secondary-fixed-dim": "#85cfff",
+                    "background": "#f9f9f9",
+                    "tertiary": "#00190e",
+                    "on-tertiary-fixed-variant": "#0e5138",
+                    "risk-very-high": "#D62828",
+                    "on-secondary-fixed-variant": "#004c6c",
+                    "on-background": "#1a1c1c",
+                    "secondary-container": "#67c5fd",
+                    "error": "#ba1a1a",
+                    "audience-citizen": "#E07A5F",
+                    "surface-container-low": "#f3f3f3",
+                    "on-tertiary-container": "#609c7e",
+                    "outline": "#747780",
+                    "primary-fixed": "#d6e3ff",
+                    "inverse-primary": "#aac7fe",
+                    "surface-dim": "#dadada"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "max-width": "1280px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "64px",
+                    "unit": "4px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "label-md": ["Hanken Grotesk"],
+                    "headline-lg": ["Montserrat"],
+                    "headline-lg-mobile": ["Montserrat"],
+                    "body-lg": ["Source Sans 3"],
+                    "display-lg": ["Montserrat"],
+                    "headline-md": ["Montserrat"],
+                    "caption": ["Source Sans 3"],
+                    "body-md": ["Source Sans 3"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Source Sans 3', sans-serif; background-color: #f9f9f9; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar (Shared Component JSON Integration) -->
+<header class="bg-surface sticky top-0 z-50 shadow-[0_4px_12px_rgba(0,40,86,0.08)]">
+<nav class="flex justify-between items-center w-full px-margin-desktop max-w-max-width mx-auto h-20">
+<div class="text-headline-md font-headline-md font-bold text-primary">Rivières Libres</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant hover:text-secondary transition-colors font-label-md text-label-md" href="#">Comprendre</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors font-label-md text-label-md" href="#">Carte &amp; données</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors font-label-md text-label-md" href="#">Cadre réglementaire</a>
+<a class="text-secondary border-b-2 border-secondary font-bold pb-1 font-label-md text-label-md" href="#">Agir</a>
+</div>
+<button class="bg-audience-professional text-on-primary px-6 py-2 rounded font-label-md text-label-md hover:bg-secondary transition-all active:scale-95">
+                Vérifier une adresse
+            </button>
+</nav>
+</header>
+<main class="max-w-max-width mx-auto px-margin-desktop py-12">
+<!-- Hero Section -->
+<section class="mb-16">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter items-center">
+<div class="md:col-span-7">
+<span class="inline-block px-3 py-1 bg-audience-professional/10 text-audience-professional rounded-full font-label-md text-label-md mb-4 uppercase tracking-wider">Portail Professionnel</span>
+<h1 class="font-display-lg text-display-lg text-primary mb-6">Expertise &amp; Ingénierie Fluviale</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-8 max-w-2xl">
+                        Accédez aux référentiels techniques, aux protocoles de mesures hydrogéomorphologiques et aux flux de données géospatiales brutes pour la conception d'ouvrages et l'aménagement résilient du territoire québécois.
+                    </p>
+<div class="flex flex-wrap gap-4">
+<button class="flex items-center gap-2 bg-primary text-on-primary px-8 py-3 rounded-lg font-label-md text-label-md hover:shadow-lg transition-all">
+<span class="material-symbols-outlined">description</span>
+                            Guide Méthodologique
+                        </button>
+<button class="flex items-center gap-2 border-2 border-audience-professional text-audience-professional px-8 py-3 rounded-lg font-label-md text-label-md hover:bg-audience-professional/5 transition-all">
+<span class="material-symbols-outlined">database</span>
+                            Accès WMS/WFS
+                        </button>
+</div>
+</div>
+<div class="md:col-span-5 relative h-96 rounded-xl overflow-hidden shadow-2xl">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A professional engineer in high-visibility gear standing by a natural river bank in Quebec, holding a specialized water flow measurement device. The lighting is crisp morning sun, highlighting the scientific precision of the scene. The background shows a lush riparian zone with clear, moving water. The overall aesthetic is professional, technical, and grounded in field science, featuring deep primary blues and soft natural greens." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCt0CHHoGOMAyzD1asuUxymOXV01vc1h8p572TYQJtgiZx2qh-Uk3Ku8A1LePsjOUp6UEb4gfQmXZrSGneJ_pnEQ1PyVH3DqT2JNXCEFzXeFXJ2bivRXfGeKsf_gt2-Y6xuKYPzz03TYK2IpJtjzXVs6KXBZ_XATFFdEDXz8O1yNv_aDVXJD-LqZQVqWrrMF6CfObMXd1wM_nf_qKkx1GEYvia2DeTdCRjXFHRkISeFA-oTAOTsEJYR-bBIEBBXh4W5q_hR_ASTtceN"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent"></div>
+<div class="absolute bottom-6 left-6 text-on-primary">
+<p class="font-label-md text-label-md opacity-80">Relevé LiDAR HD</p>
+<p class="font-headline-md text-headline-md">Bassin de la Rivière Richelieu</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid for Data & Research -->
+<section class="mb-20">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-8">Ressources Techniques</h2>
+<div class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-gutter h-auto md:h-[600px]">
+<!-- Literature & Scientific Papers -->
+<div class="md:col-span-2 md:row-span-1 bg-white p-8 rounded-xl border-t-4 border-audience-professional shadow-[0_4px_12px_rgba(0,40,86,0.08)] flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-audience-professional">menu_book</span>
+<h3 class="font-headline-md text-headline-md text-primary">Littérature scientifique</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">
+                            Consultez les publications fondamentales sur l'espace de liberté et la dynamique fluviale au Québec (Biron et al., Buffin-Bélanger).
+                        </p>
+</div>
+<ul class="space-y-3">
+<li class="flex items-center justify-between p-3 bg-surface rounded hover:bg-surface-container-low transition-colors cursor-pointer group">
+<span class="font-label-md text-label-md text-on-surface">Biron et al. (2014) - Freedom Space</span>
+<span class="material-symbols-outlined text-audience-professional opacity-0 group-hover:opacity-100 transition-opacity">download</span>
+</li>
+<li class="flex items-center justify-between p-3 bg-surface rounded hover:bg-surface-container-low transition-colors cursor-pointer group">
+<span class="font-label-md text-label-md text-on-surface">Guide de gestion des cours d'eau (MELCCFP)</span>
+<span class="material-symbols-outlined text-audience-professional opacity-0 group-hover:opacity-100 transition-opacity">download</span>
+</li>
+</ul>
+</div>
+<!-- Geospatial Raw Data -->
+<div class="md:col-span-1 md:row-span-2 bg-primary text-on-primary p-8 rounded-xl shadow-lg flex flex-col">
+<span class="material-symbols-outlined text-4xl mb-6 text-secondary-container">map</span>
+<h3 class="font-headline-md text-headline-md mb-4">Données Géospatiales</h3>
+<p class="font-body-md text-body-md text-on-primary/70 mb-8">
+                        Flux temps-réels pour intégration SIG (ArcGIS, QGIS).
+                    </p>
+<div class="mt-auto space-y-4">
+<div class="p-4 bg-white/10 rounded border border-white/20">
+<p class="text-xs font-mono text-secondary-container mb-1 tracking-tighter">WMS_ENDPOINT</p>
+<p class="text-xs truncate font-mono">https://geo.riviellibres.gouv.qc.ca/wms</p>
+</div>
+<div class="p-4 bg-white/10 rounded border border-white/20">
+<p class="text-xs font-mono text-secondary-container mb-1 tracking-tighter">WFS_QUERY</p>
+<p class="text-xs truncate font-mono">https://geo.riviellibres.gouv.qc.ca/wfs</p>
+</div>
+<button class="w-full py-3 bg-secondary-container text-primary font-bold rounded hover:bg-white transition-all">Générer clé API</button>
+</div>
+</div>
+<!-- Hydro-geomorphology Methods -->
+<div class="md:col-span-1 md:row-span-1 bg-white p-8 rounded-xl border border-outline-variant shadow-[0_4px_12px_rgba(0,40,86,0.08)]">
+<span class="material-symbols-outlined text-audience-professional mb-4">waves</span>
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Méthodes HGM</h3>
+<p class="font-caption text-caption text-on-surface-variant">Protocoles standardisés de caractérisation physique des lits mineurs et majeurs.</p>
+</div>
+<!-- OPI Standards (Important Section) -->
+<div class="md:col-span-2 md:row-span-1 bg-tertiary-fixed text-on-tertiary-fixed p-8 rounded-xl flex items-center gap-8 border border-tertiary-fixed-dim">
+<div class="flex-1">
+<h3 class="font-headline-md text-headline-md mb-2">Normes OPI</h3>
+<p class="font-body-md text-body-md mb-4">
+                            Cadre normatif pour les Ouvrages de Protection Contre les Inondations. Critères de performance et audits de sécurité.
+                        </p>
+<button class="text-on-tertiary-fixed font-bold flex items-center gap-2 hover:translate-x-2 transition-transform">
+                            Consulter le référentiel OPI <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<div class="hidden lg:block w-32 h-32 bg-on-tertiary-fixed/10 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-5xl">shield</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Technical Educational Callout -->
+<section class="bg-tertiary-container/5 border-l-4 border-on-tertiary-container p-8 rounded-r-xl mb-20">
+<div class="flex gap-6 items-start">
+<span class="material-symbols-outlined text-on-tertiary-container text-3xl">info</span>
+<div>
+<h4 class="font-headline-md text-headline-md text-primary mb-2">Note sur les Solutions Fondées sur la Nature (SFN)</h4>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        Le guide 2024 privilégie systématiquement l'autorégulation par l'espace de liberté. Tout projet d'ingénierie rigide (enrochement, digue) doit faire l'objet d'une justification technique démontrant l'absence d'alternative par restauration de la connectivité latérale, conformément à la Loi sur la qualité de l'environnement (LQE).
+                    </p>
+</div>
+</div>
+</section>
+<!-- Risk Legend Special Component -->
+<section class="max-w-3xl mx-auto">
+<div class="bg-white p-8 rounded-xl shadow-[0_4px_12px_rgba(0,40,86,0.08)]">
+<h5 class="font-label-md text-label-md text-stone mb-6 uppercase tracking-widest text-center">Légende des indices de mobilité fluviale</h5>
+<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+<div class="flex flex-col items-center gap-2">
+<div class="w-12 h-12 rounded-full bg-risk-low flex items-center justify-center text-white font-bold">L</div>
+<span class="font-caption text-caption">Faible</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-12 h-12 rounded-full bg-risk-moderate flex items-center justify-center text-white font-bold">M</div>
+<span class="font-caption text-caption">Modéré</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-12 h-12 rounded-full bg-risk-high flex items-center justify-center text-white font-bold">H</div>
+<span class="font-caption text-caption">Élevé</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-12 h-12 rounded-full bg-risk-very-high flex items-center justify-center text-white font-bold">VH</div>
+<span class="font-caption text-caption">Très Élevé</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-12 h-12 rounded-full bg-sediment flex items-center justify-center text-white font-bold">S</div>
+<span class="font-caption text-caption">Sédimentaire</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer (Shared Component JSON Integration) -->
+<footer class="bg-primary text-on-primary w-full py-12 px-margin-desktop grid grid-cols-1 md:grid-cols-3 gap-gutter mt-20">
+<div>
+<div class="text-headline-sm font-headline-sm text-on-primary mb-4">Rivières Libres</div>
+<p class="font-caption text-caption text-on-primary/60 max-w-xs">
+                © 2024 Rivières Libres. Les données sont fournies à titre indicatif et n'ont aucune valeur légale.
+            </p>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-md text-label-md uppercase opacity-50 mb-2">Navigation</span>
+<a class="text-on-primary/80 hover:text-on-primary font-body-md text-body-md" href="#">Mission</a>
+<a class="text-on-primary/80 hover:text-on-primary font-body-md text-body-md" href="#">Confidentialité</a>
+<a class="text-on-primary/80 hover:text-on-primary font-body-md text-body-md" href="#">Accessibilité</a>
+</div>
+<div>
+<span class="font-label-md text-label-md uppercase opacity-50 mb-2">Partenaires officiels</span>
+<ul class="font-body-md text-body-md text-on-primary/80 space-y-2">
+<li>Ministère de l'Environnement (MELCCFP)</li>
+<li>Consortium Ouranos</li>
+<li>Réseau RIISQ</li>
+</ul>
+</div>
+</footer>
+<script>
+        // Micro-interactions for buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-95');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('scale-95');
+            });
+            button.addEventListener('mouseleave', () => {
+                button.classList.remove('scale-95');
+            });
+        });
+
+        // Simple scroll reveal effect
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 100) {
+                    section.classList.add('opacity-100');
+                    section.classList.remove('opacity-0');
+                    section.classList.add('translate-y-0');
+                    section.classList.remove('translate-y-10');
+                }
+            });
+        });
+        
+        // Initial state for animation
+        document.querySelectorAll('section').forEach(s => {
+            s.classList.add('transition-all', 'duration-700', 'opacity-0', 'translate-y-10');
+        });
+        // Trigger first section
+        setTimeout(() => {
+             document.querySelectorAll('section')[0].classList.remove('opacity-0', 'translate-y-10');
+        }, 100);
+    </script>
+</body></html>

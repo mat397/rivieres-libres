@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&amp;family=Hanken+Grotesk:wght@400;600&amp;family=Source+Sans+3:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#001431",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#b1f0ce",
+                        "sediment": "#8D99AE",
+                        "risk-moderate": "#FFD166",
+                        "on-error-container": "#93000a",
+                        "audience-municipality": "#002856",
+                        "on-tertiary-fixed": "#002114",
+                        "stone": "#4A4E69",
+                        "on-primary-fixed-variant": "#284776",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#002856",
+                        "surface-container": "#eeeeee",
+                        "surface": "#f9f9f9",
+                        "audience-professional": "#0081A7",
+                        "risk-high": "#F77F00",
+                        "inverse-on-surface": "#f1f1f1",
+                        "secondary": "#00658e",
+                        "on-surface-variant": "#43474f",
+                        "inverse-surface": "#2f3131",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#aac7fe",
+                        "on-secondary-container": "#005072",
+                        "surface-variant": "#e2e2e2",
+                        "surface-tint": "#415f8f",
+                        "secondary-fixed": "#c7e7ff",
+                        "tertiary-fixed-dim": "#95d4b3",
+                        "error-container": "#ffdad6",
+                        "outline-variant": "#c4c6d0",
+                        "surface-container-high": "#e8e8e8",
+                        "surface-container-highest": "#e2e2e2",
+                        "risk-low": "#BDD5EA",
+                        "on-surface": "#1a1c1c",
+                        "on-primary-fixed": "#001b3e",
+                        "on-secondary-fixed": "#001e2e",
+                        "tertiary-container": "#00301e",
+                        "surface-bright": "#f9f9f9",
+                        "secondary-fixed-dim": "#85cfff",
+                        "background": "#f9f9f9",
+                        "tertiary": "#00190e",
+                        "on-tertiary-fixed-variant": "#0e5138",
+                        "on-background": "#1a1c1c",
+                        "secondary-container": "#67c5fd",
+                        "error": "#ba1a1a",
+                        "audience-citizen": "#E07A5F",
+                        "surface-container-low": "#f3f3f3",
+                        "on-tertiary-container": "#609c7e",
+                        "outline": "#747780",
+                        "primary-fixed": "#d6e3ff",
+                        "inverse-primary": "#aac7fe",
+                        "surface-dim": "#dadada"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "max-width": "1280px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px",
+                        "unit": "4px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Montserrat"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "body-lg": ["Source Sans 3"],
+                        "display-lg": ["Montserrat"],
+                        "headline-md": ["Montserrat"],
+                        "caption": ["Source Sans 3"],
+                        "body-md": ["Source Sans 3"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #f9f9f9; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .bento-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; }
+        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .transition-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .transition-lift:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0, 40, 86, 0.12); }
+    </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- Top Navigation -->
+<header class="bg-surface sticky top-0 z-50 shadow-[0_4px_12px_rgba(0,40,86,0.08)]">
+<nav class="flex justify-between items-center w-full px-margin-desktop max-w-max-width mx-auto h-20">
+<div class="text-headline-md font-headline-md font-bold text-primary">Rivières Libres</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-on-surface-variant hover:text-secondary transition-colors font-label-md text-label-md" href="#">Comprendre</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors font-label-md text-label-md" href="#">Carte &amp; données</a>
+<a class="text-secondary border-b-2 border-secondary font-bold pb-1 font-label-md text-label-md" href="#">Cadre réglementaire</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors font-label-md text-label-md" href="#">Agir</a>
+<button class="bg-secondary text-on-secondary px-6 py-2 rounded-lg font-label-md text-label-md hover:bg-secondary/90 transition-all active:scale-95">Vérifier une adresse</button>
+</div>
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</nav>
+</header>
+<main class="max-w-max-width mx-auto px-margin-desktop py-12">
+<!-- Hero Section: Operational Focus -->
+<section class="mb-16">
+<div class="relative overflow-hidden rounded-xl bg-audience-municipality p-12 text-on-primary">
+<div class="relative z-10 max-w-2xl">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full font-label-md text-caption uppercase tracking-wider mb-6 inline-block">Portail Municipalités &amp; OBV</span>
+<h1 class="font-display-lg text-display-lg mb-6 leading-tight">Accompagner la transition vers une gestion durable des cours d'eau.</h1>
+<p class="font-body-lg text-body-lg text-on-primary/80 mb-8">Outils et ressources opérationnels pour intégrer la mobilité des rivières dans vos cadres réglementaires et plans d'action.</p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-secondary text-white px-8 py-3 rounded-lg font-label-md text-label-md flex items-center gap-2 transition-all hover:bg-secondary/90 shadow-lg">
+<span class="material-symbols-outlined">account_balance</span> Accès aux financements (PRAFI)
+                        </button>
+<button class="border border-white/30 text-white px-8 py-3 rounded-lg font-label-md text-label-md flex items-center gap-2 transition-all hover:bg-white/10">
+<span class="material-symbols-outlined">map</span> Demander une délégation de cartographie
+                        </button>
+</div>
+</div>
+<div class="absolute right-0 top-0 w-1/3 h-full opacity-20 pointer-events-none">
+
+</div>
+</div>
+</section>
+<!-- Main Content Bento Grid -->
+<section class="mb-20">
+<h2 class="font-headline-lg text-headline-lg mb-10">Gestion Opérationnelle &amp; Cadre Légal</h2>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Regulatory Focus -->
+<div class="md:col-span-8 bg-white p-8 rounded-xl shadow-sm border-l-4 border-secondary flex flex-col justify-between transition-lift">
+<div>
+<div class="flex items-center gap-3 mb-4 text-secondary">
+<span class="material-symbols-outlined">gavel</span>
+<h3 class="font-headline-md text-headline-md">Cadre Réglementaire &amp; Schémas d'Aménagement</h3>
+</div>
+<p class="text-on-surface-variant font-body-md mb-6 leading-relaxed">Le nouveau cadre normatif simplifie l'intégration des zones de mobilité. Découvrez comment arrimer vos règlements de contrôle intérimaire (RCI) et vos plans de gestion de l'eau aux réalités hydrogéomorphologiques.</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="p-4 bg-surface rounded-lg border border-outline-variant/30">
+<h4 class="font-label-md text-label-md mb-2">Compatibilité RCI</h4>
+<p class="text-caption">Modèles de clauses pour les zones à risque d'érosion et de submersion.</p>
+</div>
+<div class="p-4 bg-surface rounded-lg border border-outline-variant/30">
+<h4 class="font-label-md text-label-md mb-2">Délégation de pouvoir</h4>
+<p class="text-caption">Processus pour la prise en charge locale de la cartographie de précision.</p>
+</div>
+</div>
+</div>
+<a class="mt-8 text-secondary font-label-md flex items-center gap-2 hover:underline" href="#">
+                        Consulter les guides juridiques <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<!-- PRAFI Funding -->
+<div class="md:col-span-4 bg-primary-container p-8 rounded-xl text-on-primary flex flex-col transition-lift">
+<div class="mb-auto">
+<span class="text-secondary-container material-symbols-outlined text-4xl mb-4" style="font-variation-settings: 'FILL' 1;">payments</span>
+<h3 class="font-headline-md text-headline-md mb-4">Programme PRAFI</h3>
+<p class="font-body-md text-on-primary/70 mb-6">Accédez au soutien financier pour vos projets de résilience face aux inondations et à l'érosion.</p>
+<ul class="space-y-3 mb-8">
+<li class="flex items-center gap-2 text-caption">
+<span class="material-symbols-outlined text-tertiary-fixed text-sm">check_circle</span> Volet 1: Aménagement durable
+                            </li>
+<li class="flex items-center gap-2 text-caption">
+<span class="material-symbols-outlined text-tertiary-fixed text-sm">check_circle</span> Volet 2: Solutions fondées sur la nature
+                            </li>
+</ul>
+</div>
+<button class="w-full bg-secondary text-white py-3 rounded-lg font-label-md text-label-md">Vérifier l'éligibilité</button>
+</div>
+<!-- Case Study: Coaticook -->
+<div class="md:col-span-6 bg-white rounded-xl overflow-hidden shadow-sm flex flex-col transition-lift">
+<div class="h-48 overflow-hidden relative">
+<img alt="Rivière Coaticook" class="w-full h-full object-cover" data-alt="A serene wide-angle photograph of a winding river in the Coaticook region of Quebec during autumn. The landscape is characterized by rolling hills covered in vibrant orange and red foliage under a soft, overcast sky. The river water is clear and reflects the colorful trees, illustrating a healthy riparian ecosystem. The visual style is crisp and professional, with natural lighting and a peaceful, authoritative mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzyGqfxJoUbKDN0gx8Dbyey9sVyd9hLD-Bbyv7N7-b0mn9xw8OV83fhzsxMwJfkKYQQex_TtDL9miae3h1yboUCIya75se0ujgau-kyb9SQe_UmbfTsK3cT3mGrcsOV4J3teFK_QU2Ql_mhVsL26oUJcaPmg2T0mmpGjQ0tMYkSrfmayvV6imoQ4AcjAWqC1rge0Wr9y1x6YiNLlSNW9YvamBy8IEUlge97d5BZ0u9O4o3iyB9Wss4uOSj6evQgJ9-lGbbwpZLkp-x"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent"></div>
+<div class="absolute bottom-4 left-6">
+<span class="bg-risk-low text-primary px-3 py-1 rounded-full text-caption font-label-md uppercase">Étude de cas</span>
+</div>
+</div>
+<div class="p-8">
+<h4 class="font-headline-md text-headline-md mb-3">Coaticook : Restauration de l'espace de liberté</h4>
+<p class="font-body-md text-on-surface-variant mb-6 italic">"L'approche par bassin versant a permis de réduire les coûts d'entretien des infrastructures de 40% sur 5 ans."</p>
+<div class="flex gap-4">
+<div class="text-center px-4 py-2 bg-surface rounded-lg">
+<div class="font-headline-md text-secondary">2.4km</div>
+<div class="text-caption">Cours d'eau restauré</div>
+</div>
+<div class="text-center px-4 py-2 bg-surface rounded-lg">
+<div class="font-headline-md text-secondary">12</div>
+<div class="text-caption">Propriétaires engagés</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Case Study: Argenteuil -->
+<div class="md:col-span-6 bg-white rounded-xl overflow-hidden shadow-sm flex flex-col transition-lift">
+<div class="h-48 overflow-hidden relative">
+<img alt="MRC Argenteuil" class="w-full h-full object-cover" data-alt="An aerial photograph showcasing the diverse topography of the MRC d'Argenteuil in Quebec, featuring dense green forests interlaced with silver ribbons of rivers and small agricultural plots. The lighting is high-key and bright, suggesting a clear summer afternoon. The composition highlights the intersection of human development and natural waterways, reflecting the region's focus on integrated management. The image conveys a sense of scientific precision and community stewardship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEiYe8VhNnnuu5SjCt0Q7K__JB3Sz8HA6RM-mJVLv42y8eU-0Gx_ToXJD-qFk89uhzMnEP2t-lTjPoUIttqrhmCro525nZO7u4cVPDt5d4QjeiDVg-9cdY2srEK8Khk9FKHNI_eRCKC0C2adpvZ4TK-96tvAhoqb-bY6flf1C4HdD5n9KZUPkumiKSzoDpy36TaY-MqE54RGI45OLpvllnH-HlsoGj4pI5ZKqL2jh1JymGuxLG1hHcnO-vHqi4ZpL2zl8SdP4PITQ8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent"></div>
+<div class="absolute bottom-4 left-6">
+<span class="bg-risk-low text-primary px-3 py-1 rounded-full text-caption font-label-md uppercase">Étude de cas</span>
+</div>
+</div>
+<div class="p-8">
+<h4 class="font-headline-md text-headline-md mb-3">Argenteuil : Intégration réglementaire exemplaire</h4>
+<p class="font-body-md text-on-surface-variant mb-6">Développement d'un cadre normatif harmonisé pour les 9 municipalités de la MRC, simplifiant la gestion des zones inondables.</p>
+<div class="flex items-center gap-4 text-secondary font-label-md hover:underline cursor-pointer">
+<span>Lire le rapport méthodologique</span>
+<span class="material-symbols-outlined text-sm">download</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Technical Assistance Callout -->
+<section class="mb-20">
+<div class="bg-tertiary-fixed/20 border-l-8 border-tertiary-fixed-dim p-10 rounded-xl flex flex-col md:flex-row items-center gap-12">
+<div class="flex-1">
+<h2 class="font-headline-lg text-headline-lg mb-4">Besoin d'accompagnement technique ?</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-6">Nos experts hydrogéomorphologues et conseillers juridiques sont disponibles pour réviser vos plans de gestion et vous aider dans vos demandes de financement.</p>
+<div class="flex flex-wrap gap-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">forum</span>
+<span class="font-label-md">Webinaires mensuels</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">support_agent</span>
+<span class="font-label-md">Support personnalisé</span>
+</div>
+</div>
+</div>
+<div class="w-full md:w-auto">
+<button class="whitespace-nowrap bg-primary text-white px-10 py-4 rounded-full font-label-md text-label-md hover:bg-primary/90 shadow-xl transition-all">Contacter l'équipe de soutien</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary text-on-primary py-16 px-margin-desktop">
+<div class="max-w-max-width mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-12">
+<div class="md:col-span-1">
+<div class="text-headline-sm font-headline-sm text-on-primary mb-4">Rivières Libres</div>
+<p class="text-caption text-on-primary/60 max-w-xs leading-relaxed">Le pont entre la science hydrogéomorphologique et la réglementation municipale au Québec.</p>
+</div>
+<div>
+<h5 class="font-label-md text-label-md mb-6 text-tertiary-fixed">Navigation</h5>
+<ul class="space-y-3">
+<li><a class="text-on-primary/80 hover:text-on-primary transition-opacity text-body-md" href="#">Mission</a></li>
+<li><a class="text-on-primary/80 hover:text-on-primary transition-opacity text-body-md" href="#">Carte Interactive</a></li>
+<li><a class="text-on-primary/80 hover:text-on-primary transition-opacity text-body-md" href="#">Ressources</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-label-md text-label-md mb-6 text-tertiary-fixed">Partenaires</h5>
+<ul class="space-y-3">
+<li class="text-on-primary/80 text-body-md">MELCCFP</li>
+<li class="text-on-primary/80 text-body-md">Ouranos</li>
+<li class="text-on-primary/80 text-body-md">RIISQ</li>
+</ul>
+</div>
+<div>
+<h5 class="font-label-md text-label-md mb-6 text-tertiary-fixed">Légal</h5>
+<ul class="space-y-3">
+<li><a class="text-on-primary/80 hover:text-on-primary transition-opacity text-body-md" href="#">Confidentialité</a></li>
+<li><a class="text-on-primary/80 hover:text-on-primary transition-opacity text-body-md" href="#">Accessibilité</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-caption text-on-primary/40 text-center md:text-left">© 2024 Rivières Libres. Les données sont fournies à titre indicatif et n'ont aucune valeur légale.</p>
+<div class="flex gap-6">
+<a class="text-on-primary/60 hover:text-on-primary transition-colors" href="#"><span class="material-symbols-outlined">share</span></a>
+<a class="text-on-primary/60 hover:text-on-primary transition-colors" href="#"><span class="material-symbols-outlined">mail</span></a>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions for scrolling and hovering
+        document.addEventListener('DOMContentLoaded', () => {
+            const header = document.querySelector('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 20) {
+                    header.classList.add('shadow-md');
+                } else {
+                    header.classList.remove('shadow-md');
+                }
+            });
+        });
+    </script>
+</body></html>

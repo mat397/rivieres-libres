@@ -1,0 +1,15 @@
+# Dépendances (le site n'en a aucune, mais au cas où)
+node_modules/
+package-lock.json
+
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*

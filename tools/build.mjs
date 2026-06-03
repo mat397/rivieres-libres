@@ -1,0 +1,160 @@
+/* ==========================================================================
+   tools/build.mjs — Générateur de pages statiques (optionnel)
+   Assemble chaque page à partir d'un layout commun (header/footer/head)
+   et des fragments de contenu situés dans tools/pages/.
+   Le SITE est servable SANS ce script : il ne fait que (re)générer le HTML.
+
+   Usage : node tools/build.mjs
+   ========================================================================== */
+import { readFileSync, writeFileSync, readdirSync, mkdirSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(__dirname, "..");
+const PAGES_DIR = join(__dirname, "pages");
+
+const NAV = [
+  { href: "/comprendre/espace-de-liberte.html", label: "Comprendre", match: "/comprendre/" },
+  { href: "/carte-donnees/carte.html", label: "Carte &amp; données", match: "/carte-donnees/" },
+  { href: "/cadre-reglementaire/cadre-2026.html", label: "Cadre réglementaire", match: "/cadre-reglementaire/" },
+  { href: "/pour-vous/citoyens.html", label: "Pour vous", match: "/pour-vous/" },
+];
+
+const GLYPH = `<svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
+        <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
+      </svg>`;
+
+function header(active) {
+  const links = NAV.map(n => {
+    const cur = active && n.match === active ? ' aria-current="page"' : "";
+    return `<li><a class="site-nav__link"${cur} href="${n.href}">${n.label}</a></li>`;
+  }).join("\n          ");
+  return `  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="/index.html" aria-label="Rivières Libres — accueil">${GLYPH}<span class="brand__name">Rivières Libres</span></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Ouvrir le menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <nav class="site-nav" id="site-nav" aria-label="Navigation principale">
+        <ul class="site-nav__list">
+          ${links}
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse</a>
+        <button class="lang-switch" type="button" disabled aria-label="Langue : Français (Anglais à venir)" title="Version anglaise à venir">FR</button>
+      </div>
+    </div>
+  </header>`;
+}
+
+const FOOTER = `  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__grid">
+        <div class="site-footer__brand">
+          <a class="brand" href="/index.html">${GLYPH}<span class="brand__name">Rivières Libres</span></a>
+          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec — pour les citoyens, les municipalités et les professionnels.</p>
+        </div>
+        <div>
+          <h4>Comprendre</h4>
+          <ul>
+            <li><a href="/comprendre/espace-de-liberte.html">L'espace de liberté</a></li>
+            <li><a href="/comprendre/mobilite-inondabilite.html">Mobilité &amp; inondabilité</a></li>
+            <li><a href="/comprendre/climat-inondations.html">Climat &amp; inondations</a></li>
+            <li><a href="/comprendre/glossaire-faq.html">Glossaire &amp; FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Ressources</h4>
+          <ul>
+            <li><a href="/carte-donnees/carte.html">Carte interactive</a></li>
+            <li><a href="/carte-donnees/lire-les-cartes.html">Lire les cartes</a></li>
+            <li><a href="/cadre-reglementaire/cadre-2026.html">Cadre 2026</a></li>
+            <li><a href="/a-propos.html">À propos &amp; sources</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Pour vous</h4>
+          <ul>
+            <li><a href="/pour-vous/citoyens.html">Citoyens</a></li>
+            <li><a href="/pour-vous/municipalites-obv.html">Municipalités, MRC &amp; OBV</a></li>
+            <li><a href="/pour-vous/professionnels.html">Professionnels</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="disclaimer">
+        <strong>Avertissement.</strong> Ce portail est un outil d'information et de vulgarisation indépendant.
+        Les informations, schémas et cartes présentés ont une <strong>valeur indicative</strong> et <strong>n'ont aucune portée légale</strong>.
+        Ils ne remplacent pas les cartes officielles, les règlements en vigueur ni l'avis des autorités compétentes.
+        Pour connaître le statut réel d'un terrain, consultez votre municipalité, votre MRC et les outils officiels du gouvernement du Québec.
+      </p>
+      <div class="site-footer__bottom">
+        <span>© <span data-year>2026</span> Rivières Libres. Contenu sous licence libre, sources créditées.</span>
+        <span><a href="/a-propos.html">Sources &amp; partenaires</a> · <a href="/a-propos.html#contact">Contact</a></span>
+      </div>
+    </div>
+  </footer>`;
+
+function layout({ title, description, canonical, active, body }) {
+  return `<!DOCTYPE html>
+<html lang="fr-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${title}</title>
+  <meta name="description" content="${description}">
+  <link rel="canonical" href="${canonical}">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_CA">
+  <meta property="og:site_name" content="Rivières Libres">
+  <meta property="og:title" content="${title}">
+  <meta property="og:description" content="${description}">
+  <meta property="og:image" content="https://rivieres-libres.example/assets/img/og-default.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Aller au contenu</a>
+${header(active)}
+  <main id="main">
+${body}
+  </main>
+${FOOTER}
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>
+`;
+}
+
+function emit(out, meta, body) {
+  const html = layout({ ...meta, body });
+  const dest = join(ROOT, out);
+  mkdirSync(dirname(dest), { recursive: true });
+  writeFileSync(dest, html, "utf8");
+  console.log("✓", relative(ROOT, dest));
+}
+
+let count = 0;
+
+// 1) Pages de contenu : chaque tools/pages/*.mjs exporte default { out, meta, body }
+const files = readdirSync(PAGES_DIR).filter(f => f.endsWith(".mjs") && !f.startsWith("_"));
+for (const f of files) {
+  const mod = await import(pathToFileURL(join(PAGES_DIR, f)).href);
+  const { out, meta, body } = mod.default;
+  emit(out, meta, body);
+  count++;
+}
+
+// 2) Gabarits V2 « bientôt disponible »
+const { V2_PAGES, v2Body, v2Meta } = await import(pathToFileURL(join(PAGES_DIR, "_v2.mjs")).href);
+for (const p of V2_PAGES) {
+  emit(p.out, v2Meta(p), v2Body(p));
+  count++;
+}
+
+console.log(`\n${count} page(s) générée(s).`);

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://rivieres-libres.example/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://rivieres-libres.example/comprendre/espace-de-liberte.html</loc><priority>0.9</priority></url>
+  <url><loc>https://rivieres-libres.example/comprendre/mobilite-inondabilite.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rivieres-libres.example/comprendre/climat-inondations.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rivieres-libres.example/comprendre/pourquoi-espace.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rivieres-libres.example/comprendre/glossaire-faq.html</loc><priority>0.7</priority></url>
+  <url><loc>https://rivieres-libres.example/carte-donnees/carte.html</loc><priority>0.9</priority></url>
+  <url><loc>https://rivieres-libres.example/carte-donnees/lire-les-cartes.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rivieres-libres.example/cadre-reglementaire/cadre-2026.html</loc><priority>0.9</priority></url>
+  <url><loc>https://rivieres-libres.example/pour-vous/citoyens.html</loc><priority>0.9</priority></url>
+  <url><loc>https://rivieres-libres.example/pour-vous/municipalites-obv.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rivieres-libres.example/pour-vous/professionnels.html</loc><priority>0.8</priority></url>
+  <url><loc>https://rivieres-libres.example/a-propos.html</loc><priority>0.6</priority></url>
+</urlset>
