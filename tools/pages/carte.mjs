@@ -4,7 +4,7 @@ export default {
   out: "carte-donnees/carte.html",
   meta: {
     title: "Carte interactive des zones inondables et de mobilité | Rivières Libres",
-    description: "Vérifiez si une adresse se trouve en zone inondable, en zone de mobilité, dans l'espace de liberté ou un milieu humide. Aperçu ; intégration des couches officielles prévue.",
+    description: "Consultez la carte officielle du gouvernement du Québec (MRNF) des zones inondables et de mobilité des cours d'eau, embarquée sur le portail, avec la légende des classes d'intensité.",
     canonical: "https://rivieres-libres.example/carte-donnees/carte.html",
     active: "/carte-donnees/",
   },
@@ -18,32 +18,31 @@ export default {
     <section class="section">
       <div class="container">
         <div class="grid grid--2-1">
-          <div class="map-embed map-embed--full">
-            <!-- V2: intégrer Leaflet + couches WMS officielles MELCCFP/MRNF -->
-            <div class="map-embed__canvas">
-              <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1400&q=60" alt="Vue cartographique aérienne d'un bassin versant" loading="lazy">
-              <div class="map-embed__overlay">
-                <span class="map-embed__badge">Aperçu — carte non interactive</span>
-                <form class="map-search" data-map-search action="#" role="search" aria-label="Rechercher une adresse">
-                  <label class="visually-hidden" for="adresse">Adresse</label>
-                  <input id="adresse" type="text" name="adresse" placeholder="Entrez une adresse au Québec…" autocomplete="off">
-                  <button class="btn btn--primary" type="submit">Vérifier</button>
-                </form>
-                <p data-map-message role="status" hidden style="background:rgba(255,255,255,.95);color:var(--color-ink);padding:var(--space-3);border-radius:var(--radius-sm);max-width:46ch"></p>
-              </div>
-            </div>
+          <div class="map-embed">
+            <!-- Carte officielle des zones inondables et de mobilité (MRNF, gouvernement du Québec) -->
+            <iframe
+              class="map-embed__frame"
+              src="https://zonesinondables.mrnf.gouv.qc.ca/"
+              title="Carte interactive officielle des zones inondables et de mobilité des cours d'eau (MRNF, gouvernement du Québec)"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allow="geolocation"></iframe>
+            <p class="map-fallback">
+              La carte ne s'affiche pas ? Ouvrez-la directement :
+              <a href="https://zonesinondables.mrnf.gouv.qc.ca/" rel="noopener" target="_blank">zonesinondables.mrnf.gouv.qc.ca</a>
+            </p>
           </div>
 
           <div class="stack">
             <div class="map-layers">
-              <fieldset>
-                <legend>Couches</legend>
-                <label><input type="checkbox" checked> Zones inondables</label>
-                <label><input type="checkbox"> Zones de mobilité</label>
-                <label><input type="checkbox"> Espace de liberté</label>
-                <label><input type="checkbox"> Milieux humides</label>
-              </fieldset>
-              <p class="source" style="margin-top:var(--space-3)">Couches illustratives. Les données officielles seront intégrées en V2.</p>
+              <h3 class="mt-0" style="font-size:1rem">Utiliser la carte</h3>
+              <p class="mt-0">La carte ci-contre est l'outil <strong>officiel du gouvernement du Québec</strong> (MRNF). Recherchez une adresse et activez les couches directement dans la carte :</p>
+              <ul style="margin:0; padding-left:1.2em">
+                <li>Zones inondables (classes d'intensité)</li>
+                <li>Zones de mobilité des cours d'eau</li>
+                <li>Milieux humides</li>
+              </ul>
+              <p class="source" style="margin-top:var(--space-3)">Source : ministère des Ressources naturelles et des Forêts (MRNF).</p>
             </div>
 
             <div class="legend" aria-label="Légende des classes de risque">
