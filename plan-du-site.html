@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Données &amp; méthodes | Rivières Libres</title>
-  <meta name="description" content="Données &amp; méthodes — page en préparation. Le détail des sources de données et des méthodes de délimitation hydrogéomorphologique sera publié ici.">
-  <link rel="canonical" href="https://rivieres-libres.example/carte-donnees/donnees-methodes.html">
+  <title>Plan du site | Rivières Libres</title>
+  <meta name="description" content="Plan du site Rivières Libres : toutes les pages du portail sur l'espace de liberté des rivières, les zones inondables et le cadre réglementaire 2026 du Québec.">
+  <link rel="canonical" href="https://rivieres-libres.example/plan-du-site.html">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_CA">
   <meta property="og:site_name" content="Rivières Libres">
-  <meta property="og:title" content="Données &amp; méthodes | Rivières Libres">
-  <meta property="og:description" content="Données &amp; méthodes — page en préparation. Le détail des sources de données et des méthodes de délimitation hydrogéomorphologique sera publié ici.">
+  <meta property="og:title" content="Plan du site | Rivières Libres">
+  <meta property="og:description" content="Plan du site Rivières Libres : toutes les pages du portail sur l'espace de liberté des rivières, les zones inondables et le cadre réglementaire 2026 du Québec.">
   <meta property="og:image" content="https://rivieres-libres.example/assets/img/og-default.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,7 +32,7 @@
       <nav class="site-nav" id="site-nav" aria-label="Navigation principale">
         <ul class="site-nav__list">
           <li><a class="site-nav__link" href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
-          <li><a class="site-nav__link" aria-current="page" href="/carte-donnees/carte.html">Carte &amp; données</a></li>
+          <li><a class="site-nav__link" href="/carte-donnees/carte.html">Carte &amp; données</a></li>
           <li><a class="site-nav__link" href="/cadre-reglementaire/cadre-2026.html">Cadre réglementaire</a></li>
           <li><a class="site-nav__link" href="/pour-vous/citoyens.html">Pour vous</a></li>
         </ul>
@@ -44,14 +44,95 @@
     </div>
   </header>
   <main id="main">
+  <nav class="breadcrumb container" aria-label="Fil d'Ariane">
+    <ol>
+      <li><a href="/index.html">Accueil</a></li>
+      <li aria-current="page">Plan du site</li>
+    </ol>
+  </nav>
+    <div class="page-head">
+      <div class="page-head__inner">
+        <p class="eyebrow">Navigation</p>
+        <h1>Plan du site</h1>
+        <p>Toutes les pages du portail Rivières Libres, regroupées par section, pour retrouver rapidement l'information recherchée.</p>
+      </div>
+    </div>
+
     <section class="section">
-      <div class="container soon">
-        <span class="tag">Bientôt disponible</span>
-        <svg class="soon__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-        <h1 class="mt-0">Données &amp; méthodes</h1>
-        <p class="lead" style="margin-inline:auto">Le détail des sources de données et des méthodes de délimitation hydrogéomorphologique sera publié ici.</p>
-        <p>En attendant, consultez :</p>
-        <ul style="display:inline-block;text-align:left"><li><a href="/pour-vous/professionnels.html">Espace professionnels</a></li><li><a href="/comprendre/mobilite-inondabilite.html">Mobilité & inondabilité</a></li></ul>
+      <div class="container">
+        <div class="grid grid--3">
+
+          <nav class="card" aria-labelledby="plan-accueil">
+            <h2 class="mt-0" id="plan-accueil">Général</h2>
+            <ul>
+              <li><a href="/index.html">Accueil</a></li>
+              <li><a href="/a-propos.html">À propos &amp; sources</a></li>
+              <li><a href="/a-propos.html#contact">Contact &amp; infolettre</a></li>
+            </ul>
+          </nav>
+
+          <nav class="card" aria-labelledby="plan-comprendre">
+            <h2 class="mt-0" id="plan-comprendre">Comprendre</h2>
+            <ul>
+              <li><a href="/comprendre/espace-de-liberte.html">L'espace de liberté des rivières</a></li>
+              <li><a href="/comprendre/mobilite-inondabilite.html">Mobilité et inondabilité des rivières</a></li>
+              <li><a href="/comprendre/climat-inondations.html">Climat et inondations au Québec</a></li>
+              <li><a href="/comprendre/pourquoi-espace.html">Pourquoi protéger l'espace de liberté</a></li>
+              <li><a href="/comprendre/glossaire-faq.html">Glossaire et FAQ</a></li>
+            </ul>
+          </nav>
+
+          <nav class="card" aria-labelledby="plan-carte">
+            <h2 class="mt-0" id="plan-carte">Carte &amp; données</h2>
+            <ul>
+              <li><a href="/carte-donnees/carte.html">Carte interactive</a></li>
+              <li><a href="/carte-donnees/lire-les-cartes.html">Lire les cartes</a></li>
+              <li><a href="/carte-donnees/donnees-methodes.html">Données &amp; méthodes</a></li>
+            </ul>
+          </nav>
+
+          <nav class="card" aria-labelledby="plan-cadre">
+            <h2 class="mt-0" id="plan-cadre">Cadre réglementaire</h2>
+            <ul>
+              <li><a href="/cadre-reglementaire/cadre-2026.html">Le cadre réglementaire 2026</a></li>
+              <li><a href="/cadre-reglementaire/ancienne-nouvelle-carto.html">Ancienne et nouvelle cartographie</a></li>
+              <li><a href="/cadre-reglementaire/permis-par-zone.html">Permis et travaux par zone</a></li>
+            </ul>
+          </nav>
+
+          <nav class="card" aria-labelledby="plan-pour-vous">
+            <h2 class="mt-0" id="plan-pour-vous">Pour vous</h2>
+            <ul>
+              <li><a href="/pour-vous/citoyens.html">Espace citoyens</a></li>
+              <li><a href="/pour-vous/municipalites-obv.html">Municipalités, MRC &amp; OBV</a></li>
+              <li><a href="/pour-vous/professionnels.html">Professionnels</a></li>
+            </ul>
+          </nav>
+
+          <nav class="card" aria-labelledby="plan-agir">
+            <h2 class="mt-0" id="plan-agir">Agir</h2>
+            <ul>
+              <li><a href="/agir/amenagement-resilient.html">Aménagement résilient</a></li>
+              <li><a href="/agir/solutions-nature.html">Solutions fondées sur la nature</a></li>
+              <li><a href="/agir/financements.html">Financements</a></li>
+            </ul>
+          </nav>
+
+          <nav class="card" aria-labelledby="plan-ressources">
+            <h2 class="mt-0" id="plan-ressources">Ressources</h2>
+            <ul>
+              <li><a href="/ressources/bibliotheque.html">Bibliothèque</a></li>
+              <li><a href="/ressources/etudes-de-cas.html">Études de cas</a></li>
+              <li><a href="/ressources/repertoire-acteurs.html">Répertoire des acteurs</a></li>
+            </ul>
+          </nav>
+
+        </div>
+
+        <div class="callout callout--warning" style="margin-top:var(--space-5)">
+          <span class="callout__label">Avertissement</span>
+          <p class="mt-0">Les informations de ce portail ont une valeur indicative et n'ont aucune portée légale. Elles ne remplacent pas les cartes officielles, les règlements ni l'avis des autorités compétentes.</p>
+        </div>
       </div>
     </section>
   </main>
