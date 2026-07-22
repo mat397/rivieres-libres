@@ -10,7 +10,12 @@
    - Milieux humides potentiels — MELCCFP
    - Municipalités / MRC (repérage) — MRNF (SDA)
 
-   Chargé uniquement sur la page carte (le HTML inclut maplibre-gl depuis le CDN).
+   maplibre-gl et pmtiles sont servis depuis /assets/vendor/ (pas de CDN tiers,
+   donc non bloqués par les adblockers).
+
+   La couche bâtiments (référentiel du Québec) est un PMTiles hébergé sur
+   Cloudflare R2 (BATIMENTS_PMTILES_URL). Elle se dessine PAR-DESSUS les zones
+   inondables pour montrer si un bâtiment tombe en zone à risque.
    ========================================================================== */
 (function () {
   "use strict";
@@ -20,6 +25,14 @@
   if (!el) return;
 
   var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* URL du PMTiles des bâtiments (R2). Vide = couche bâtiments désactivée. */
+  var BATIMENTS_PMTILES_URL = (window.RL_CONFIG && window.RL_CONFIG.batimentsPmtiles) || "";
+
+  /* Protocole PMTiles (la lib est chargée avant ce script). */
+  if (typeof pmtiles !== "undefined") {
+    maplibregl.addProtocol("pmtiles", new pmtiles.Protocol().tile);
+  }
 
   /* --- Fond de carte clair, sans clé (tuiles raster CARTO Positron) -------- */
   var STYLE = {
@@ -36,7 +49,10 @@
         attribution: "© OpenStreetMap, © CARTO"
       }
     },
-    layers: [{ id: "carto", type: "raster", source: "carto" }]
+    layers: [
+      { id: "bg", type: "background", paint: { "background-color": "#dfe8ec" } },
+      { id: "carto", type: "raster", source: "carto" }
+    ]
   };
 
   /* --- Couches WMS officielles (CC-BY) ------------------------------------ */
@@ -92,6 +108,8 @@
       'Carte : <a href="https://altogeo.ca" target="_blank" rel="noopener">Alto Géomatique</a>'
   }), "bottom-right");
 
+  var hasBatiments = false;
+
   map.on("load", function () {
     LAYERS.forEach(function (l) {
       map.addSource(l.id, { type: "raster", tiles: [l.tiles], tileSize: 256 });
@@ -101,6 +119,34 @@
         layout: { visibility: l.on ? "visible" : "none" }
       });
     });
+
+    /* Bâtiments (PMTiles R2) — PAR-DESSUS les zones inondables.
+       Ajoutés en dernier, donc au sommet de la pile de couches. */
+    if (BATIMENTS_PMTILES_URL && typeof pmtiles !== "undefined") {
+      map.addSource("batiments", { type: "vector", url: "pmtiles://" + BATIMENTS_PMTILES_URL });
+      map.addLayer({
+        id: "batiments-fill", type: "fill", source: "batiments", "source-layer": "batiments",
+        minzoom: 12,
+        paint: { "fill-color": "#0E3A52", "fill-opacity": 0.45 }
+      });
+      map.addLayer({
+        id: "batiments-line", type: "line", source: "batiments", "source-layer": "batiments",
+        minzoom: 13,
+        paint: { "line-color": "#0A2C3F", "line-width": 0.5 }
+      });
+      hasBatiments = true;
+
+      map.on("click", "batiments-fill", function (e) {
+        var s = e.features[0].properties.Superficie;
+        new maplibregl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML("<strong>Bâtiment</strong><br>Superficie : " + (s ? Math.round(s) + " m²" : "non disponible"))
+          .addTo(map);
+      });
+      map.on("mouseenter", "batiments-fill", function () { map.getCanvas().style.cursor = "pointer"; });
+      map.on("mouseleave", "batiments-fill", function () { map.getCanvas().style.cursor = ""; });
+    }
+
     buildControls();
   });
 
@@ -124,6 +170,26 @@
       row.appendChild(document.createTextNode(" " + l.label));
       box.appendChild(row);
     });
+
+    /* Case bâtiments (seulement si la couche PMTiles est disponible) */
+    if (hasBatiments) {
+      var brow = document.createElement("label");
+      brow.className = "carte-couche";
+      var bcb = document.createElement("input");
+      bcb.type = "checkbox"; bcb.checked = true;
+      bcb.addEventListener("change", function () {
+        var v = bcb.checked ? "visible" : "none";
+        map.setLayoutProperty("batiments-fill", "visibility", v);
+        map.setLayoutProperty("batiments-line", "visibility", v);
+      });
+      var bsw = document.createElement("span");
+      bsw.className = "carte-couche__swatch";
+      bsw.style.background = "#0E3A52";
+      brow.appendChild(bcb);
+      brow.appendChild(bsw);
+      brow.appendChild(document.createTextNode(" Bâtiments (zoom sur une ville)"));
+      box.appendChild(brow);
+    }
   }
 
   /* --- Recherche d'adresse (géocodage Nominatim, biaisé Québec) ----------- */

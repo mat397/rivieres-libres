@@ -7,8 +7,16 @@ export default {
     description: "Carte interactive des zones inondables, milieux humides et municipalités au Québec. Vérifiez une adresse et explorez les couches officielles (données MRNF et MELCCFP, CC-BY).",
     canonical: "https://rivieres-libres.example/carte-donnees/carte.html",
     active: "/carte-donnees/",
-    headExtra: `  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
-  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" defer></script>
+    headExtra: `  <link href="/assets/vendor/maplibre-gl.css" rel="stylesheet">
+  <script>
+    /* Config runtime de la carte. batimentsPmtiles = URL publique du PMTiles
+       des bâtiments (Cloudflare R2). Vide = couche bâtiments désactivée. */
+    window.RL_CONFIG = {
+      batimentsPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/batiments-quebec-sud.pmtiles"
+    };
+  </script>
+  <script src="/assets/vendor/maplibre-gl.js" defer></script>
+  <script src="/assets/vendor/pmtiles.js" defer></script>
   <script src="/assets/js/carte.js" defer></script>`,
   },
   body: `${pageHero({
