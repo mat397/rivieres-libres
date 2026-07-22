@@ -4,32 +4,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lire les cartes des zones inondables | Rivières Libres</title>
-  <meta name="description" content="Comprendre les quatre classes d'intensité (faible, modérée, élevée, très élevée), la zone protégée à risque résiduel, et le passage de l'ancien au nouveau système cartographique.">
+  <meta name="description" content="Comprendre les quatre classes d'intensité, la zone protégée à risque résiduel et le passage de l'ancien au nouveau système cartographique des zones inondables.">
   <link rel="canonical" href="https://rivieres-libres.example/carte-donnees/lire-les-cartes.html">
+  <meta name="theme-color" content="#0A2C3F">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_CA">
   <meta property="og:site_name" content="Rivières Libres">
   <meta property="og:title" content="Lire les cartes des zones inondables | Rivières Libres">
-  <meta property="og:description" content="Comprendre les quatre classes d'intensité (faible, modérée, élevée, très élevée), la zone protégée à risque résiduel, et le passage de l'ancien au nouveau système cartographique.">
+  <meta property="og:description" content="Comprendre les quatre classes d'intensité, la zone protégée à risque résiduel et le passage de l'ancien au nouveau système cartographique des zones inondables.">
   <meta property="og:image" content="https://rivieres-libres.example/assets/img/og-default.jpg">
+  <script>document.documentElement.classList.add("js")</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>
-  <header class="site-header">
+  <header class="site-header" data-scheme="dark">
     <div class="site-header__inner">
-      <a class="brand" href="/index.html" aria-label="Rivières Libres — accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
         <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
       </svg><span class="brand__name">Rivières Libres</span></a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Ouvrir le menu">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-      <nav class="site-nav" id="site-nav" aria-label="Navigation principale">
+      <nav class="site-nav" aria-label="Navigation principale">
         <ul class="site-nav__list">
           <li><a class="site-nav__link" href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
           <li><a class="site-nav__link" aria-current="page" href="/carte-donnees/carte.html">Carte &amp; données</a></li>
@@ -38,35 +37,62 @@
         </ul>
       </nav>
       <div class="header-actions">
-        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse</a>
+        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <button class="lang-switch" type="button" disabled aria-label="Langue : Français (Anglais à venir)" title="Version anglaise à venir">FR</button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Ouvrir le menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
       </div>
     </div>
   </header>
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu__top">
+      <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
+        <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
+      </svg><span class="brand__name">Rivières Libres</span></a>
+      <button class="mobile-menu__close" type="button" aria-label="Fermer le menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <ul class="mobile-menu__list">
+      <li style="--i:0"><a href="/index.html">Accueil</a></li>
+      <li style="--i:1"><a href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
+      <li style="--i:2"><a href="/carte-donnees/carte.html">Carte &amp; données</a></li>
+      <li style="--i:3"><a href="/cadre-reglementaire/cadre-2026.html">Cadre réglementaire</a></li>
+      <li style="--i:4"><a href="/pour-vous/citoyens.html">Pour vous</a></li>
+      <li style="--i:5"><a href="/a-propos.html">À propos</a></li>
+    </ul>
+    <div class="mobile-menu__cta">
+      <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+  </div>
   <main id="main">
-  <nav class="breadcrumb container" aria-label="Fil d'Ariane">
-    <ol>
-      <li><a href="/index.html">Accueil</a></li>
-      <li><a href="/carte-donnees/carte.html">Carte & données</a></li>
-      <li aria-current="page">Lire les cartes</li>
-    </ol>
-  </nav>
-    <div class="page-head">
-      <div class="page-head__inner">
-        <p class="eyebrow">Carte &amp; données</p>
-        <h1>Lire les cartes</h1>
-        <p>Les classes d'intensité, le risque résiduel, et ce qui change par rapport à l'ancien système.</p>
+    <div class="page-hero" data-navtheme="dark">
+      <div class="page-hero__inner">
+        <nav class="breadcrumb" aria-label="Fil d'Ariane">
+        <ol>
+          <li><a href="/index.html">Accueil</a></li>
+          <li><a href="/carte-donnees/carte.html">Carte &amp; données</a></li>
+          <li aria-current="page">Lire les cartes</li>
+        </ol>
+      </nav>
+        <p class="kicker">Carte et données</p>
+        <h1><span class="mask"><span class="mask__seg"><span class="mask__line">Apprendre à lire</span></span><span class="mask__seg"><span class="mask__line">les <em>cartes</em></span></span></span></h1>
+        <p class="lead" data-reveal>Quatre classes d'intensité, une zone protégée à risque résiduel : voici comment lire la nouvelle cartographie et ce qui change par rapport à l'ancienne.</p>
       </div>
     </div>
 
+    <!-- ===== LES CLASSES D'INTENSITÉ (sélecteur interactif + légende) ===== -->
     <section class="section">
       <div class="container">
-        <div class="grid grid--2-1">
+        <div class="grid grid--2-1 grid--gap-lg">
           <div>
-            <h2 class="mt-0">Les classes d'intensité</h2>
-            <p class="prose">Le nouveau système classe chaque secteur selon l'intensité de l'aléa d'inondation. Sélectionnez une classe pour en voir la description et les implications.</p>
+            <h2 class="mt-0"><span class="mask"><span class="mask__seg"><span class="mask__line">Les classes</span></span><span class="mask__seg"><span class="mask__line">d'intensité</span></span></span></h2>
+            <p class="prose" data-reveal>Le nouveau système classe chaque secteur selon l'intensité de l'aléa d'inondation. Sélectionnez une classe pour voir ce qu'elle signifie et quoi faire ensuite.</p>
 
-            <div data-zone-selector>
+            <div data-zone-selector data-reveal>
               <div class="zone-selector__controls" role="group" aria-label="Choisir une classe de risque">
                 <button class="zone-chip" type="button" data-zone="faible" aria-pressed="false" style="--swatch:var(--risk-faible)">Faible</button>
                 <button class="zone-chip" type="button" data-zone="moderee" aria-pressed="false" style="--swatch:var(--risk-moderee)">Modérée</button>
@@ -80,24 +106,27 @@
             </div>
           </div>
 
-          <div class="legend" aria-label="Légende des classes de risque">
+          <div class="legend" aria-label="Légende des classes de risque" data-reveal>
             <h3 class="mt-0" style="font-size:1rem">Légende</h3>
             <ul class="legend__list">
-              <li class="legend__item"><span class="legend__swatch legend__swatch--faible"></span><span><span class="legend__term">Faible</span> — probabilité la plus basse</span></li>
-              <li class="legend__item"><span class="legend__swatch legend__swatch--moderee"></span><span><span class="legend__term">Modérée</span> — probabilité intermédiaire</span></li>
-              <li class="legend__item"><span class="legend__swatch legend__swatch--elevee"></span><span><span class="legend__term">Élevée</span> — probabilité importante</span></li>
-              <li class="legend__item"><span class="legend__swatch legend__swatch--tres-elevee"></span><span><span class="legend__term">Très élevée</span> — probabilité la plus haute</span></li>
-              <li class="legend__item"><span class="legend__swatch legend__swatch--residuel"></span><span><span class="legend__term">Risque résiduel</span> — derrière un ouvrage reconnu</span></li>
+              <li class="legend__item"><span class="legend__swatch legend__swatch--faible"></span><span><span class="legend__term">Faible</span> : probabilité la plus basse</span></li>
+              <li class="legend__item"><span class="legend__swatch legend__swatch--moderee"></span><span><span class="legend__term">Modérée</span> : probabilité intermédiaire</span></li>
+              <li class="legend__item"><span class="legend__swatch legend__swatch--elevee"></span><span><span class="legend__term">Élevée</span> : probabilité importante</span></li>
+              <li class="legend__item"><span class="legend__swatch legend__swatch--tres-elevee"></span><span><span class="legend__term">Très élevée</span> : probabilité la plus haute</span></li>
+              <li class="legend__item"><span class="legend__swatch legend__swatch--residuel"></span><span><span class="legend__term">Risque résiduel</span> : derrière un ouvrage reconnu</span></li>
             </ul>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- ===== DE L'ANCIEN AU NOUVEAU SYSTÈME ===== -->
     <section class="section section--mist">
       <div class="container">
-        <h2 class="mt-0">De l'ancien au nouveau système</h2>
-        <div class="table-wrap">
+        <h2 class="mt-0"><span class="mask"><span class="mask__seg"><span class="mask__line">De l'ancien au</span></span><span class="mask__seg"><span class="mask__line">nouveau système</span></span></span></h2>
+        <p class="section__intro" data-reveal>D'un découpage en deux zones à quatre classes d'intensité, plus une zone protégée à risque résiduel.</p>
+
+        <div class="table-wrap" data-reveal>
           <table class="comparison-table is-stacked">
             <caption class="visually-hidden">Comparaison entre l'ancien et le nouveau système cartographique</caption>
             <thead>
@@ -105,34 +134,40 @@
             </thead>
             <tbody>
               <tr><th scope="row">Découpage</th><td data-label="Ancien">2 zones</td><td data-label="Nouveau">4 classes d'intensité + risque résiduel</td></tr>
-              <tr><th scope="row">Référence</th><td data-label="Ancien">Grand courant (0–20 ans) / faible courant (20–100 ans)</td><td data-label="Nouveau">Faible / modérée / élevée / très élevée</td></tr>
+              <tr><th scope="row">Référence</th><td data-label="Ancien">Grand courant (0 à 20 ans) / faible courant (20 à 100 ans)</td><td data-label="Nouveau">Faible / modérée / élevée / très élevée</td></tr>
               <tr><th scope="row">Ouvrages de protection</th><td data-label="Ancien">Peu pris en compte</td><td data-label="Nouveau">Zone protégée à risque résiduel reconnue</td></tr>
             </tbody>
           </table>
         </div>
 
-        <div class="callout callout--warning">
-          <span class="callout__label">À valider avant publication</span>
-          <p class="mt-0">Les seuils précis associés à chaque classe (par exemple « très élevée » = plus de 70 % de probabilité sur 25 ans, profondeur supérieure à 60 cm) proviennent de relais médiatiques et <strong>doivent être validés sur le guide méthodologique officiel du MELCCFP</strong> avant mise en ligne.</p>
+        <div class="grid grid--2" data-reveal-group>
+          <div class="callout callout--warning" data-reveal>
+            <span class="callout__label">À valider avant publication</span>
+            <p class="mt-0">Les seuils précis associés à chaque classe (par exemple « très élevée » = plus de 70 % de probabilité sur 25 ans, profondeur supérieure à 60 cm) proviennent de relais médiatiques et <strong>doivent être validés sur le guide méthodologique officiel du MELCCFP</strong> avant mise en ligne.</p>
+          </div>
+          <div class="callout callout--info" data-reveal>
+            <span class="callout__label">Limites</span>
+            <p class="mt-0">Les cartes ont une valeur indicative. Pour les limites officielles et le statut applicable à un terrain, adressez-vous à votre municipalité.</p>
+          </div>
         </div>
 
-        <div class="callout callout--info">
-          <span class="callout__label">Limites</span>
-          <p class="mt-0">Les cartes ont une valeur indicative. Pour les limites officielles et le statut applicable à un terrain, adressez-vous à votre municipalité.</p>
+        <div class="btn-row" style="margin-top:var(--space-6)" data-reveal>
+          <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         </div>
       </div>
     </section>
   </main>
-  <footer class="site-footer">
+  <footer class="site-footer" data-navtheme="dark">
+    <span class="site-footer__mark" aria-hidden="true">Rivières Libres</span>
     <div class="site-footer__inner">
       <div class="site-footer__grid">
         <div class="site-footer__brand">
-          <a class="brand" href="/index.html"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
         <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
       </svg><span class="brand__name">Rivières Libres</span></a>
-          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec — pour les citoyens, les municipalités et les professionnels.</p>
+          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec, pour les citoyens, les municipalités et les professionnels.</p>
         </div>
         <div>
           <h4>Comprendre</h4>
@@ -173,6 +208,7 @@
       </div>
     </div>
   </footer>
+  <div class="grain" aria-hidden="true"></div>
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>

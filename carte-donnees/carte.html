@@ -4,32 +4,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Carte interactive des zones inondables et de mobilité | Rivières Libres</title>
-  <meta name="description" content="Consultez la carte officielle du gouvernement du Québec (MRNF) des zones inondables et de mobilité des cours d'eau, embarquée sur le portail, avec la légende des classes d'intensité.">
+  <meta name="description" content="La carte officielle du Québec (MRNF), intégrée au portail : zones inondables, zones de mobilité et milieux humides, avec la légende des classes d'intensité.">
   <link rel="canonical" href="https://rivieres-libres.example/carte-donnees/carte.html">
+  <meta name="theme-color" content="#0A2C3F">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_CA">
   <meta property="og:site_name" content="Rivières Libres">
   <meta property="og:title" content="Carte interactive des zones inondables et de mobilité | Rivières Libres">
-  <meta property="og:description" content="Consultez la carte officielle du gouvernement du Québec (MRNF) des zones inondables et de mobilité des cours d'eau, embarquée sur le portail, avec la légende des classes d'intensité.">
+  <meta property="og:description" content="La carte officielle du Québec (MRNF), intégrée au portail : zones inondables, zones de mobilité et milieux humides, avec la légende des classes d'intensité.">
   <meta property="og:image" content="https://rivieres-libres.example/assets/img/og-default.jpg">
+  <script>document.documentElement.classList.add("js")</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>
-  <header class="site-header">
+  <header class="site-header" data-scheme="dark">
     <div class="site-header__inner">
-      <a class="brand" href="/index.html" aria-label="Rivières Libres — accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
         <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
       </svg><span class="brand__name">Rivières Libres</span></a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Ouvrir le menu">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-      <nav class="site-nav" id="site-nav" aria-label="Navigation principale">
+      <nav class="site-nav" aria-label="Navigation principale">
         <ul class="site-nav__list">
           <li><a class="site-nav__link" href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
           <li><a class="site-nav__link" aria-current="page" href="/carte-donnees/carte.html">Carte &amp; données</a></li>
@@ -38,31 +37,58 @@
         </ul>
       </nav>
       <div class="header-actions">
-        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse</a>
+        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <button class="lang-switch" type="button" disabled aria-label="Langue : Français (Anglais à venir)" title="Version anglaise à venir">FR</button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Ouvrir le menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
       </div>
     </div>
   </header>
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu__top">
+      <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
+        <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
+      </svg><span class="brand__name">Rivières Libres</span></a>
+      <button class="mobile-menu__close" type="button" aria-label="Fermer le menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <ul class="mobile-menu__list">
+      <li style="--i:0"><a href="/index.html">Accueil</a></li>
+      <li style="--i:1"><a href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
+      <li style="--i:2"><a href="/carte-donnees/carte.html">Carte &amp; données</a></li>
+      <li style="--i:3"><a href="/cadre-reglementaire/cadre-2026.html">Cadre réglementaire</a></li>
+      <li style="--i:4"><a href="/pour-vous/citoyens.html">Pour vous</a></li>
+      <li style="--i:5"><a href="/a-propos.html">À propos</a></li>
+    </ul>
+    <div class="mobile-menu__cta">
+      <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+  </div>
   <main id="main">
-  <nav class="breadcrumb container" aria-label="Fil d'Ariane">
-    <ol>
-      <li><a href="/index.html">Accueil</a></li>
-      <li><a href="/carte-donnees/carte.html">Carte & données</a></li>
-      <li aria-current="page">Carte</li>
-    </ol>
-  </nav>
-    <div class="page-head">
-      <div class="page-head__inner">
-        <p class="eyebrow">Carte &amp; données</p>
-        <h1>Carte interactive</h1>
-        <p>Vérifiez une adresse et explorez les couches : zones inondables, mobilité, espace de liberté, milieux humides.</p>
+    <div class="page-hero" data-navtheme="dark">
+      <div class="page-hero__inner">
+        <nav class="breadcrumb" aria-label="Fil d'Ariane">
+        <ol>
+          <li><a href="/index.html">Accueil</a></li>
+          <li><a href="/carte-donnees/carte.html">Carte &amp; données</a></li>
+          <li aria-current="page">Carte</li>
+        </ol>
+      </nav>
+        <p class="kicker">Carte et données</p>
+        <h1><span class="mask"><span class="mask__seg"><span class="mask__line">La carte officielle,</span></span><span class="mask__seg"><span class="mask__line"><em>intégrée</em> au portail</span></span></span></h1>
+        <p class="lead" data-reveal>Vérifiez une adresse et explorez les couches officielles : zones inondables, zones de mobilité et milieux humides. Vous y voyez, en version réglementaire, les composantes de l'espace de liberté.</p>
       </div>
     </div>
 
+    <!-- ===== LA CARTE (outil officiel MRNF) ===== -->
     <section class="section">
       <div class="container">
-        <div class="grid grid--2-1">
-          <div class="map-embed">
+        <div class="grid grid--2-1" data-reveal-group>
+          <div class="map-embed" data-reveal>
             <!-- Carte officielle des zones inondables et de mobilité (MRNF, gouvernement du Québec) -->
             <iframe
               class="map-embed__frame"
@@ -78,7 +104,7 @@
           </div>
 
           <div class="stack">
-            <div class="map-layers">
+            <div class="map-layers" data-reveal>
               <h3 class="mt-0" style="font-size:1rem">Utiliser la carte</h3>
               <p class="mt-0">La carte ci-contre est l'outil <strong>officiel du gouvernement du Québec</strong> (MRNF). Recherchez une adresse et activez les couches directement dans la carte :</p>
               <ul style="margin:0; padding-left:1.2em">
@@ -89,7 +115,7 @@
               <p class="source" style="margin-top:var(--space-3)">Source : ministère des Ressources naturelles et des Forêts (MRNF).</p>
             </div>
 
-            <div class="legend" aria-label="Légende des classes de risque">
+            <div class="legend" aria-label="Légende des classes de risque" data-reveal>
               <h3 class="mt-0" style="font-size:1rem">Classes d'intensité</h3>
               <ul class="legend__list">
                 <li class="legend__item"><span class="legend__swatch legend__swatch--faible"></span><span><span class="legend__term">Faible</span></span></li>
@@ -98,40 +124,47 @@
                 <li class="legend__item"><span class="legend__swatch legend__swatch--tres-elevee"></span><span><span class="legend__term">Très élevée</span></span></li>
                 <li class="legend__item"><span class="legend__swatch legend__swatch--residuel"></span><span><span class="legend__term">Risque résiduel</span> (derrière un ouvrage)</span></li>
               </ul>
-              <p style="margin:var(--space-3) 0 0"><a href="/carte-donnees/lire-les-cartes.html">Comment lire les cartes ?</a></p>
+              <p style="margin:var(--space-3) 0 0"><a class="link-arrow" href="/carte-donnees/lire-les-cartes.html">Comment lire les cartes ? <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
             </div>
           </div>
         </div>
 
-        <div class="callout callout--warning" style="margin-top:var(--space-5)">
+        <div class="callout callout--warning" style="margin-top:var(--space-5)" data-reveal>
           <span class="callout__label">Avertissement</span>
           <p class="mt-0">Cette carte a une valeur indicative et n'a aucune portée légale. Pour connaître le statut réel d'un terrain, consultez votre municipalité et les outils officiels du gouvernement du Québec.</p>
         </div>
       </div>
     </section>
 
+    <!-- ===== LIENS OFFICIELS ===== -->
     <section class="section section--mist">
       <div class="container">
-        <h2 class="mt-0">Liens officiels</h2>
-        <ul class="prose">
-          <li><a href="https://www.quebec.ca/" rel="noopener" target="_blank">Carte gouvernementale des zones inondables et de mobilité des cours d'eau</a></li>
-          <li><a href="https://www.quebec.ca/" rel="noopener" target="_blank">Géo-Inondations</a></li>
-          <li><a href="https://www.quebec.ca/" rel="noopener" target="_blank">Atlas de l'eau</a></li>
-        </ul>
-        <p class="source">Liens à pointer vers les URL officielles exactes lors de la mise en ligne.</p>
+        <div class="grid grid--1-1 grid--gap-lg">
+          <div>
+            <h2 class="mt-0"><span class="mask"><span class="mask__seg"><span class="mask__line">Liens officiels</span></span></span></h2>
+            <p data-reveal>Les outils gouvernementaux de référence, pour consulter les données à la source.</p>
+          </div>
+          <div data-reveal-group>
+            <p class="mt-0" data-reveal><a class="link-arrow" href="https://www.quebec.ca/" rel="noopener" target="_blank">Carte gouvernementale des zones inondables et de mobilité des cours d'eau <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
+            <p data-reveal><a class="link-arrow" href="https://www.quebec.ca/" rel="noopener" target="_blank">Géo-Inondations <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
+            <p data-reveal><a class="link-arrow" href="https://www.quebec.ca/" rel="noopener" target="_blank">Atlas de l'eau <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
+            <p class="source" data-reveal>Liens à pointer vers les URL officielles exactes lors de la mise en ligne.</p>
+          </div>
+        </div>
       </div>
     </section>
   </main>
-  <footer class="site-footer">
+  <footer class="site-footer" data-navtheme="dark">
+    <span class="site-footer__mark" aria-hidden="true">Rivières Libres</span>
     <div class="site-footer__inner">
       <div class="site-footer__grid">
         <div class="site-footer__brand">
-          <a class="brand" href="/index.html"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
         <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
       </svg><span class="brand__name">Rivières Libres</span></a>
-          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec — pour les citoyens, les municipalités et les professionnels.</p>
+          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec, pour les citoyens, les municipalités et les professionnels.</p>
         </div>
         <div>
           <h4>Comprendre</h4>
@@ -172,6 +205,7 @@
       </div>
     </div>
   </footer>
+  <div class="grain" aria-hidden="true"></div>
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>

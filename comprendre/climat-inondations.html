@@ -6,30 +6,29 @@
   <title>Climat et inondations au Québec | Rivières Libres</title>
   <meta name="description" content="Changements climatiques, crues plus fréquentes, inondations de 2017 et 2019, et pourquoi les nouvelles cartes élargissent les zones inondables d'environ 30 %.">
   <link rel="canonical" href="https://rivieres-libres.example/comprendre/climat-inondations.html">
+  <meta name="theme-color" content="#0A2C3F">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_CA">
   <meta property="og:site_name" content="Rivières Libres">
   <meta property="og:title" content="Climat et inondations au Québec | Rivières Libres">
   <meta property="og:description" content="Changements climatiques, crues plus fréquentes, inondations de 2017 et 2019, et pourquoi les nouvelles cartes élargissent les zones inondables d'environ 30 %.">
   <meta property="og:image" content="https://rivieres-libres.example/assets/img/og-default.jpg">
+  <script>document.documentElement.classList.add("js")</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>
-  <header class="site-header">
+  <header class="site-header" data-scheme="dark">
     <div class="site-header__inner">
-      <a class="brand" href="/index.html" aria-label="Rivières Libres — accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
         <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
       </svg><span class="brand__name">Rivières Libres</span></a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Ouvrir le menu">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-      <nav class="site-nav" id="site-nav" aria-label="Navigation principale">
+      <nav class="site-nav" aria-label="Navigation principale">
         <ul class="site-nav__list">
           <li><a class="site-nav__link" aria-current="page" href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
           <li><a class="site-nav__link" href="/carte-donnees/carte.html">Carte &amp; données</a></li>
@@ -38,35 +37,61 @@
         </ul>
       </nav>
       <div class="header-actions">
-        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse</a>
+        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <button class="lang-switch" type="button" disabled aria-label="Langue : Français (Anglais à venir)" title="Version anglaise à venir">FR</button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Ouvrir le menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
       </div>
     </div>
   </header>
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu__top">
+      <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
+        <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
+      </svg><span class="brand__name">Rivières Libres</span></a>
+      <button class="mobile-menu__close" type="button" aria-label="Fermer le menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <ul class="mobile-menu__list">
+      <li style="--i:0"><a href="/index.html">Accueil</a></li>
+      <li style="--i:1"><a href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
+      <li style="--i:2"><a href="/carte-donnees/carte.html">Carte &amp; données</a></li>
+      <li style="--i:3"><a href="/cadre-reglementaire/cadre-2026.html">Cadre réglementaire</a></li>
+      <li style="--i:4"><a href="/pour-vous/citoyens.html">Pour vous</a></li>
+      <li style="--i:5"><a href="/a-propos.html">À propos</a></li>
+    </ul>
+    <div class="mobile-menu__cta">
+      <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+  </div>
   <main id="main">
-  <nav class="breadcrumb container" aria-label="Fil d'Ariane">
-    <ol>
-      <li><a href="/index.html">Accueil</a></li>
-      <li><a href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
-      <li aria-current="page">Climat & inondations</li>
-    </ol>
-  </nav>
-    <div class="page-head">
-      <div class="page-head__inner">
-        <p class="eyebrow">Comprendre</p>
-        <h1>Climat &amp; inondations</h1>
-        <p>Pourquoi les zones à risque changent — et pourquoi maintenant.</p>
+    <div class="page-hero" data-navtheme="dark">
+      <div class="page-hero__inner">
+        <nav class="breadcrumb" aria-label="Fil d'Ariane">
+        <ol>
+          <li><a href="/index.html">Accueil</a></li>
+          <li><a href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
+          <li aria-current="page">Climat & inondations</li>
+        </ol>
+      </nav>
+        <p class="kicker">Comprendre</p>
+        <h1><span class="mask"><span class="mask__seg"><span class="mask__line">Climat et</span></span><span class="mask__seg"><span class="mask__line"><em>inondations</em></span></span></span></h1>
+        <p class="lead" data-reveal>Pourquoi les zones à risque changent, et pourquoi maintenant.</p>
       </div>
     </div>
 
     <section class="section">
       <div class="container">
         <div class="prose">
-          <h2 class="mt-0">Un contexte qui change</h2>
-          <p>Les changements climatiques modifient le régime des cours d'eau québécois : crues plus fréquentes et plus intenses dans certains bassins, étiages plus marqués en période sèche. Cette variabilité accrue rend d'autant plus importante la place laissée à la rivière.</p>
+          <h2 class="mt-0" data-reveal>Un contexte qui change</h2>
+          <p data-reveal>Les changements climatiques modifient le régime des cours d'eau québécois : crues plus fréquentes et plus intenses dans certains bassins, étiages plus marqués en période sèche. Cette variabilité accrue rend d'autant plus importante la place laissée à la rivière.</p>
         </div>
 
-        <div class="callout callout--warning">
+        <div class="callout callout--warning" data-reveal>
           <span class="callout__label">Rappel : 2017 et 2019</span>
           <p>Les inondations majeures de 2017 et 2019 ont coûté plus d'un milliard de dollars de fonds publics. Selon des analyses universitaires, elles ont touché respectivement environ <strong>293</strong> et <strong>240</strong> municipalités.</p>
           <p class="source">Sources : gouvernement du Québec (déclarations de juin 2025) ; analyses universitaires (UQAM, via The Conversation). Chiffres à citer précisément lors de la mise en ligne.</p>
@@ -76,21 +101,21 @@
 
     <section class="section section--mist">
       <div class="container">
-        <div class="grid grid--3">
-          <div class="card data-card">
-            <span class="data-card__value">~1 G$</span>
-            <span class="data-card__unit">de fonds publics (2017 + 2019)</span>
-            <span class="data-card__source">Source : gouvernement du Québec, juin 2025</span>
+        <div class="stat-band" data-reveal-group>
+          <div class="stat" data-reveal>
+            <span class="stat__value">≈ 1 <span class="stat__unit">G$</span></span>
+            <span class="stat__label">De fonds publics (inondations 2017 et 2019)</span>
+            <span class="stat__note">Source : gouvernement du Québec, juin 2025.</span>
           </div>
-          <div class="card data-card">
-            <span class="data-card__value">~293</span>
-            <span class="data-card__unit">municipalités touchées en 2017</span>
-            <span class="data-card__source">Source : analyses universitaires (UQAM)</span>
+          <div class="stat" data-reveal>
+            <span class="stat__value"><span data-count-to="293" data-count-prefix="≈ ">≈ 293</span></span>
+            <span class="stat__label">Municipalités touchées en 2017</span>
+            <span class="stat__note">Source : analyses universitaires (UQAM).</span>
           </div>
-          <div class="card data-card">
-            <span class="data-card__value">~240</span>
-            <span class="data-card__unit">municipalités touchées en 2019</span>
-            <span class="data-card__source">Source : analyses universitaires (UQAM)</span>
+          <div class="stat" data-reveal>
+            <span class="stat__value"><span data-count-to="240" data-count-prefix="≈ ">≈ 240</span></span>
+            <span class="stat__label">Municipalités touchées en 2019</span>
+            <span class="stat__note">Source : analyses universitaires (UQAM).</span>
           </div>
         </div>
       </div>
@@ -99,25 +124,28 @@
     <section class="section">
       <div class="container">
         <div class="prose">
-          <h2 class="mt-0">Pourquoi les zones s'élargissent</h2>
-          <p>Les nouvelles cartes élargissent les zones inondables d'environ <strong>30 %</strong>. Comme l'a précisé le gouvernement, il ne s'agit pas de créer de nouvelles zones, mais d'<strong>identifier plus justement</strong> celles qui existent déjà.</p>
-          <p class="source">Source : ministre de l'Environnement, juin 2025. Estimation gouvernementale annoncée, sujette à ajustement régional — à présenter comme estimation.</p>
-          <p><a href="https://www.atlas-hydroclimatique.ca/" rel="noopener" target="_blank">Consulter l'Atlas hydroclimatique (horizons 2050 / 2080) →</a></p>
-          <p><a href="/cadre-reglementaire/cadre-2026.html">Voir le cadre réglementaire 2026 →</a></p>
+          <h2 class="mt-0"><span class="mask"><span class="mask__seg"><span class="mask__line">Pourquoi les zones s'élargissent</span></span></span></h2>
+          <div data-reveal-group>
+            <p data-reveal>Les nouvelles cartes élargissent les zones inondables d'environ <strong>30 %</strong>. Comme l'a précisé le gouvernement, il ne s'agit pas de créer de nouvelles zones, mais d'<strong>identifier plus justement</strong> celles qui existent déjà.</p>
+            <p class="source" data-reveal>Source : ministre de l'Environnement, juin 2025. Estimation gouvernementale annoncée, sujette à ajustement régional ; à présenter comme estimation.</p>
+            <p data-reveal><a class="link-arrow" href="https://www.atlas-hydroclimatique.ca/" rel="noopener" target="_blank">Consulter l'Atlas hydroclimatique (horizons 2050 / 2080) <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
+            <p data-reveal><a class="link-arrow" href="/cadre-reglementaire/cadre-2026.html">Voir le cadre réglementaire 2026 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
+          </div>
         </div>
       </div>
     </section>
   </main>
-  <footer class="site-footer">
+  <footer class="site-footer" data-navtheme="dark">
+    <span class="site-footer__mark" aria-hidden="true">Rivières Libres</span>
     <div class="site-footer__inner">
       <div class="site-footer__grid">
         <div class="site-footer__brand">
-          <a class="brand" href="/index.html"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
         <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
       </svg><span class="brand__name">Rivières Libres</span></a>
-          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec — pour les citoyens, les municipalités et les professionnels.</p>
+          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec, pour les citoyens, les municipalités et les professionnels.</p>
         </div>
         <div>
           <h4>Comprendre</h4>
@@ -158,6 +186,7 @@
       </div>
     </div>
   </footer>
+  <div class="grain" aria-hidden="true"></div>
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>

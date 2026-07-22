@@ -4,32 +4,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Espace citoyens | Rivières Libres</title>
-  <meta name="description" content="Ma propriété est-elle en zone inondable ? Ce que les nouvelles cartes changent (valeur, assurabilité, permis), les travaux d'adaptation possibles et qui contacter.">
+  <meta name="description" content="Ma propriété est-elle en zone inondable ? Vérifier une adresse, comprendre ce que les nouvelles cartes changent et s'adapter : les étapes pour les citoyens.">
   <link rel="canonical" href="https://rivieres-libres.example/pour-vous/citoyens.html">
+  <meta name="theme-color" content="#0A2C3F">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_CA">
   <meta property="og:site_name" content="Rivières Libres">
   <meta property="og:title" content="Espace citoyens | Rivières Libres">
-  <meta property="og:description" content="Ma propriété est-elle en zone inondable ? Ce que les nouvelles cartes changent (valeur, assurabilité, permis), les travaux d'adaptation possibles et qui contacter.">
+  <meta property="og:description" content="Ma propriété est-elle en zone inondable ? Vérifier une adresse, comprendre ce que les nouvelles cartes changent et s'adapter : les étapes pour les citoyens.">
   <meta property="og:image" content="https://rivieres-libres.example/assets/img/og-default.jpg">
+  <script>document.documentElement.classList.add("js")</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>
-  <header class="site-header">
+  <header class="site-header" data-scheme="dark">
     <div class="site-header__inner">
-      <a class="brand" href="/index.html" aria-label="Rivières Libres — accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
         <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
       </svg><span class="brand__name">Rivières Libres</span></a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Ouvrir le menu">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-      <nav class="site-nav" id="site-nav" aria-label="Navigation principale">
+      <nav class="site-nav" aria-label="Navigation principale">
         <ul class="site-nav__list">
           <li><a class="site-nav__link" href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
           <li><a class="site-nav__link" href="/carte-donnees/carte.html">Carte &amp; données</a></li>
@@ -38,94 +37,197 @@
         </ul>
       </nav>
       <div class="header-actions">
-        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse</a>
+        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <button class="lang-switch" type="button" disabled aria-label="Langue : Français (Anglais à venir)" title="Version anglaise à venir">FR</button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Ouvrir le menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
       </div>
     </div>
   </header>
-  <main id="main">
-  <nav class="breadcrumb container" aria-label="Fil d'Ariane">
-    <ol>
-      <li><a href="/index.html">Accueil</a></li>
-      <li><a href="/pour-vous/citoyens.html">Pour vous</a></li>
-      <li aria-current="page">Citoyens</li>
-    </ol>
-  </nav>
-    <div class="page-head">
-      <div class="page-head__inner">
-        <p class="eyebrow">Pour vous</p>
-        <h1>Citoyens</h1>
-        <p>Ce que les nouvelles cartes changent pour vous, et comment vous adapter.</p>
-      </div>
-    </div>
-
-    <section class="section">
-      <div class="container">
-        <div class="cta-band">
-          <h2 class="mt-0">Ma propriété est-elle concernée ?</h2>
-          <p>Vérifiez une adresse sur la carte, puis confirmez le statut réel auprès de votre municipalité.</p>
-          <div class="btn-row"><a class="btn btn--ghost" href="/carte-donnees/carte.html">Vérifier une adresse</a></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <div class="prose">
-          <h2 class="mt-0">Ce que ça change</h2>
-          <ul>
-            <li><strong>Valeur et assurabilité</strong> — le classement peut influencer l'assurance et le financement. Nous restons prudents sur les chiffres ; référez-vous aux analyses officielles.</li>
-            <li><strong>Permis et travaux</strong> — les règles d'aménagement dépendent de la classe de risque applicable à votre terrain.</li>
-            <li><strong>Information</strong> — de nouvelles cartes sont publiées progressivement ; votre secteur peut être cartographié à une date ultérieure.</li>
-          </ul>
-        </div>
-
-        <div class="callout callout--nature">
-          <span class="callout__label">Travaux d'adaptation possibles</span>
-          <p class="mt-0">Selon votre situation : immunisation du bâtiment (surélévation des équipements, clapets anti-retour), aménagement du terrain favorisant l'infiltration, renaturalisation de la rive. Validez l'admissibilité avec votre municipalité.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section--mist">
-      <div class="container">
-        <h2 class="mt-0">Questions fréquentes</h2>
-        <div class="accordion">
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="c-q1">Mon terrain est nouvellement classé : que faire ?<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="c-q1" hidden><div class="accordion__panel-inner">Contactez votre municipalité pour connaître le statut réglementaire exact et les règles applicables. Le portail et la carte sont indicatifs.</div></div>
-          </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="c-q2">Puis-je agrandir ma maison ?<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="c-q2" hidden><div class="accordion__panel-inner">Cela dépend de la classe d'intensité et du règlement municipal. Certains travaux restent permis sous conditions ; d'autres sont restreints.</div></div>
-          </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="c-q3">Suis-je protégé par une digue ?<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="c-q3" hidden><div class="accordion__panel-inner">Si votre secteur est derrière un ouvrage de protection reconnu, il peut être classé en « zone protégée à risque résiduel » : le risque est réduit mais subsiste.</div></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <div class="callout callout--info">
-          <span class="callout__label">Qui contacter</span>
-          <p class="mt-0">Votre <strong>municipalité</strong> (statut du terrain, permis), votre <strong>MRC</strong> (aménagement), la <strong>sécurité civile</strong> (MSP) en cas de sinistre, et les <strong>outils officiels</strong> du gouvernement du Québec pour les cartes.</p>
-        </div>
-      </div>
-    </section>
-  </main>
-  <footer class="site-footer">
-    <div class="site-footer__inner">
-      <div class="site-footer__grid">
-        <div class="site-footer__brand">
-          <a class="brand" href="/index.html"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu__top">
+      <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
         <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
       </svg><span class="brand__name">Rivières Libres</span></a>
-          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec — pour les citoyens, les municipalités et les professionnels.</p>
+      <button class="mobile-menu__close" type="button" aria-label="Fermer le menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <ul class="mobile-menu__list">
+      <li style="--i:0"><a href="/index.html">Accueil</a></li>
+      <li style="--i:1"><a href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
+      <li style="--i:2"><a href="/carte-donnees/carte.html">Carte &amp; données</a></li>
+      <li style="--i:3"><a href="/cadre-reglementaire/cadre-2026.html">Cadre réglementaire</a></li>
+      <li style="--i:4"><a href="/pour-vous/citoyens.html">Pour vous</a></li>
+      <li style="--i:5"><a href="/a-propos.html">À propos</a></li>
+    </ul>
+    <div class="mobile-menu__cta">
+      <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+  </div>
+  <main id="main">
+    <div class="page-hero" data-navtheme="dark">
+      <div class="page-hero__inner">
+        <nav class="breadcrumb" aria-label="Fil d'Ariane">
+        <ol>
+          <li><a href="/index.html">Accueil</a></li>
+          <li><a href="/pour-vous/citoyens.html">Pour vous</a></li>
+          <li aria-current="page">Citoyens</li>
+        </ol>
+      </nav>
+        <p class="kicker">Pour vous</p>
+        <h1><span class="mask"><span class="mask__seg"><span class="mask__line">Citoyens et</span></span><span class="mask__seg"><span class="mask__line"><em>propriétaires</em></span></span></span></h1>
+        <p class="lead" data-reveal>Une carte qui change ne change pas votre maison : voici comment vérifier votre situation, comprendre les nouvelles règles et vous adapter.</p>
+      </div>
+    </div>
+
+    <!-- ===== LES TROIS GESTES (colonne vertébrale de la page) ===== -->
+    <section class="section">
+      <div class="container">
+        <h2><span class="mask"><span class="mask__seg"><span class="mask__line">Trois gestes,</span></span><span class="mask__seg"><span class="mask__line">dans l'ordre</span></span></span></h2>
+        <p class="section__intro" data-reveal>Un nouveau classement soulève des questions légitimes. La démarche pour y répondre, elle, reste simple.</p>
+        <ol class="index-list" data-reveal-group>
+          <li class="index-list__item" data-reveal>
+            <a class="index-list__link" href="/carte-donnees/carte.html">
+              <span class="index-list__num" aria-hidden="true">01</span>
+              <span>
+                <span class="index-list__title">Vérifier une adresse sur la carte</span>
+                <p class="index-list__desc">La carte officielle donne une première lecture de votre secteur. Elle a une valeur indicative, sans portée légale.</p>
+              </span>
+              <span class="index-list__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </a>
+          </li>
+          <li class="index-list__item" data-reveal>
+            <a class="index-list__link" href="#contacts">
+              <span class="index-list__num" aria-hidden="true">02</span>
+              <span>
+                <span class="index-list__title">Confirmer auprès de votre municipalité</span>
+                <p class="index-list__desc">Elle seule connaît le statut réglementaire exact de votre terrain et les permis qui s'y appliquent.</p>
+              </span>
+              <span class="index-list__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </a>
+          </li>
+          <li class="index-list__item" data-reveal>
+            <a class="index-list__link" href="#adaptation">
+              <span class="index-list__num" aria-hidden="true">03</span>
+              <span>
+                <span class="index-list__title">Adapter votre propriété au besoin</span>
+                <p class="index-list__desc">Immunisation du bâtiment, aménagement du terrain, renaturalisation de la rive : des travaux existent.</p>
+              </span>
+              <span class="index-list__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </a>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===== CE QUE ÇA CHANGE + S'ADAPTER ===== -->
+    <section class="section section--mist">
+      <div class="container">
+        <div class="grid grid--2-1 grid--gap-lg">
+          <div>
+            <h2 class="mt-0"><span class="mask"><span class="mask__seg"><span class="mask__line">Ce que ça change</span></span><span class="mask__seg"><span class="mask__line">pour vous</span></span></span></h2>
+            <div class="prose" data-reveal>
+              <p>Le classement de votre terrain peut jouer sur trois plans :</p>
+              <ul>
+                <li><strong>Valeur et assurabilité</strong> : le classement peut influencer l'assurance et le financement. Nous restons prudents sur les chiffres ; référez-vous aux analyses officielles.</li>
+                <li><strong>Permis et travaux</strong> : les règles d'aménagement dépendent de la classe de risque applicable à votre terrain.</li>
+                <li><strong>Information</strong> : de nouvelles cartes sont publiées progressivement ; votre secteur peut être cartographié à une date ultérieure.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="callout callout--nature" id="adaptation" data-reveal>
+            <span class="callout__label">Travaux d'adaptation possibles</span>
+            <p class="mt-0">Selon votre situation : immunisation du bâtiment (surélévation des équipements, clapets anti-retour), aménagement du terrain favorisant l'infiltration, renaturalisation de la rive. Validez l'admissibilité avec votre municipalité.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== QUESTIONS FRÉQUENTES ===== -->
+    <section class="section">
+      <div class="container">
+        <h2 class="mt-0" data-reveal>Questions fréquentes</h2>
+        <p class="section__intro" data-reveal>Des réponses courtes aux inquiétudes les plus courantes.</p>
+        <div class="accordion" data-reveal>
+          <div class="accordion__item">
+            <h3 class="mt-0" style="margin:0">
+              <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="c-q1">
+                Mon terrain est nouvellement classé : que faire ?
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </h3>
+            <div class="accordion__panel" id="c-q1" role="region">
+              <div class="accordion__panel-inner">Contactez votre municipalité pour connaître le statut réglementaire exact et les règles applicables. Le portail et la carte sont indicatifs.</div>
+            </div>
+          </div>
+          <div class="accordion__item">
+            <h3 class="mt-0" style="margin:0">
+              <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="c-q2">
+                Puis-je agrandir ma maison ?
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </h3>
+            <div class="accordion__panel" id="c-q2" role="region">
+              <div class="accordion__panel-inner">Cela dépend de la classe d'intensité et du règlement municipal. Certains travaux restent permis sous conditions ; d'autres sont restreints.</div>
+            </div>
+          </div>
+          <div class="accordion__item">
+            <h3 class="mt-0" style="margin:0">
+              <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="c-q3">
+                Suis-je protégé par une digue ?
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </h3>
+            <div class="accordion__panel" id="c-q3" role="region">
+              <div class="accordion__panel-inner">Si votre secteur est derrière un ouvrage de protection reconnu, il peut être classé en « zone protégée à risque résiduel » : le risque est réduit mais subsiste.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== QUI CONTACTER ===== -->
+    <section class="section section--mist" id="contacts">
+      <div class="container">
+        <h2 class="mt-0" data-reveal>Qui contacter</h2>
+        <p class="section__intro" data-reveal>Un interlocuteur par besoin : vous n'avez pas à chercher seul.</p>
+        <div class="prose" data-reveal>
+          <ul>
+            <li><strong>Votre municipalité</strong> : statut réglementaire du terrain et permis.</li>
+            <li><strong>Votre MRC</strong> : aménagement du territoire.</li>
+            <li><strong>La sécurité civile (MSP)</strong> : en cas de sinistre.</li>
+            <li><strong>Les outils officiels du gouvernement du Québec</strong> : pour les cartes.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== APPEL FINAL ===== -->
+    <section class="section">
+      <div class="container">
+        <div class="cta-band" data-reveal>
+          <h2 class="mt-0">Ma propriété est-elle concernée ?</h2>
+          <p>Vérifiez une adresse sur la carte, puis confirmez le statut réel auprès de votre municipalité.</p>
+          <div class="btn-row"><a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer" data-navtheme="dark">
+    <span class="site-footer__mark" aria-hidden="true">Rivières Libres</span>
+    <div class="site-footer__inner">
+      <div class="site-footer__grid">
+        <div class="site-footer__brand">
+          <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
+        <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
+      </svg><span class="brand__name">Rivières Libres</span></a>
+          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec, pour les citoyens, les municipalités et les professionnels.</p>
         </div>
         <div>
           <h4>Comprendre</h4>
@@ -166,6 +268,7 @@
       </div>
     </div>
   </footer>
+  <div class="grain" aria-hidden="true"></div>
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>

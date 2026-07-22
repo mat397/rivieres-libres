@@ -79,7 +79,7 @@ export function v2Body(p) {
 export function v2Meta(p) {
   return {
     title: `${p.title} | Rivières Libres`,
-    description: `${p.title} — page en préparation. ${p.desc}`,
+    description: `${p.title} : page en préparation. ${p.desc}`,
     canonical: `https://rivieres-libres.example/${p.out}`,
     active: p.active,
   };

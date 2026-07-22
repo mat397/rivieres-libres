@@ -4,32 +4,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Glossaire et FAQ | Rivières Libres</title>
-  <meta name="description" content="Glossaire des termes clés (espace de liberté, zone de mobilité, zone de grand courant, risque résiduel…) et foire aux questions par audience.">
+  <meta name="description" content="Glossaire de l'espace de liberté, de la zone de mobilité et du cadre 2026, avec des réponses directes pour citoyens, municipalités et professionnels.">
   <link rel="canonical" href="https://rivieres-libres.example/comprendre/glossaire-faq.html">
+  <meta name="theme-color" content="#0A2C3F">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_CA">
   <meta property="og:site_name" content="Rivières Libres">
   <meta property="og:title" content="Glossaire et FAQ | Rivières Libres">
-  <meta property="og:description" content="Glossaire des termes clés (espace de liberté, zone de mobilité, zone de grand courant, risque résiduel…) et foire aux questions par audience.">
+  <meta property="og:description" content="Glossaire de l'espace de liberté, de la zone de mobilité et du cadre 2026, avec des réponses directes pour citoyens, municipalités et professionnels.">
   <meta property="og:image" content="https://rivieres-libres.example/assets/img/og-default.jpg">
+  <script>document.documentElement.classList.add("js")</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>
-  <header class="site-header">
+  <header class="site-header" data-scheme="dark">
     <div class="site-header__inner">
-      <a class="brand" href="/index.html" aria-label="Rivières Libres — accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
         <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
       </svg><span class="brand__name">Rivières Libres</span></a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Ouvrir le menu">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-      <nav class="site-nav" id="site-nav" aria-label="Navigation principale">
+      <nav class="site-nav" aria-label="Navigation principale">
         <ul class="site-nav__list">
           <li><a class="site-nav__link" aria-current="page" href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
           <li><a class="site-nav__link" href="/carte-donnees/carte.html">Carte &amp; données</a></li>
@@ -38,135 +37,215 @@
         </ul>
       </nav>
       <div class="header-actions">
-        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse</a>
+        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <button class="lang-switch" type="button" disabled aria-label="Langue : Français (Anglais à venir)" title="Version anglaise à venir">FR</button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Ouvrir le menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
       </div>
     </div>
   </header>
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu__top">
+      <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
+        <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
+      </svg><span class="brand__name">Rivières Libres</span></a>
+      <button class="mobile-menu__close" type="button" aria-label="Fermer le menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <ul class="mobile-menu__list">
+      <li style="--i:0"><a href="/index.html">Accueil</a></li>
+      <li style="--i:1"><a href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
+      <li style="--i:2"><a href="/carte-donnees/carte.html">Carte &amp; données</a></li>
+      <li style="--i:3"><a href="/cadre-reglementaire/cadre-2026.html">Cadre réglementaire</a></li>
+      <li style="--i:4"><a href="/pour-vous/citoyens.html">Pour vous</a></li>
+      <li style="--i:5"><a href="/a-propos.html">À propos</a></li>
+    </ul>
+    <div class="mobile-menu__cta">
+      <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+  </div>
   <main id="main">
-  <nav class="breadcrumb container" aria-label="Fil d'Ariane">
-    <ol>
-      <li><a href="/index.html">Accueil</a></li>
-      <li><a href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
-      <li aria-current="page">Glossaire & FAQ</li>
-    </ol>
-  </nav>
-    <div class="page-head">
-      <div class="page-head__inner">
-        <p class="eyebrow">Comprendre</p>
-        <h1>Glossaire &amp; FAQ</h1>
-        <p>Les mots clés pour s'y retrouver, et des réponses par profil.</p>
+    <div class="page-hero" data-navtheme="dark">
+      <div class="page-hero__inner">
+        <nav class="breadcrumb" aria-label="Fil d'Ariane">
+        <ol>
+          <li><a href="/index.html">Accueil</a></li>
+          <li><a href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
+          <li aria-current="page">Glossaire &amp; FAQ</li>
+        </ol>
+      </nav>
+        <p class="kicker">Comprendre</p>
+        <h1><span class="mask"><span class="mask__seg"><span class="mask__line">Des mots justes,</span></span><span class="mask__seg"><span class="mask__line">des réponses <em>claires</em>.</span></span></span></h1>
+        <p class="lead" data-reveal>Le vocabulaire pour se repérer dans les cartes et le cadre 2026, puis des réponses directes selon votre profil.</p>
       </div>
     </div>
 
+    <!-- ===== GLOSSAIRE ===== -->
     <section class="section">
       <div class="container">
-        <h2 class="mt-0">Glossaire A–Z</h2>
-        <div class="accordion">
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="t-edl">Espace de liberté<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="t-edl" hidden><div class="accordion__panel-inner">Concept scientifique réunissant l'espace de mobilité et l'espace d'inondabilité d'une rivière, milieux humides riverains compris. Volontaire et hydrogéomorphologique.</div></div>
+        <h2><span class="mask"><span class="mask__seg"><span class="mask__line">Onze termes à connaître</span></span></span></h2>
+        <p class="section__intro" data-reveal>La science et le règlement n'emploient pas toujours les mêmes mots. Voici ceux qui reviennent partout sur ce portail, du concept d'espace de liberté aux notions du cadre 2026.</p>
+        <dl class="grid grid--2 grid--gap-lg" style="margin:0" data-reveal-group>
+          <div id="t-edl" data-reveal>
+            <dt style="font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--color-deep);margin:0 0 var(--space-2)">Espace de liberté</dt>
+            <dd style="margin:0">Concept scientifique réunissant l'espace de mobilité et l'espace d'inondabilité d'une rivière, milieux humides riverains compris. Une démarche volontaire et hydrogéomorphologique.</dd>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="t-em">Espace de mobilité<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="t-em" hidden><div class="accordion__panel-inner">Zone dans laquelle le lit de la rivière se déplace latéralement (méandres, érosion, dépôts).</div></div>
+          <div id="t-em" data-reveal>
+            <dt style="font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--color-deep);margin:0 0 var(--space-2)">Espace de mobilité</dt>
+            <dd style="margin:0">Zone dans laquelle le lit de la rivière se déplace latéralement (méandres, érosion, dépôts).</dd>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="t-ei">Espace d'inondabilité<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="t-ei" hidden><div class="accordion__panel-inner">Zone occupée par les crues selon leur récurrence ; inclut la plaine inondable et les milieux humides.</div></div>
+          <div id="t-ei" data-reveal>
+            <dt style="font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--color-deep);margin:0 0 var(--space-2)">Espace d'inondabilité</dt>
+            <dd style="margin:0">Zone occupée par les crues selon leur récurrence ; inclut la plaine inondable et les milieux humides.</dd>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="t-zmce">Zone de mobilité des cours d'eau<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="t-zmce" hidden><div class="accordion__panel-inner">Notion réglementaire du cadre 2026, cartographiée par le gouvernement et opposable (court terme 50 ans, long terme).</div></div>
+          <div id="t-zmce" data-reveal>
+            <dt style="font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--color-deep);margin:0 0 var(--space-2)">Zone de mobilité des cours d'eau</dt>
+            <dd style="margin:0">Notion réglementaire du cadre 2026, cartographiée par le gouvernement et opposable (court terme 50 ans, long terme).</dd>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="t-zgc">Zone de grand courant<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="t-zgc" hidden><div class="accordion__panel-inner">Dans l'ancien système, secteur de la plaine inondable correspondant aux crues fréquentes (récurrence 0–20 ans).</div></div>
+          <div id="t-zgc" data-reveal>
+            <dt style="font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--color-deep);margin:0 0 var(--space-2)">Zone de grand courant</dt>
+            <dd style="margin:0">Dans l'ancien système, secteur de la plaine inondable correspondant aux crues fréquentes, de récurrence 0 à 20 ans.</dd>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="t-classes">Classes d'intensité<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="t-classes" hidden><div class="accordion__panel-inner">Nouveau système à quatre classes (faible, modérée, élevée, très élevée) remplaçant l'ancien découpage en deux zones.</div></div>
+          <div id="t-classes" data-reveal>
+            <dt style="font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--color-deep);margin:0 0 var(--space-2)">Classes d'intensité</dt>
+            <dd style="margin:0">Nouveau système à quatre classes (faible, modérée, élevée, très élevée) remplaçant l'ancien découpage en deux zones.</dd>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="t-residuel">Zone protégée à risque résiduel<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="t-residuel" hidden><div class="accordion__panel-inner">Secteur derrière un ouvrage de protection contre les inondations (OPI) reconnu : risque réduit mais subsistant.</div></div>
+          <div id="t-residuel" data-reveal>
+            <dt style="font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--color-deep);margin:0 0 var(--space-2)">Zone protégée à risque résiduel</dt>
+            <dd style="margin:0">Secteur situé derrière un ouvrage de protection contre les inondations (OPI) reconnu : risque réduit, mais subsistant.</dd>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="t-rec">Récurrence<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="t-rec" hidden><div class="accordion__panel-inner">Fréquence statistique d'une crue d'une ampleur donnée.</div></div>
+          <div id="t-rec" data-reveal>
+            <dt style="font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--color-deep);margin:0 0 var(--space-2)">Récurrence</dt>
+            <dd style="margin:0">Fréquence statistique d'une crue d'une ampleur donnée.</dd>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="t-emb">Embâcle<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="t-emb" hidden><div class="accordion__panel-inner">Obstruction d'un cours d'eau par de la glace ou des débris, pouvant causer une inondation en amont.</div></div>
+          <div id="t-emb" data-reveal>
+            <dt style="font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--color-deep);margin:0 0 var(--space-2)">Embâcle</dt>
+            <dd style="margin:0">Obstruction d'un cours d'eau par de la glace ou des débris, pouvant causer une inondation en amont.</dd>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="t-opi">OPI<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="t-opi" hidden><div class="accordion__panel-inner">Ouvrage de protection contre les inondations (digue, muret) reconnu par le gouvernement.</div></div>
+          <div id="t-opi" data-reveal>
+            <dt style="font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--color-deep);margin:0 0 var(--space-2)">OPI</dt>
+            <dd style="margin:0">Ouvrage de protection contre les inondations (digue, muret) reconnu par le gouvernement.</dd>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="t-hgm">Hydrogéomorphologie<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="t-hgm" hidden><div class="accordion__panel-inner">Étude des formes et de l'évolution du lit et des berges d'un cours d'eau.</div></div>
+          <div id="t-hgm" data-reveal>
+            <dt style="font-family:var(--font-display);font-weight:600;font-size:1.15rem;color:var(--color-deep);margin:0 0 var(--space-2)">Hydrogéomorphologie</dt>
+            <dd style="margin:0">Étude des formes et de l'évolution du lit et des berges d'un cours d'eau.</dd>
           </div>
-        </div>
+        </dl>
+        <p style="margin-top:var(--space-6)" data-reveal><a class="link-arrow" href="/comprendre/mobilite-inondabilite.html">Distinguer mobilité et inondabilité <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></p>
       </div>
     </section>
 
+    <!-- ===== FAQ PAR PROFIL ===== -->
     <section class="section section--mist">
       <div class="container">
-        <h2 class="mt-0">FAQ par audience</h2>
+        <h2><span class="mask"><span class="mask__seg"><span class="mask__line">Des réponses par profil</span></span></span></h2>
 
-        <h3>Citoyens</h3>
-        <div class="accordion" style="margin-bottom:var(--space-5)">
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="f-c1">Comment savoir si ma propriété est en zone inondable ?<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="f-c1" hidden><div class="accordion__panel-inner">Consultez la carte officielle du gouvernement du Québec et, surtout, votre municipalité, qui détient le statut réglementaire applicable à votre terrain. La carte de ce portail est indicative.</div></div>
+        <h3 data-reveal>Citoyens</h3>
+        <div class="accordion" style="margin:0 0 var(--space-6)" data-reveal>
+<div class="accordion__item">
+            <h3 class="mt-0" style="margin:0">
+              <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="f-c1">
+                Comment savoir si ma propriété est en zone inondable ?
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </h3>
+            <div class="accordion__panel" id="f-c1" role="region">
+              <div class="accordion__panel-inner"><p style="margin:0">Consultez la <a href="/carte-donnees/carte.html">carte officielle du gouvernement du Québec</a> et, surtout, votre municipalité, qui détient le statut réglementaire applicable à votre terrain. La carte de ce portail est indicative, sans portée légale.</p></div>
+            </div>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="f-c2">Les nouvelles cartes changent-elles la valeur de ma maison ?<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="f-c2" hidden><div class="accordion__panel-inner">Le classement peut influencer l'assurabilité et les permis. Nous restons prudents sur les chiffres : référez-vous à l'analyse d'impact réglementaire officielle plutôt qu'à des estimations commerciales.</div></div>
+<div class="accordion__item">
+            <h3 class="mt-0" style="margin:0">
+              <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="f-c2">
+                Les nouvelles cartes changent-elles la valeur de ma maison ?
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </h3>
+            <div class="accordion__panel" id="f-c2" role="region">
+              <div class="accordion__panel-inner"><p style="margin:0">Le classement peut influencer l'assurabilité et les permis. Nous restons prudents sur les chiffres : référez-vous à l'analyse d'impact réglementaire officielle plutôt qu'à des estimations commerciales.</p></div>
+            </div>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="f-c3">Puis-je encore faire des travaux ?<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="f-c3" hidden><div class="accordion__panel-inner">Cela dépend de la classe de risque et du règlement applicable. Certains travaux d'adaptation restent possibles ; vérifiez auprès de votre municipalité.</div></div>
+<div class="accordion__item">
+            <h3 class="mt-0" style="margin:0">
+              <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="f-c3">
+                Puis-je encore faire des travaux ?
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </h3>
+            <div class="accordion__panel" id="f-c3" role="region">
+              <div class="accordion__panel-inner"><p style="margin:0">Cela dépend de la classe de risque et du règlement applicable. Certains travaux d'adaptation restent possibles ; vérifiez auprès de votre municipalité.</p></div>
+            </div>
           </div>
         </div>
 
-        <h3>Municipalités, MRC &amp; OBV</h3>
-        <div class="accordion" style="margin-bottom:var(--space-5)">
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="f-m1">Qui produit les cartes ?<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="f-m1" hidden><div class="accordion__panel-inner">La cartographie est produite dans le cadre du projet INFO-Crue (MELCCFP, avec Ouranos), avec délégation à la CMM (BIRC) et à des MRC mandataires.</div></div>
+        <h3 data-reveal>Municipalités, MRC &amp; OBV</h3>
+        <div class="accordion" style="margin:0 0 var(--space-6)" data-reveal>
+<div class="accordion__item">
+            <h3 class="mt-0" style="margin:0">
+              <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="f-m1">
+                Qui produit les cartes ?
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </h3>
+            <div class="accordion__panel" id="f-m1" role="region">
+              <div class="accordion__panel-inner"><p style="margin:0">La cartographie est produite dans le cadre du projet INFO-Crue (MELCCFP, avec Ouranos), avec délégation à la CMM (BIRC) et à des MRC mandataires.</p></div>
+            </div>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="f-m2">Quels financements pour l'adaptation ?<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="f-m2" hidden><div class="accordion__panel-inner">Des programmes comme le PRAFI et les bureaux de projets-Inondations (MAMH) soutiennent la gestion des risques. Voir l'espace municipalités.</div></div>
+<div class="accordion__item">
+            <h3 class="mt-0" style="margin:0">
+              <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="f-m2">
+                Quels financements pour l'adaptation ?
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </h3>
+            <div class="accordion__panel" id="f-m2" role="region">
+              <div class="accordion__panel-inner"><p style="margin:0">Des programmes comme le PRAFI et les bureaux de projets-Inondations (MAMH) soutiennent la gestion des risques. Voir <a href="/pour-vous/municipalites-obv.html">l'espace municipalités</a>.</p></div>
+            </div>
           </div>
         </div>
 
-        <h3>Professionnels</h3>
-        <div class="accordion">
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="f-p1">Où trouver le guide méthodologique ?<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="f-p1" hidden><div class="accordion__panel-inner">Le guide méthodologique officiel du MELCCFP (volets technique/scientifique et cartographie réglementaire) est la référence. Voir l'espace professionnels.</div></div>
+        <h3 data-reveal>Professionnels</h3>
+        <div class="accordion" data-reveal>
+<div class="accordion__item">
+            <h3 class="mt-0" style="margin:0">
+              <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="f-p1">
+                Où trouver le guide méthodologique ?
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </h3>
+            <div class="accordion__panel" id="f-p1" role="region">
+              <div class="accordion__panel-inner"><p style="margin:0">Le guide méthodologique officiel du MELCCFP (volets technique/scientifique et cartographie réglementaire) est la référence. Voir <a href="/pour-vous/professionnels.html">l'espace professionnels</a>.</p></div>
+            </div>
           </div>
-          <div class="accordion__item">
-            <h3 style="margin:0"><button class="accordion__trigger" aria-expanded="false" aria-controls="f-p2">Quelles données géospatiales sont disponibles ?<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h3>
-            <div class="accordion__panel" id="f-p2" hidden><div class="accordion__panel-inner">Données Québec (GRHQ, LiDAR/MNT), Géo-Inondations, Atlas de l'eau et Atlas hydroclimatique.</div></div>
+<div class="accordion__item">
+            <h3 class="mt-0" style="margin:0">
+              <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="f-p2">
+                Quelles données géospatiales sont disponibles ?
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </h3>
+            <div class="accordion__panel" id="f-p2" role="region">
+              <div class="accordion__panel-inner"><p style="margin:0">Données Québec (GRHQ, LiDAR/MNT), Géo-Inondations, Atlas de l'eau et Atlas hydroclimatique.</p></div>
+            </div>
           </div>
         </div>
       </div>
     </section>
   </main>
-  <footer class="site-footer">
+  <footer class="site-footer" data-navtheme="dark">
+    <span class="site-footer__mark" aria-hidden="true">Rivières Libres</span>
     <div class="site-footer__inner">
       <div class="site-footer__grid">
         <div class="site-footer__brand">
-          <a class="brand" href="/index.html"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
         <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
       </svg><span class="brand__name">Rivières Libres</span></a>
-          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec — pour les citoyens, les municipalités et les professionnels.</p>
+          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec, pour les citoyens, les municipalités et les professionnels.</p>
         </div>
         <div>
           <h4>Comprendre</h4>
@@ -207,6 +286,7 @@
       </div>
     </div>
   </footer>
+  <div class="grain" aria-hidden="true"></div>
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>

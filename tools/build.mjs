@@ -1,6 +1,6 @@
 /* ==========================================================================
-   tools/build.mjs — Générateur de pages statiques (optionnel)
-   Assemble chaque page à partir d'un layout commun (header/footer/head)
+   tools/build.mjs — Générateur de pages statiques
+   Assemble chaque page à partir d'un layout commun (head/header/footer)
    et des fragments de contenu situés dans tools/pages/.
    Le SITE est servable SANS ce script : il ne fait que (re)générer le HTML.
 
@@ -9,6 +9,7 @@
 import { readFileSync, writeFileSync, readdirSync, mkdirSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { ICON_ARROW } from "./pages/_shared.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -27,36 +28,58 @@ const GLYPH = `<svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" 
         <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
       </svg>`;
 
+const BRAND = `<a class="brand" href="/index.html" aria-label="Rivières Libres, accueil">${GLYPH}<span class="brand__name">Rivières Libres</span></a>`;
+
 function header(active) {
   const links = NAV.map(n => {
     const cur = active && n.match === active ? ' aria-current="page"' : "";
     return `<li><a class="site-nav__link"${cur} href="${n.href}">${n.label}</a></li>`;
   }).join("\n          ");
-  return `  <header class="site-header">
+  return `  <header class="site-header" data-scheme="dark">
     <div class="site-header__inner">
-      <a class="brand" href="/index.html" aria-label="Rivières Libres — accueil">${GLYPH}<span class="brand__name">Rivières Libres</span></a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Ouvrir le menu">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-      <nav class="site-nav" id="site-nav" aria-label="Navigation principale">
+      ${BRAND}
+      <nav class="site-nav" aria-label="Navigation principale">
         <ul class="site-nav__list">
           ${links}
         </ul>
       </nav>
       <div class="header-actions">
-        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse</a>
+        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse ${ICON_ARROW}</a>
         <button class="lang-switch" type="button" disabled aria-label="Langue : Français (Anglais à venir)" title="Version anglaise à venir">FR</button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Ouvrir le menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
       </div>
     </div>
-  </header>`;
+  </header>
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu__top">
+      ${BRAND}
+      <button class="mobile-menu__close" type="button" aria-label="Fermer le menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <ul class="mobile-menu__list">
+      <li style="--i:0"><a href="/index.html">Accueil</a></li>
+      <li style="--i:1"><a href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
+      <li style="--i:2"><a href="/carte-donnees/carte.html">Carte &amp; données</a></li>
+      <li style="--i:3"><a href="/cadre-reglementaire/cadre-2026.html">Cadre réglementaire</a></li>
+      <li style="--i:4"><a href="/pour-vous/citoyens.html">Pour vous</a></li>
+      <li style="--i:5"><a href="/a-propos.html">À propos</a></li>
+    </ul>
+    <div class="mobile-menu__cta">
+      <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse ${ICON_ARROW}</a>
+    </div>
+  </div>`;
 }
 
-const FOOTER = `  <footer class="site-footer">
+const FOOTER = `  <footer class="site-footer" data-navtheme="dark">
+    <span class="site-footer__mark" aria-hidden="true">Rivières Libres</span>
     <div class="site-footer__inner">
       <div class="site-footer__grid">
         <div class="site-footer__brand">
-          <a class="brand" href="/index.html">${GLYPH}<span class="brand__name">Rivières Libres</span></a>
-          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec — pour les citoyens, les municipalités et les professionnels.</p>
+          ${BRAND}
+          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec, pour les citoyens, les municipalités et les professionnels.</p>
         </div>
         <div>
           <h4>Comprendre</h4>
@@ -98,7 +121,7 @@ const FOOTER = `  <footer class="site-footer">
     </div>
   </footer>`;
 
-function layout({ title, description, canonical, active, body }) {
+function layout({ title, description, canonical, active, headExtra = "", body }) {
   return `<!DOCTYPE html>
 <html lang="fr-CA">
 <head>
@@ -107,16 +130,18 @@ function layout({ title, description, canonical, active, body }) {
   <title>${title}</title>
   <meta name="description" content="${description}">
   <link rel="canonical" href="${canonical}">
+  <meta name="theme-color" content="#0A2C3F">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_CA">
   <meta property="og:site_name" content="Rivières Libres">
   <meta property="og:title" content="${title}">
   <meta property="og:description" content="${description}">
   <meta property="og:image" content="https://rivieres-libres.example/assets/img/og-default.jpg">
+  <script>document.documentElement.classList.add("js")</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/styles.css">${headExtra ? "\n" + headExtra : ""}
 </head>
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>
@@ -125,6 +150,7 @@ ${header(active)}
 ${body}
   </main>
 ${FOOTER}
+  <div class="grain" aria-hidden="true"></div>
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>
@@ -136,7 +162,7 @@ function emit(out, meta, body) {
   const dest = join(ROOT, out);
   mkdirSync(dirname(dest), { recursive: true });
   writeFileSync(dest, html, "utf8");
-  console.log("✓", relative(ROOT, dest));
+  console.log("OK", relative(ROOT, dest));
 }
 
 let count = 0;

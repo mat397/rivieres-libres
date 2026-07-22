@@ -4,32 +4,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>L'espace de liberté des rivières | Rivières Libres</title>
-  <meta name="description" content="Qu'est-ce que l'espace de liberté d'une rivière ? Un concept scientifique québécois (Biron, Buffin-Bélanger, Larocque, 2013) qui réunit espace de mobilité et espace d'inondabilité.">
+  <meta name="description" content="L'espace de liberté des rivières expliqué : un concept scientifique québécois (Biron, Buffin-Bélanger, Larocque, 2013) réunissant mobilité et inondabilité.">
   <link rel="canonical" href="https://rivieres-libres.example/comprendre/espace-de-liberte.html">
+  <meta name="theme-color" content="#0A2C3F">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_CA">
   <meta property="og:site_name" content="Rivières Libres">
   <meta property="og:title" content="L'espace de liberté des rivières | Rivières Libres">
-  <meta property="og:description" content="Qu'est-ce que l'espace de liberté d'une rivière ? Un concept scientifique québécois (Biron, Buffin-Bélanger, Larocque, 2013) qui réunit espace de mobilité et espace d'inondabilité.">
+  <meta property="og:description" content="L'espace de liberté des rivières expliqué : un concept scientifique québécois (Biron, Buffin-Bélanger, Larocque, 2013) réunissant mobilité et inondabilité.">
   <meta property="og:image" content="https://rivieres-libres.example/assets/img/og-default.jpg">
+  <script>document.documentElement.classList.add("js")</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>
-  <header class="site-header">
+  <header class="site-header" data-scheme="dark">
     <div class="site-header__inner">
-      <a class="brand" href="/index.html" aria-label="Rivières Libres — accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
         <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
       </svg><span class="brand__name">Rivières Libres</span></a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Ouvrir le menu">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-      <nav class="site-nav" id="site-nav" aria-label="Navigation principale">
+      <nav class="site-nav" aria-label="Navigation principale">
         <ul class="site-nav__list">
           <li><a class="site-nav__link" aria-current="page" href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
           <li><a class="site-nav__link" href="/carte-donnees/carte.html">Carte &amp; données</a></li>
@@ -38,69 +37,114 @@
         </ul>
       </nav>
       <div class="header-actions">
-        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse</a>
+        <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <button class="lang-switch" type="button" disabled aria-label="Langue : Français (Anglais à venir)" title="Version anglaise à venir">FR</button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Ouvrir le menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
       </div>
     </div>
   </header>
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu__top">
+      <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
+        <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
+      </svg><span class="brand__name">Rivières Libres</span></a>
+      <button class="mobile-menu__close" type="button" aria-label="Fermer le menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <ul class="mobile-menu__list">
+      <li style="--i:0"><a href="/index.html">Accueil</a></li>
+      <li style="--i:1"><a href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
+      <li style="--i:2"><a href="/carte-donnees/carte.html">Carte &amp; données</a></li>
+      <li style="--i:3"><a href="/cadre-reglementaire/cadre-2026.html">Cadre réglementaire</a></li>
+      <li style="--i:4"><a href="/pour-vous/citoyens.html">Pour vous</a></li>
+      <li style="--i:5"><a href="/a-propos.html">À propos</a></li>
+    </ul>
+    <div class="mobile-menu__cta">
+      <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+  </div>
   <main id="main">
-  <nav class="breadcrumb container" aria-label="Fil d'Ariane">
-    <ol>
-      <li><a href="/index.html">Accueil</a></li>
-      <li><a href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
-      <li aria-current="page">L'espace de liberté</li>
-    </ol>
-  </nav>
-    <div class="page-head">
-      <div class="page-head__inner">
-        <p class="eyebrow">Comprendre</p>
-        <h1>L'espace de liberté des rivières</h1>
-        <p>Redonner à la rivière la place d'évoluer, plutôt que de la dompter.</p>
+    <div class="page-hero" data-navtheme="dark">
+      <div class="page-hero__inner">
+        <nav class="breadcrumb" aria-label="Fil d'Ariane">
+        <ol>
+          <li><a href="/index.html">Accueil</a></li>
+          <li><a href="/comprendre/espace-de-liberte.html">Comprendre</a></li>
+          <li aria-current="page">L'espace de liberté</li>
+        </ol>
+      </nav>
+        <p class="kicker">Comprendre</p>
+        <h1><span class="mask"><span class="mask__seg"><span class="mask__line">L'espace de <em>liberté</em></span></span><span class="mask__seg"><span class="mask__line">des rivières</span></span></span></h1>
+        <p class="lead" data-reveal>Redonner à la rivière la place d'évoluer, plutôt que de la dompter.</p>
       </div>
     </div>
 
+    <!-- ===== LE CONCEPT : TROIS COMPOSANTES ===== -->
     <section class="section">
       <div class="container">
-        <div class="prose">
-          <p class="lead">Pendant longtemps, on a géré les rivières comme des canaux à dompter : enrochement, murets, redressement. L'approche de l'espace de liberté propose l'inverse — redonner à la rivière la place d'évoluer.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section--mist">
-      <div class="container">
-        <div class="grid grid--1-1">
-          <figure class="concept-diagram">
+        <div class="grid grid--1-1 grid--gap-lg">
+          <div>
+            <h2 class="mt-0"><span class="mask"><span class="mask__seg"><span class="mask__line">Trois composantes,</span></span><span class="mask__seg"><span class="mask__line">un seul espace</span></span></span></h2>
+            <div data-reveal-group>
+              <p data-reveal>Pendant longtemps, on a géré les rivières comme des canaux à dompter : enrochement, murets, redressement. L'approche de l'espace de liberté renverse cette logique : travailler avec la dynamique de la rivière plutôt que contre elle.</p>
+              <ul class="prose" data-reveal>
+                <li><strong>Espace de mobilité</strong> : la zone dans laquelle le lit se déplace latéralement (méandres, érosion des berges).</li>
+                <li><strong>Espace d'inondabilité</strong> : la zone occupée par les crues de différentes récurrences.</li>
+                <li><strong>Milieux humides riverains</strong> : des éponges naturelles qui stockent l'eau et réduisent les pointes de crue.</li>
+              </ul>
+            </div>
+          </div>
+          <figure class="concept-diagram draw" data-reveal>
             <svg viewBox="0 0 480 260" role="img" aria-labelledby="elt elc">
               <title id="elt">Les trois composantes de l'espace de liberté</title>
               <desc id="elc">L'espace de liberté combine l'espace de mobilité (déplacement latéral du lit), l'espace d'inondabilité (zone des crues) et les milieux humides riverains.</desc>
-              <rect x="20" y="40" width="440" height="180" rx="10" fill="#EAF5F7" stroke="#4FB3C4" stroke-dasharray="6 5"/>
-              <rect x="70" y="80" width="340" height="110" rx="8" fill="#FBF6EC" stroke="#DBB36A" stroke-dasharray="6 5"/>
-              <path d="M40 135 C 130 95, 180 175, 250 135 S 380 95, 440 135" fill="none" stroke="#1E8AA0" stroke-width="14" stroke-linecap="round"/>
+              <rect x="20" y="40" width="440" height="180" rx="14" fill="#EAF5F7" stroke="#4FB3C4" stroke-dasharray="6 5"/>
+              <rect x="70" y="80" width="340" height="110" rx="10" fill="#FBF6EC" stroke="#DBB36A" stroke-dasharray="6 5"/>
+              <path pathLength="1" d="M40 135 C 130 95, 180 175, 250 135 S 380 95, 440 135" fill="none" stroke="#1E8AA0" stroke-width="14" stroke-linecap="round"/>
               <text x="240" y="32" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#0E3A52">Espace d'inondabilité</text>
               <text x="240" y="74" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#8a6d2f">Espace de mobilité</text>
               <text x="240" y="210" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#5C6B73">+ milieux humides riverains</text>
             </svg>
-            <figcaption class="source">Schéma simplifié à des fins pédagogiques.</figcaption>
+            <figcaption class="source">Schéma simplifié à des fins pédagogiques. Concept : Biron et coll. (2013).</figcaption>
           </figure>
-          <div>
-            <h2 class="mt-0">Trois composantes</h2>
-            <ul class="prose">
-              <li><strong>Espace de mobilité</strong> — la zone dans laquelle le lit se déplace latéralement (méandres, érosion des berges).</li>
-              <li><strong>Espace d'inondabilité</strong> — la zone occupée par les crues de différentes récurrences.</li>
-              <li><strong>Milieux humides riverains</strong> — des éponges naturelles qui stockent l'eau et réduisent les pointes de crue.</li>
-            </ul>
-            <p><a href="/comprendre/mobilite-inondabilite.html">Approfondir mobilité &amp; inondabilité →</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ORIGINES ET NIVEAUX L1 / L2 ===== -->
+    <section class="section section--mist">
+      <div class="container">
+        <div class="callout callout--info" data-reveal>
+          <span class="callout__label">Origines au Québec</span>
+          <p>L'approche a été développée par <strong>Pascale Biron</strong> (Université Concordia), <strong>Thomas Buffin-Bélanger</strong> (UQAR) et <strong>Marie Larocque</strong> (UQAM), notamment dans le rapport Concordia/Ouranos de 2013 « Espace de liberté : un cadre de gestion intégrée pour la conservation des cours d'eau dans un contexte de changements climatiques ».</p>
+          <p class="source">Source : Biron et al., 2013 (Université Concordia / Ouranos).</p>
+        </div>
+
+        <h2 data-reveal>L1 et L2 : deux niveaux de protection</h2>
+        <div class="grid grid--2" data-reveal-group>
+          <div class="card data-card" data-reveal>
+            <h3 class="mt-0">Niveau L1</h3>
+            <p>L'espace minimal vital de la rivière, où aucun aménagement ne devrait avoir lieu.</p>
+          </div>
+          <div class="card data-card" data-reveal>
+            <h3 class="mt-0">Niveau L2</h3>
+            <p>L'espace fonctionnel plus large, à protéger pour que la dynamique naturelle opère, aujourd'hui et en climat futur.</p>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- ===== CONCEPT SCIENTIFIQUE VS NOTION RÉGLEMENTAIRE ===== -->
     <section class="section">
       <div class="container">
-        <h2 class="mt-0">Espace de liberté vs zone de mobilité des cours d'eau</h2>
-        <p class="prose">Deux notions cousines, mais distinctes — c'est l'une des clés pour comprendre le débat actuel.</p>
-        <div class="table-wrap">
+        <h2><span class="mask"><span class="mask__seg"><span class="mask__line">Espace de liberté ou</span></span><span class="mask__seg"><span class="mask__line">zone de mobilité ?</span></span></span></h2>
+        <p class="section__intro" data-reveal>Deux notions cousines, mais distinctes : l'une est volontaire, l'autre vous est opposable.</p>
+        <div class="table-wrap" data-reveal>
           <table class="comparison-table is-stacked">
             <caption class="visually-hidden">Comparaison entre l'espace de liberté et la zone de mobilité des cours d'eau</caption>
             <thead>
@@ -118,33 +162,47 @@
       </div>
     </section>
 
+    <!-- ===== POURSUIVRE LE PARCOURS ===== -->
     <section class="section section--mist">
       <div class="container">
-        <div class="callout callout--info">
-          <span class="callout__label">Origines au Québec</span>
-          <p>L'approche a été développée par <strong>Pascale Biron</strong> (Université Concordia), <strong>Thomas Buffin-Bélanger</strong> (UQAR) et <strong>Marie Larocque</strong> (UQAM), notamment dans le rapport Concordia/Ouranos de 2013 « Espace de liberté : un cadre de gestion intégrée pour la conservation des cours d'eau dans un contexte de changements climatiques ».</p>
-          <p class="source">Source : Biron et al., 2013 (Université Concordia / Ouranos).</p>
-        </div>
-
-        <h2>L1 et L2 : deux niveaux de protection</h2>
-        <div class="prose">
-          <p><strong>L1 — l'espace minimal vital</strong> de la rivière, où aucun aménagement ne devrait avoir lieu.</p>
-          <p><strong>L2 — l'espace fonctionnel plus large</strong>, à protéger pour que la dynamique naturelle opère, aujourd'hui et en climat futur.</p>
-          <p><a href="/comprendre/pourquoi-espace.html">Pourquoi protéger cet espace ? →</a></p>
-        </div>
+        <h2 data-reveal>Poursuivre le parcours</h2>
+        <p class="section__intro" data-reveal>Deux lectures pour compléter ce dossier.</p>
+        <ol class="index-list" data-reveal-group>
+          <li class="index-list__item" data-reveal>
+            <a class="index-list__link" href="/comprendre/pourquoi-espace.html">
+              <span class="index-list__num" aria-hidden="true">01</span>
+              <span>
+                <span class="index-list__title">Pourquoi protéger l'espace des rivières</span>
+                <p class="index-list__desc">Sécurité, économie, biodiversité : les bénéfices de laisser la rivière respirer.</p>
+              </span>
+              <span class="index-list__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </a>
+          </li>
+          <li class="index-list__item" data-reveal>
+            <a class="index-list__link" href="/comprendre/mobilite-inondabilite.html">
+              <span class="index-list__num" aria-hidden="true">03</span>
+              <span>
+                <span class="index-list__title">Mobilité et inondabilité</span>
+                <p class="index-list__desc">Approfondir la distinction entre concept scientifique et notion réglementaire.</p>
+              </span>
+              <span class="index-list__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </a>
+          </li>
+        </ol>
       </div>
     </section>
   </main>
-  <footer class="site-footer">
+  <footer class="site-footer" data-navtheme="dark">
+    <span class="site-footer__mark" aria-hidden="true">Rivières Libres</span>
     <div class="site-footer__inner">
       <div class="site-footer__grid">
         <div class="site-footer__brand">
-          <a class="brand" href="/index.html"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <a class="brand" href="/index.html" aria-label="Rivières Libres, accueil"><svg class="brand__glyph" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <path d="M2 9c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
         <path d="M2 16c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
         <path d="M2 23c4 0 4 3 8 3s4-3 8-3 4 3 8 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".4"/>
       </svg><span class="brand__name">Rivières Libres</span></a>
-          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec — pour les citoyens, les municipalités et les professionnels.</p>
+          <p class="site-footer__mission">Comprendre l'espace de liberté des rivières et les zones inondables au Québec, pour les citoyens, les municipalités et les professionnels.</p>
         </div>
         <div>
           <h4>Comprendre</h4>
@@ -185,6 +243,7 @@
       </div>
     </div>
   </footer>
+  <div class="grain" aria-hidden="true"></div>
   <script src="/assets/js/main.js" defer></script>
 </body>
 </html>
