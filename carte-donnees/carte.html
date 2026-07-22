@@ -4,20 +4,23 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Carte interactive des zones inondables et de mobilité | Rivières Libres</title>
-  <meta name="description" content="La carte officielle du Québec (MRNF), intégrée au portail : zones inondables, zones de mobilité et milieux humides, avec la légende des classes d'intensité.">
+  <meta name="description" content="Carte interactive des zones inondables, milieux humides et municipalités au Québec. Vérifiez une adresse et explorez les couches officielles (données MRNF et MELCCFP, CC-BY).">
   <link rel="canonical" href="https://rivieres-libres.example/carte-donnees/carte.html">
   <meta name="theme-color" content="#0A2C3F">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_CA">
   <meta property="og:site_name" content="Rivières Libres">
   <meta property="og:title" content="Carte interactive des zones inondables et de mobilité | Rivières Libres">
-  <meta property="og:description" content="La carte officielle du Québec (MRNF), intégrée au portail : zones inondables, zones de mobilité et milieux humides, avec la légende des classes d'intensité.">
+  <meta property="og:description" content="Carte interactive des zones inondables, milieux humides et municipalités au Québec. Vérifiez une adresse et explorez les couches officielles (données MRNF et MELCCFP, CC-BY).">
   <meta property="og:image" content="https://rivieres-libres.example/assets/img/og-default.jpg">
   <script>document.documentElement.classList.add("js")</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" defer></script>
+  <script src="/assets/js/carte.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Aller au contenu</a>
@@ -80,39 +83,39 @@
       </nav>
         <p class="kicker">Carte et données</p>
         <h1><span class="mask"><span class="mask__seg"><span class="mask__line">La carte officielle,</span></span><span class="mask__seg"><span class="mask__line"><em>intégrée</em> au portail</span></span></span></h1>
-        <p class="lead" data-reveal>Vérifiez une adresse et explorez les couches officielles : zones inondables, zones de mobilité et milieux humides. Vous y voyez, en version réglementaire, les composantes de l'espace de liberté.</p>
+        <p class="lead" data-reveal>Vérifiez une adresse et explorez les <strong>couches officielles</strong> : zones inondables, milieux humides et municipalités. Les données proviennent du gouvernement du Québec (MRNF, MELCCFP).</p>
       </div>
     </div>
 
-    <!-- ===== LA CARTE (outil officiel MRNF) ===== -->
+    <!-- ===== LA CARTE (MapLibre + couches officielles CC-BY) ===== -->
     <section class="section">
       <div class="container">
         <div class="grid grid--2-1" data-reveal-group>
           <div class="map-embed" data-reveal>
-            <!-- Carte officielle des zones inondables et de mobilité (MRNF, gouvernement du Québec) -->
-            <iframe
-              class="map-embed__frame"
-              src="https://zonesinondables.mrnf.gouv.qc.ca/"
-              title="Carte interactive officielle des zones inondables et de mobilité des cours d'eau (MRNF, gouvernement du Québec)"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              allow="geolocation"></iframe>
-            <p class="map-fallback">
-              La carte ne s'affiche pas ? Ouvrez-la directement :
-              <a href="https://zonesinondables.mrnf.gouv.qc.ca/" rel="noopener" target="_blank">zonesinondables.mrnf.gouv.qc.ca</a>
+            <div class="map-embed__stage">
+              <div id="carte" class="map-embed__frame" role="application" aria-label="Carte interactive des zones inondables, milieux humides et municipalités du Québec"></div>
+              <a class="map-embed__badge-alto" href="https://altogeo.ca" rel="noopener" target="_blank" aria-label="Une initiative d'Alto Géomatique (nouvel onglet)">
+                <img src="/assets/img/logo-alto-couleur.png" alt="Alto Géomatique" width="1280" height="714" loading="lazy">
+              </a>
+            </div>
+            <p class="map-initiative">
+              Carte réalisée par <a href="https://altogeo.ca" rel="noopener" target="_blank">Alto Géomatique</a> à partir des données ouvertes du gouvernement du Québec. La carte officielle reste consultable sur <a href="https://zonesinondables.mrnf.gouv.qc.ca/" rel="noopener" target="_blank">zonesinondables.mrnf.gouv.qc.ca</a>.
             </p>
           </div>
 
           <div class="stack">
             <div class="map-layers" data-reveal>
-              <h3 class="mt-0" style="font-size:1rem">Utiliser la carte</h3>
-              <p class="mt-0">La carte ci-contre est l'outil <strong>officiel du gouvernement du Québec</strong> (MRNF). Recherchez une adresse et activez les couches directement dans la carte :</p>
-              <ul style="margin:0; padding-left:1.2em">
-                <li>Zones inondables (classes d'intensité)</li>
-                <li>Zones de mobilité des cours d'eau</li>
-                <li>Milieux humides</li>
-              </ul>
-              <p class="source" style="margin-top:var(--space-3)">Source : ministère des Ressources naturelles et des Forêts (MRNF).</p>
+              <h3 class="mt-0" style="font-size:1rem">Rechercher une adresse</h3>
+              <form id="carte-recherche" class="map-search" role="search" aria-label="Rechercher une adresse sur la carte">
+                <label class="visually-hidden" for="carte-recherche-input">Adresse ou municipalité</label>
+                <input id="carte-recherche-input" type="search" placeholder="Adresse, municipalité…" autocomplete="off">
+                <button class="btn btn--primary" type="submit">Chercher <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              </form>
+              <p id="carte-recherche-msg" class="source" role="status" aria-live="polite" style="min-height:1.2em"></p>
+
+              <h3 style="font-size:1rem;margin-top:var(--space-4)">Couches à afficher</h3>
+              <div id="carte-couches" class="carte-couches"></div>
+              <p class="source" style="margin-top:var(--space-3)">Données : MRNF, MELCCFP (données ouvertes, CC-BY 4.0).</p>
             </div>
 
             <div class="legend" aria-label="Légende des classes de risque" data-reveal>
@@ -199,6 +202,12 @@
         Ils ne remplacent pas les cartes officielles, les règlements en vigueur ni l'avis des autorités compétentes.
         Pour connaître le statut réel d'un terrain, consultez votre municipalité, votre MRC et les outils officiels du gouvernement du Québec.
       </p>
+      <div class="site-footer__initiative">
+        <span>Une initiative 100&nbsp;% financée par</span>
+        <a href="https://altogeo.ca" rel="noopener" target="_blank" aria-label="Alto Géomatique (nouvel onglet)">
+          <img src="/assets/img/logo-alto-blanc.png" alt="Alto Géomatique" width="131" height="77" loading="lazy">
+        </a>
+      </div>
       <div class="site-footer__bottom">
         <span>© <span data-year>2026</span> Rivières Libres. Contenu sous licence libre, sources créditées.</span>
         <span><a href="/a-propos.html">Sources &amp; partenaires</a> · <a href="/a-propos.html#contact">Contact</a></span>

@@ -4,14 +4,17 @@ export default {
   out: "carte-donnees/carte.html",
   meta: {
     title: "Carte interactive des zones inondables et de mobilité | Rivières Libres",
-    description: "La carte officielle du Québec (MRNF), intégrée au portail : zones inondables, zones de mobilité et milieux humides, avec la légende des classes d'intensité.",
+    description: "Carte interactive des zones inondables, milieux humides et municipalités au Québec. Vérifiez une adresse et explorez les couches officielles (données MRNF et MELCCFP, CC-BY).",
     canonical: "https://rivieres-libres.example/carte-donnees/carte.html",
     active: "/carte-donnees/",
+    headExtra: `  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" defer></script>
+  <script src="/assets/js/carte.js" defer></script>`,
   },
   body: `${pageHero({
     kicker: "Carte et données",
     title: ["La carte officielle,", "<em>intégrée</em> au portail"],
-    lead: "Vérifiez une adresse et explorez les couches officielles : zones inondables, zones de mobilité et milieux humides. Vous y voyez, en version réglementaire, les composantes de l'espace de liberté.",
+    lead: "Vérifiez une adresse et explorez les <strong>couches officielles</strong> : zones inondables, milieux humides et municipalités. Les données proviennent du gouvernement du Québec (MRNF, MELCCFP).",
     crumbs: [
       { href: "/index.html", label: "Accueil" },
       { href: "/carte-donnees/carte.html", label: "Carte &amp; données" },
@@ -19,35 +22,35 @@ export default {
     ],
   })}
 
-    <!-- ===== LA CARTE (outil officiel MRNF) ===== -->
+    <!-- ===== LA CARTE (MapLibre + couches officielles CC-BY) ===== -->
     <section class="section">
       <div class="container">
         <div class="grid grid--2-1" data-reveal-group>
           <div class="map-embed" data-reveal>
-            <!-- Carte officielle des zones inondables et de mobilité (MRNF, gouvernement du Québec) -->
-            <iframe
-              class="map-embed__frame"
-              src="https://zonesinondables.mrnf.gouv.qc.ca/"
-              title="Carte interactive officielle des zones inondables et de mobilité des cours d'eau (MRNF, gouvernement du Québec)"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              allow="geolocation"></iframe>
-            <p class="map-fallback">
-              La carte ne s'affiche pas ? Ouvrez-la directement :
-              <a href="https://zonesinondables.mrnf.gouv.qc.ca/" rel="noopener" target="_blank">zonesinondables.mrnf.gouv.qc.ca</a>
+            <div class="map-embed__stage">
+              <div id="carte" class="map-embed__frame" role="application" aria-label="Carte interactive des zones inondables, milieux humides et municipalités du Québec"></div>
+              <a class="map-embed__badge-alto" href="https://altogeo.ca" rel="noopener" target="_blank" aria-label="Une initiative d'Alto Géomatique (nouvel onglet)">
+                <img src="/assets/img/logo-alto-couleur.png" alt="Alto Géomatique" width="1280" height="714" loading="lazy">
+              </a>
+            </div>
+            <p class="map-initiative">
+              Carte réalisée par <a href="https://altogeo.ca" rel="noopener" target="_blank">Alto Géomatique</a> à partir des données ouvertes du gouvernement du Québec. La carte officielle reste consultable sur <a href="https://zonesinondables.mrnf.gouv.qc.ca/" rel="noopener" target="_blank">zonesinondables.mrnf.gouv.qc.ca</a>.
             </p>
           </div>
 
           <div class="stack">
             <div class="map-layers" data-reveal>
-              <h3 class="mt-0" style="font-size:1rem">Utiliser la carte</h3>
-              <p class="mt-0">La carte ci-contre est l'outil <strong>officiel du gouvernement du Québec</strong> (MRNF). Recherchez une adresse et activez les couches directement dans la carte :</p>
-              <ul style="margin:0; padding-left:1.2em">
-                <li>Zones inondables (classes d'intensité)</li>
-                <li>Zones de mobilité des cours d'eau</li>
-                <li>Milieux humides</li>
-              </ul>
-              <p class="source" style="margin-top:var(--space-3)">Source : ministère des Ressources naturelles et des Forêts (MRNF).</p>
+              <h3 class="mt-0" style="font-size:1rem">Rechercher une adresse</h3>
+              <form id="carte-recherche" class="map-search" role="search" aria-label="Rechercher une adresse sur la carte">
+                <label class="visually-hidden" for="carte-recherche-input">Adresse ou municipalité</label>
+                <input id="carte-recherche-input" type="search" placeholder="Adresse, municipalité…" autocomplete="off">
+                <button class="btn btn--primary" type="submit">Chercher ${ICON_ARROW}</button>
+              </form>
+              <p id="carte-recherche-msg" class="source" role="status" aria-live="polite" style="min-height:1.2em"></p>
+
+              <h3 style="font-size:1rem;margin-top:var(--space-4)">Couches à afficher</h3>
+              <div id="carte-couches" class="carte-couches"></div>
+              <p class="source" style="margin-top:var(--space-3)">Données : MRNF, MELCCFP (données ouvertes, CC-BY 4.0).</p>
             </div>
 
             <div class="legend" aria-label="Légende des classes de risque" data-reveal>
