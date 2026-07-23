@@ -15,6 +15,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const PAGES_DIR = join(__dirname, "pages");
 
+/* Le token Mapbox n'est JAMAIS écrit en dur dans le HTML commité (GitHub le
+   bloque, et c'est une mauvaise pratique). Les pages référencent un placeholder
+   `__MAPBOX_TOKEN__`. En production, un script Vercel (tools/inject-token.mjs)
+   le remplace par la variable d'environnement Vercel MAPBOX_TOKEN au moment du
+   build. En local, on peut aussi lancer l'injection après le build. */
+globalThis.MAPBOX_TOKEN = "__MAPBOX_TOKEN__";
+
 const NAV = [
   { href: "/comprendre/espace-de-liberte.html", label: "Comprendre", match: "/comprendre/" },
   { href: "/carte-donnees/carte.html", label: "Carte &amp; données", match: "/carte-donnees/" },
@@ -127,7 +134,30 @@ const FOOTER = `  <footer class="site-footer" data-navtheme="dark">
     </div>
   </footer>`;
 
-function layout({ title, description, canonical, active, headExtra = "", body }) {
+function layout({ title, description, canonical, active, headExtra = "", body, bare = false }) {
+  if (bare) {
+    /* Page « nue » pour intégration en iframe : la carte seule, sans header,
+       footer, ni grain. Servable sur un domaine tiers via <iframe>. */
+    return `<!DOCTYPE html>
+<html lang="fr-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${title}</title>
+  <meta name="description" content="${description}">
+  <link rel="canonical" href="${canonical}">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/styles.css">${headExtra ? "\n" + headExtra : ""}
+</head>
+<body class="is-embed">
+${body}
+</body>
+</html>
+`;
+  }
   return `<!DOCTYPE html>
 <html lang="fr-CA">
 <head>
@@ -164,7 +194,7 @@ ${FOOTER}
 }
 
 function emit(out, meta, body) {
-  const html = layout({ ...meta, body });
+  const html = layout({ ...meta, body, bare: meta.bare });
   const dest = join(ROOT, out);
   mkdirSync(dirname(dest), { recursive: true });
   writeFileSync(dest, html, "utf8");

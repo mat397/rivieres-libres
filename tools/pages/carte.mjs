@@ -7,16 +7,19 @@ export default {
     description: "Carte interactive des zones inondables, milieux humides et municipalités au Québec. Vérifiez une adresse et explorez les couches officielles (données MRNF et MELCCFP, CC-BY).",
     canonical: "https://rivieres-libres.example/carte-donnees/carte.html",
     active: "/carte-donnees/",
-    headExtra: `  <link href="/assets/vendor/maplibre-gl.css" rel="stylesheet">
+    headExtra: `  <link href="/assets/vendor/mapbox-gl.css" rel="stylesheet">
   <script>
-    /* Config runtime de la carte. batimentsPmtiles = URL publique du PMTiles
-       des bâtiments (Cloudflare R2). Vide = couche bâtiments désactivée. */
+    /* Config runtime de la carte. Le token pk. Mapbox est PUBLIC (visible dans
+       le navigateur, c'est le fonctionnement normal de Mapbox) ; il doit être
+       restreint par domaine sur account.mapbox.com. Données : R2 (CC-BY). */
     window.RL_CONFIG = {
+      mapboxToken: "${globalThis.MAPBOX_TOKEN || ""}",
       batimentsPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/batiments-quebec-sud.pmtiles",
-      grillePmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/grille-zi.pmtiles"
+      grillePmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/grille-zi.pmtiles",
+      fondPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/fond-quebec.pmtiles"
     };
   </script>
-  <script src="/assets/vendor/maplibre-gl.js" defer></script>
+  <script src="/assets/vendor/mapbox-gl.js" defer></script>
   <script src="/assets/vendor/pmtiles.js" defer></script>
   <script src="/assets/js/carte.js" defer></script>`,
   },
@@ -69,6 +72,8 @@ export default {
                 </ol>
               </div>
 
+              <h3 style="font-size:1rem;margin-top:var(--space-4)">Fond de carte</h3>
+              <div id="carte-fonds" class="carte-fonds" role="group" aria-label="Fond de carte"></div>
               <h3 style="font-size:1rem;margin-top:var(--space-4)">Couches à afficher</h3>
               <div id="carte-couches" class="carte-couches"></div>
               <p class="source" style="margin-top:var(--space-3)">Données : MRNF, MELCCFP (données ouvertes, CC-BY 4.0).</p>

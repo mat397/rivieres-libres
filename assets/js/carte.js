@@ -20,41 +20,103 @@
 (function () {
   "use strict";
 
-  if (typeof maplibregl === "undefined") return;
+  /* Config runtime. */
+  var CFG = window.RL_CONFIG || {};
+  var BATIMENTS_PMTILES_URL = CFG.batimentsPmtiles || "";
+  var GRILLE_PMTILES_URL = CFG.grillePmtiles || "";
+  var FOND_PMTILES_URL = CFG.fondPmtiles || "";
+  var MAPBOX_TOKEN = CFG.mapboxToken || "";
+
+  /* Moteur : Mapbox GL JS natif si token + lib présents (fonds riches, 3D),
+     sinon MapLibre GL (fond auto-hébergé, adblock-proof). L'API est quasi
+     identique (Mapbox GL est l'ancêtre dont MapLibre est le fork). */
+  var USE_MAPBOX = !!MAPBOX_TOKEN && typeof mapboxgl !== "undefined";
+  var GL = USE_MAPBOX ? mapboxgl : (typeof maplibregl !== "undefined" ? maplibregl : null);
+  if (!GL) return;
   var el = document.getElementById("carte");
   if (!el) return;
 
   var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* URLs des PMTiles hébergés sur R2. Vide = couche désactivée. */
-  var BATIMENTS_PMTILES_URL = (window.RL_CONFIG && window.RL_CONFIG.batimentsPmtiles) || "";
-  var GRILLE_PMTILES_URL = (window.RL_CONFIG && window.RL_CONFIG.grillePmtiles) || "";
+  if (USE_MAPBOX) { mapboxgl.accessToken = MAPBOX_TOKEN; }
 
-  /* Protocole PMTiles (la lib est chargée avant ce script). */
-  if (typeof pmtiles !== "undefined") {
-    maplibregl.addProtocol("pmtiles", new pmtiles.Protocol().tile);
+  /* Fonds Mapbox (styles natifs mapbox://). */
+  var MAPBOX_STYLES = {
+    rues: "mapbox://styles/mapbox/streets-v12",
+    clair: "mapbox://styles/mapbox/light-v11",
+    satellite: "mapbox://styles/mapbox/satellite-streets-v12",
+    plein_air: "mapbox://styles/mapbox/outdoors-v12"
+  };
+  var currentFond = "rues";
+
+  /* Protocole PMTiles (fonctionne avec Mapbox GL v3 comme avec MapLibre). */
+  if (typeof pmtiles !== "undefined" && GL.addProtocol) {
+    GL.addProtocol("pmtiles", new pmtiles.Protocol().tile);
   }
 
-  /* --- Fond de carte clair, sans clé (tuiles raster CARTO Positron) -------- */
-  var STYLE = {
-    version: 8,
-    sources: {
-      carto: {
-        type: "raster",
-        tiles: [
-          "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-          "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-          "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        ],
-        tileSize: 256,
-        attribution: "© OpenStreetMap, © CARTO"
-      }
-    },
-    layers: [
-      { id: "bg", type: "background", paint: { "background-color": "#dfe8ec" } },
-      { id: "carto", type: "raster", source: "carto" }
-    ]
-  };
+  /* --- Fond de carte ----------------------------------------------------- */
+  var STYLE;
+  if (USE_MAPBOX) {
+    STYLE = MAPBOX_STYLES[currentFond];
+  } else if (FOND_PMTILES_URL && typeof pmtiles !== "undefined") {
+    STYLE = {
+      version: 8,
+      sources: {
+        fond: {
+          type: "vector", url: "pmtiles://" + FOND_PMTILES_URL,
+          attribution: '© <a href="https://openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
+        }
+      },
+      layers: [
+        { id: "bg", type: "background", paint: { "background-color": "#F4F2EC" } },
+        { id: "earth", type: "fill", source: "fond", "source-layer": "earth", paint: { "fill-color": "#F7F5EF" } },
+        /* Eau : uniquement les grands plans d'eau incontestables (océan, lacs,
+           grandes rivières). À partir du zoom 7 seulement : sous ce zoom, la
+           géométrie extraite est simplifiée en triangles grossiers, on préfère
+           le fond uni. Exclut explicitement les petits polygones parasites. */
+        {
+          id: "water", type: "fill", source: "fond", "source-layer": "water",
+          minzoom: 7,
+          filter: ["match", ["get", "kind"],
+            ["ocean", "sea", "lake", "river", "riverbank", "reservoir"], true, false],
+          paint: { "fill-color": "#C4DEEA" }
+        },
+        {
+          id: "water-line", type: "line", source: "fond", "source-layer": "water",
+          filter: ["match", ["get", "kind"], ["river", "canal", "stream"], true, false],
+          minzoom: 10,
+          paint: { "line-color": "#C4DEEA", "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.6, 15, 2.5] }
+        },
+        { id: "roads-casing", type: "line", source: "fond", "source-layer": "roads", minzoom: 9,
+          filter: ["match", ["get", "kind"], ["highway", "major_road", "medium_road"], true, false],
+          paint: { "line-color": "#E6E1D6", "line-width": ["interpolate", ["linear"], ["zoom"], 9, 1, 16, 7] } },
+        { id: "roads", type: "line", source: "fond", "source-layer": "roads", minzoom: 9,
+          filter: ["match", ["get", "kind"], ["highway", "major_road", "medium_road"], true, false],
+          paint: { "line-color": "#FFFFFF", "line-width": ["interpolate", ["linear"], ["zoom"], 9, 0.5, 16, 5] } },
+        { id: "boundaries", type: "line", source: "fond", "source-layer": "boundaries", minzoom: 5,
+          paint: { "line-color": "#CFCBC0", "line-dasharray": [3, 2], "line-width": 0.8 } }
+      ]
+    };
+  } else {
+    /* Repli : fond raster CARTO (peut être bloqué par un adblocker). */
+    STYLE = {
+      version: 8,
+      sources: {
+        carto: {
+          type: "raster",
+          tiles: [
+            "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          ],
+          tileSize: 256, attribution: "© OpenStreetMap, © CARTO"
+        }
+      },
+      layers: [
+        { id: "bg", type: "background", paint: { "background-color": "#dfe8ec" } },
+        { id: "carto", type: "raster", source: "carto" }
+      ]
+    };
+  }
 
   /* --- Couches WMS officielles (CC-BY) ------------------------------------ */
   function wms(base, layers) {
@@ -65,14 +127,25 @@
       "&width=256&height=256&bbox={bbox-epsg-3857}";
   }
 
+  /* Légende officielle d'un WMS (GetLegendGraphic) : image fournie par le
+     serveur gouvernemental, donc symbologie exacte (aucune invention). */
+  function wmsLegend(base, layer) {
+    var sep = base.indexOf("?") === -1 ? "?" : "&";
+    return base + sep +
+      "service=WMS&version=1.3.0&request=GetLegendGraphic&format=image/png&layer=" + layer;
+  }
+
   /* La couche zones inondables n'est plus en WMS raster : elle est servie en
      PMTiles vecteur (grille), donc INTERROGEABLE pour le verdict citoyen.
      Voir plus bas (map.on load). Ici : les couches raster secondaires. */
+  var MH_WMS = "https://geo.environnement.gouv.qc.ca/donnees/services/Biodiversite/MH_potentiels/MapServer/WMSServer";
+  var SDA_WMS = "https://servicescarto.mrnf.gouv.qc.ca/pes/services/Territoire/SDA_WMS/MapServer/WMSServer";
   var LAYERS = [
     {
       id: "mh",
       label: "Milieux humides potentiels",
-      tiles: wms("https://geo.environnement.gouv.qc.ca/donnees/services/Biodiversite/MH_potentiels/MapServer/WMSServer", "Milieux_humides_potentiels11904"),
+      tiles: wms(MH_WMS, "Milieux_humides_potentiels11904"),
+      legend: wmsLegend(MH_WMS, "Milieux_humides_potentiels11904"),
       opacity: 0.6,
       on: false,
       swatch: "#5E8C3F"
@@ -80,7 +153,7 @@
     {
       id: "muni",
       label: "Municipalités et MRC",
-      tiles: wms("https://servicescarto.mrnf.gouv.qc.ca/pes/services/Territoire/SDA_WMS/MapServer/WMSServer", "4,3"),
+      tiles: wms(SDA_WMS, "4,3"),
       opacity: 0.9,
       on: false,
       swatch: "#0E3A52"
@@ -88,16 +161,16 @@
   ];
 
   /* --- Carte -------------------------------------------------------------- */
-  var map = new maplibregl.Map({
+  var map = new GL.Map({
     container: "carte",
     style: STYLE,
     center: [-72.3, 46.4],   // Québec habité
     zoom: 6,
     attributionControl: false
   });
-  map.addControl(new maplibregl.NavigationControl(), "top-right");
-  map.addControl(new maplibregl.ScaleControl({ unit: "metric" }));
-  map.addControl(new maplibregl.AttributionControl({
+  map.addControl(new GL.NavigationControl(), "top-right");
+  map.addControl(new GL.ScaleControl({ unit: "metric" }));
+  map.addControl(new GL.AttributionControl({
     compact: true,
     customAttribution:
       'Données : <a href="https://www.donneesquebec.ca/" target="_blank" rel="noopener">MRNF / MELCCFP</a> (CC-BY 4.0) · ' +
@@ -106,26 +179,58 @@
 
   var hasBatiments = false;
   var hasGrille = false;
+  var overlaysReady = false;
 
-  map.on("load", function () {
+  /* Filet de sécurité : forcer un recalcul de taille (conteneur parfois
+     dimensionné après l'init, notamment en iframe ou conteneur positionné). */
+  window.addEventListener("resize", function () { map.resize(); });
+
+  /* Ajoute les couches par-dessus le fond. Rappelée après chaque changement de
+     style Mapbox (changer de fond efface les couches ajoutées). */
+  function addOverlays() {
+    map.resize();
+
+    /* 0) Terrain 3D + ciel (Mapbox uniquement). Le relief se soulève, ce qui
+       aide à comprendre pourquoi l'eau s'accumule dans les vallées. */
+    if (USE_MAPBOX) {
+      if (!map.getSource("mapbox-dem")) {
+        map.addSource("mapbox-dem", {
+          type: "raster-dem",
+          url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+          tileSize: 512, maxzoom: 14
+        });
+      }
+      map.setTerrain({ source: "mapbox-dem", exaggeration: 1.3 });
+      if (!map.getLayer("sky")) {
+        map.addLayer({
+          id: "sky", type: "sky",
+          paint: { "sky-type": "atmosphere", "sky-atmosphere-sun-intensity": 12 }
+        });
+      }
+    }
+
     /* 1) Zones inondables (grille) en PMTiles vecteur — SOUS les autres.
        Vecteur = net à tous les zooms ET interrogeable pour le verdict. */
-    if (GRILLE_PMTILES_URL && typeof pmtiles !== "undefined") {
+    if (GRILLE_PMTILES_URL && typeof pmtiles !== "undefined" && !map.getSource("grille")) {
       map.addSource("grille", { type: "vector", url: "pmtiles://" + GRILLE_PMTILES_URL });
+    }
+    if (GRILLE_PMTILES_URL && typeof pmtiles !== "undefined") {
       map.addLayer({
         id: "grille-fill", type: "fill", source: "grille", "source-layer": "grille_zi",
-        paint: { "fill-color": "#D64545", "fill-opacity": 0.35 }
+        paint: { "fill-color": "#D64545", "fill-opacity": 0.5 }
       });
       map.addLayer({
         id: "grille-line", type: "line", source: "grille", "source-layer": "grille_zi",
-        paint: { "line-color": "#B02E2E", "line-width": 0.8, "line-opacity": 0.6 }
+        paint: { "line-color": "#B02E2E", "line-width": 1.4, "line-opacity": 0.9 }
       });
       hasGrille = true;
     }
 
     /* 2) Couches raster secondaires (milieux humides, municipalités) */
     LAYERS.forEach(function (l) {
-      map.addSource(l.id, { type: "raster", tiles: [l.tiles], tileSize: 256 });
+      if (!map.getSource(l.id)) {
+        map.addSource(l.id, { type: "raster", tiles: [l.tiles], tileSize: 256 });
+      }
       map.addLayer({
         id: l.id, type: "raster", source: l.id,
         paint: { "raster-opacity": l.opacity },
@@ -133,10 +238,11 @@
       });
     });
 
-    /* 3) Bâtiments (PMTiles R2) — PAR-DESSUS les zones inondables.
-       Ajoutés en dernier, donc au sommet de la pile de couches. */
+    /* 3) Bâtiments (PMTiles R2) — PAR-DESSUS les zones inondables. */
     if (BATIMENTS_PMTILES_URL && typeof pmtiles !== "undefined") {
-      map.addSource("batiments", { type: "vector", url: "pmtiles://" + BATIMENTS_PMTILES_URL });
+      if (!map.getSource("batiments")) {
+        map.addSource("batiments", { type: "vector", url: "pmtiles://" + BATIMENTS_PMTILES_URL });
+      }
       map.addLayer({
         id: "batiments-fill", type: "fill", source: "batiments", "source-layer": "batiments",
         minzoom: 12,
@@ -148,82 +254,131 @@
         paint: { "line-color": "#0A2C3F", "line-width": 0.5 }
       });
       hasBatiments = true;
-
-      map.on("click", "batiments-fill", function (e) {
-        var s = e.features[0].properties.Superficie;
-        new maplibregl.Popup()
-          .setLngLat(e.lngLat)
-          .setHTML("<strong>Bâtiment</strong><br>Superficie : " + (s ? Math.round(s) + " m²" : "non disponible"))
-          .addTo(map);
-      });
-      map.on("mouseenter", "batiments-fill", function () { map.getCanvas().style.cursor = "pointer"; });
-      map.on("mouseleave", "batiments-fill", function () { map.getCanvas().style.cursor = ""; });
     }
 
-    buildControls();
+    if (!overlaysReady) {
+      overlaysReady = true;
+      buildControls();
+    }
+  }
+
+  map.on("load", addOverlays);
+  /* Après un changement de fond Mapbox : le style est rechargé, on ré-ajoute. */
+  map.on("style.load", function () {
+    if (overlaysReady) { addOverlays(); syncLayerVisibility(); }
   });
 
-  /* --- Panneau : couches activables + légende ----------------------------- */
-  function buildControls() {
+  /* Interactions bâtiments (attachées une seule fois, indépendantes du style) */
+  if (BATIMENTS_PMTILES_URL) {
+    (function () {
+      map.on("mouseenter", "batiments-fill", function () { map.getCanvas().style.cursor = "pointer"; });
+      map.on("mouseleave", "batiments-fill", function () { map.getCanvas().style.cursor = ""; });
+    })();
+  }
+
+  /* Réapplique l'état visible/masqué des cases après un changement de fond. */
+  function syncLayerVisibility() {
     var box = document.getElementById("carte-couches");
     if (!box) return;
+    box.querySelectorAll("input[type=checkbox][data-layers]").forEach(function (cb) {
+      var ids = cb.getAttribute("data-layers").split(",");
+      var v = cb.checked ? "visible" : "none";
+      ids.forEach(function (id) { if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", v); });
+    });
+  }
 
-    /* Case zones inondables (grille vecteur), en tête et activée */
-    if (hasGrille) {
-      var grow = document.createElement("label");
-      grow.className = "carte-couche";
-      var gcb = document.createElement("input");
-      gcb.type = "checkbox"; gcb.checked = true;
-      gcb.addEventListener("change", function () {
-        var v = gcb.checked ? "visible" : "none";
-        map.setLayoutProperty("grille-fill", "visibility", v);
-        map.setLayoutProperty("grille-line", "visibility", v);
-      });
-      var gsw = document.createElement("span");
-      gsw.className = "carte-couche__swatch";
-      gsw.style.background = "#D64545";
-      grow.appendChild(gcb);
-      grow.appendChild(gsw);
-      grow.appendChild(document.createTextNode(" Zones inondables cartographiées"));
-      box.appendChild(grow);
+  /* --- Panneau : sélecteur de fond + couches activables + légende --------- */
+  var builtOnce = false;
+  function buildControls() {
+    var box = document.getElementById("carte-couches");
+    if (!box || builtOnce) return;
+    builtOnce = true;
+
+    /* Sélecteur de fond (seulement si Mapbox actif) */
+    if (USE_MAPBOX) {
+      var fondBox = document.getElementById("carte-fonds");
+      if (fondBox) {
+        var fonds = [
+          { key: "rues", label: "Rues" },
+          { key: "clair", label: "Clair" },
+          { key: "satellite", label: "Satellite" },
+          { key: "plein_air", label: "Plein air" }
+        ];
+        fonds.forEach(function (f) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "carte-fond-btn" + (f.key === currentFond ? " is-active" : "");
+          b.textContent = f.label;
+          b.addEventListener("click", function () {
+            if (f.key === currentFond) return;
+            currentFond = f.key;
+            fondBox.querySelectorAll(".carte-fond-btn").forEach(function (x) { x.classList.remove("is-active"); });
+            b.classList.add("is-active");
+            map.setStyle(MAPBOX_STYLES[f.key]); /* déclenche style.load -> addOverlays */
+          });
+          fondBox.appendChild(b);
+        });
+      }
     }
 
+    /* Définition unifiée des couches activables. `legendHtml` = légende locale
+       (zones inondables : tes classes officielles) ; `legendImg` = légende
+       officielle GetLegendGraphic du WMS (milieux humides). */
+    var RISK_LEGEND =
+      '<span class="lg-item"><i style="background:var(--risk-faible)"></i>Faible</span>' +
+      '<span class="lg-item"><i style="background:var(--risk-moderee)"></i>Modérée</span>' +
+      '<span class="lg-item"><i style="background:var(--risk-elevee)"></i>Élevée</span>' +
+      '<span class="lg-item"><i style="background:var(--risk-tres-elevee)"></i>Très élevée</span>' +
+      '<span class="lg-item"><i style="background:var(--risk-residuel)"></i>Risque résiduel</span>';
+
+    var toggles = [];
+    if (hasGrille) toggles.push({ label: "Zones inondables cartographiées", color: "#D64545", ids: ["grille-fill", "grille-line"], on: true, note: "Secteurs où une cartographie existe." });
     LAYERS.forEach(function (l) {
+      toggles.push({ label: l.label, color: l.swatch, ids: [l.id], on: l.on, legendImg: l.legend || "" });
+    });
+    if (hasBatiments) toggles.push({ label: "Bâtiments", color: "#0E3A52", ids: ["batiments-fill", "batiments-line"], on: true, note: "Visibles à partir d'un zoom rapproché." });
+
+    toggles.forEach(function (t) {
+      var wrap = document.createElement("div");
+      wrap.className = "carte-couche-wrap";
+
       var row = document.createElement("label");
       row.className = "carte-couche";
       var cb = document.createElement("input");
-      cb.type = "checkbox"; cb.checked = l.on;
-      cb.addEventListener("change", function () {
-        map.setLayoutProperty(l.id, "visibility", cb.checked ? "visible" : "none");
-      });
+      cb.type = "checkbox"; cb.checked = t.on;
+      cb.setAttribute("data-layers", t.ids.join(","));
       var sw = document.createElement("span");
       sw.className = "carte-couche__swatch";
-      sw.style.background = l.swatch;
+      sw.style.background = t.color;
       row.appendChild(cb);
       row.appendChild(sw);
-      row.appendChild(document.createTextNode(" " + l.label));
-      box.appendChild(row);
-    });
+      row.appendChild(document.createTextNode(" " + t.label));
+      wrap.appendChild(row);
 
-    /* Case bâtiments (seulement si la couche PMTiles est disponible) */
-    if (hasBatiments) {
-      var brow = document.createElement("label");
-      brow.className = "carte-couche";
-      var bcb = document.createElement("input");
-      bcb.type = "checkbox"; bcb.checked = true;
-      bcb.addEventListener("change", function () {
-        var v = bcb.checked ? "visible" : "none";
-        map.setLayoutProperty("batiments-fill", "visibility", v);
-        map.setLayoutProperty("batiments-line", "visibility", v);
+      /* Zone de légende détaillée, repliée sauf si la couche est active. */
+      var leg = document.createElement("div");
+      leg.className = "carte-legende";
+      leg.hidden = !t.on;
+      if (t.note) { leg.innerHTML = '<p class="carte-legende__note">' + t.note + "</p>"; }
+      if (t.ids.indexOf("grille-fill") !== -1) { leg.innerHTML += '<div class="lg-items">' + RISK_LEGEND + "</div>"; }
+      if (t.legendImg) {
+        var img = document.createElement("img");
+        img.className = "carte-legende__img";
+        img.alt = "Légende officielle : " + t.label;
+        img.loading = "lazy";
+        img.src = t.legendImg;
+        leg.appendChild(img);
+      }
+      if (leg.innerHTML || leg.childNodes.length) { wrap.appendChild(leg); }
+
+      cb.addEventListener("change", function () {
+        var v = cb.checked ? "visible" : "none";
+        t.ids.forEach(function (id) { if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", v); });
+        leg.hidden = !cb.checked;
       });
-      var bsw = document.createElement("span");
-      bsw.className = "carte-couche__swatch";
-      bsw.style.background = "#0E3A52";
-      brow.appendChild(bcb);
-      brow.appendChild(bsw);
-      brow.appendChild(document.createTextNode(" Bâtiments (zoom sur une ville)"));
-      box.appendChild(brow);
-    }
+
+      box.appendChild(wrap);
+    });
   }
 
   /* --- Verdict citoyen (prudent) ----------------------------------------- */
@@ -263,7 +418,7 @@
   function localiser(lng, lat) {
     map.flyTo({ center: [lng, lat], zoom: 15, duration: REDUCED ? 0 : 1400 });
     if (window._rlMarker) { window._rlMarker.remove(); }
-    window._rlMarker = new maplibregl.Marker({ color: "#1E8AA0" }).setLngLat([lng, lat]).addTo(map);
+    window._rlMarker = new GL.Marker({ color: "#1E8AA0" }).setLngLat([lng, lat]).addTo(map);
     // Attendre la stabilisation de la carte avant d'interroger la grille rendue.
     map.once("idle", function () {
       if (hasGrille) { afficheVerdict(pointDansGrille(lng, lat)); }
