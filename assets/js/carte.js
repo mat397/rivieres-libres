@@ -26,8 +26,9 @@
 
   var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* URL du PMTiles des bâtiments (R2). Vide = couche bâtiments désactivée. */
+  /* URLs des PMTiles hébergés sur R2. Vide = couche désactivée. */
   var BATIMENTS_PMTILES_URL = (window.RL_CONFIG && window.RL_CONFIG.batimentsPmtiles) || "";
+  var GRILLE_PMTILES_URL = (window.RL_CONFIG && window.RL_CONFIG.grillePmtiles) || "";
 
   /* Protocole PMTiles (la lib est chargée avant ce script). */
   if (typeof pmtiles !== "undefined") {
@@ -64,15 +65,10 @@
       "&width=256&height=256&bbox={bbox-epsg-3857}";
   }
 
+  /* La couche zones inondables n'est plus en WMS raster : elle est servie en
+     PMTiles vecteur (grille), donc INTERROGEABLE pour le verdict citoyen.
+     Voir plus bas (map.on load). Ici : les couches raster secondaires. */
   var LAYERS = [
-    {
-      id: "zi",
-      label: "Zones inondables cartographiées",
-      tiles: wms("https://servicesvecto3.mern.gouv.qc.ca/geoserver/GrilleInfoZI_Pub/wms", "GrilleInfoZI"),
-      opacity: 0.55,
-      on: true,
-      swatch: "#D64545"
-    },
     {
       id: "mh",
       label: "Milieux humides potentiels",
@@ -109,8 +105,25 @@
   }), "bottom-right");
 
   var hasBatiments = false;
+  var hasGrille = false;
 
   map.on("load", function () {
+    /* 1) Zones inondables (grille) en PMTiles vecteur — SOUS les autres.
+       Vecteur = net à tous les zooms ET interrogeable pour le verdict. */
+    if (GRILLE_PMTILES_URL && typeof pmtiles !== "undefined") {
+      map.addSource("grille", { type: "vector", url: "pmtiles://" + GRILLE_PMTILES_URL });
+      map.addLayer({
+        id: "grille-fill", type: "fill", source: "grille", "source-layer": "grille_zi",
+        paint: { "fill-color": "#D64545", "fill-opacity": 0.35 }
+      });
+      map.addLayer({
+        id: "grille-line", type: "line", source: "grille", "source-layer": "grille_zi",
+        paint: { "line-color": "#B02E2E", "line-width": 0.8, "line-opacity": 0.6 }
+      });
+      hasGrille = true;
+    }
+
+    /* 2) Couches raster secondaires (milieux humides, municipalités) */
     LAYERS.forEach(function (l) {
       map.addSource(l.id, { type: "raster", tiles: [l.tiles], tileSize: 256 });
       map.addLayer({
@@ -120,7 +133,7 @@
       });
     });
 
-    /* Bâtiments (PMTiles R2) — PAR-DESSUS les zones inondables.
+    /* 3) Bâtiments (PMTiles R2) — PAR-DESSUS les zones inondables.
        Ajoutés en dernier, donc au sommet de la pile de couches. */
     if (BATIMENTS_PMTILES_URL && typeof pmtiles !== "undefined") {
       map.addSource("batiments", { type: "vector", url: "pmtiles://" + BATIMENTS_PMTILES_URL });
@@ -154,6 +167,27 @@
   function buildControls() {
     var box = document.getElementById("carte-couches");
     if (!box) return;
+
+    /* Case zones inondables (grille vecteur), en tête et activée */
+    if (hasGrille) {
+      var grow = document.createElement("label");
+      grow.className = "carte-couche";
+      var gcb = document.createElement("input");
+      gcb.type = "checkbox"; gcb.checked = true;
+      gcb.addEventListener("change", function () {
+        var v = gcb.checked ? "visible" : "none";
+        map.setLayoutProperty("grille-fill", "visibility", v);
+        map.setLayoutProperty("grille-line", "visibility", v);
+      });
+      var gsw = document.createElement("span");
+      gsw.className = "carte-couche__swatch";
+      gsw.style.background = "#D64545";
+      grow.appendChild(gcb);
+      grow.appendChild(gsw);
+      grow.appendChild(document.createTextNode(" Zones inondables cartographiées"));
+      box.appendChild(grow);
+    }
+
     LAYERS.forEach(function (l) {
       var row = document.createElement("label");
       row.className = "carte-couche";
@@ -192,18 +226,62 @@
     }
   }
 
+  /* --- Verdict citoyen (prudent) ----------------------------------------- */
+  /* Après localisation d'une adresse, on teste si le point tombe dans un
+     polygone de la grille de zone inondable (couche vecteur interrogeable).
+     Formulation NON alarmiste, avertissement systématique, renvoi municipalité.
+     La grille indique où une CARTOGRAPHIE existe, pas que le terrain est inondé. */
+  var verdictEl = document.getElementById("carte-verdict");
+
+  function pointDansGrille(lng, lat) {
+    // Interroge les entités rendues au point (la carte doit être zoomée/stabilisée).
+    var pt = map.project([lng, lat]);
+    var feats = map.queryRenderedFeatures(pt, { layers: hasGrille ? ["grille-fill"] : [] });
+    return feats && feats.length > 0;
+  }
+
+  function afficheVerdict(dansZone) {
+    if (!verdictEl) return;
+    if (dansZone) {
+      verdictEl.className = "carte-verdict carte-verdict--in";
+      verdictEl.innerHTML =
+        '<strong>Ce point se trouve dans un secteur cartographié pour les zones inondables.</strong>' +
+        '<p>Cela signifie qu’une cartographie existe pour ce secteur, pas que le terrain sera inondé. ' +
+        'Pour connaître le statut réel et la réglementation applicable, contactez votre municipalité.</p>' +
+        '<p class="carte-verdict__src">Source : grille de présence, MRNF (valeur indicative, aucune portée légale).</p>';
+    } else {
+      verdictEl.className = "carte-verdict carte-verdict--out";
+      verdictEl.innerHTML =
+        '<strong>Ce point ne semble pas dans un secteur cartographié pour les zones inondables.</strong>' +
+        '<p>L’absence de cartographie ne garantit pas l’absence de risque : de nouvelles cartes sont publiées ' +
+        'progressivement. En cas de doute, contactez votre municipalité.</p>' +
+        '<p class="carte-verdict__src">Source : grille de présence, MRNF (valeur indicative, aucune portée légale).</p>';
+    }
+    verdictEl.hidden = false;
+  }
+
+  function localiser(lng, lat) {
+    map.flyTo({ center: [lng, lat], zoom: 15, duration: REDUCED ? 0 : 1400 });
+    if (window._rlMarker) { window._rlMarker.remove(); }
+    window._rlMarker = new maplibregl.Marker({ color: "#1E8AA0" }).setLngLat([lng, lat]).addTo(map);
+    // Attendre la stabilisation de la carte avant d'interroger la grille rendue.
+    map.once("idle", function () {
+      if (hasGrille) { afficheVerdict(pointDansGrille(lng, lat)); }
+    });
+  }
+
   /* --- Recherche d'adresse (géocodage Nominatim, biaisé Québec) ----------- */
   var form = document.getElementById("carte-recherche");
   if (form) {
     var input = form.querySelector("input");
     var msg = document.getElementById("carte-recherche-msg");
-    var marker = null;
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var q = (input.value || "").trim();
       if (!q) return;
       if (msg) { msg.textContent = "Recherche en cours…"; }
+      if (verdictEl) { verdictEl.hidden = true; }
 
       var url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ca&q=" +
         encodeURIComponent(q + ", Québec");
@@ -215,16 +293,35 @@
             return;
           }
           var r = results[0];
-          var lng = parseFloat(r.lon), lat = parseFloat(r.lat);
-          map.flyTo({ center: [lng, lat], zoom: 14, duration: REDUCED ? 0 : 1400 });
-          if (marker) { marker.remove(); }
-          marker = new maplibregl.Marker({ color: "#1E8AA0" })
-            .setLngLat([lng, lat]).addTo(map);
+          localiser(parseFloat(r.lon), parseFloat(r.lat));
           if (msg) { msg.textContent = ""; }
         })
         .catch(function () {
           if (msg) { msg.textContent = "La recherche a échoué. Réessayez plus tard."; }
         });
     });
+  }
+
+  /* --- Géolocalisation « autour de moi » --------------------------------- */
+  var geoBtn = document.getElementById("carte-geoloc");
+  if (geoBtn && "geolocation" in navigator) {
+    geoBtn.addEventListener("click", function () {
+      geoBtn.disabled = true;
+      var prev = geoBtn.textContent;
+      geoBtn.textContent = "Localisation…";
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          localiser(pos.coords.longitude, pos.coords.latitude);
+          geoBtn.disabled = false; geoBtn.textContent = prev;
+        },
+        function () {
+          if (msg) { msg.textContent = "Localisation refusée ou indisponible."; }
+          geoBtn.disabled = false; geoBtn.textContent = prev;
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+  } else if (geoBtn) {
+    geoBtn.hidden = true;
   }
 })();

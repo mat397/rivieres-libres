@@ -762,6 +762,22 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 .carte-couche__swatch { width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(0,0,0,.2); flex: none; }
 .map-search input[type="search"] { flex: 1; font: inherit; padding: .7rem 1rem; border-radius: var(--radius-pill); border: 1px solid var(--color-border); min-width: 0; }
 .map-search input[type="search"]:focus { outline-color: var(--color-river); border-color: var(--color-river); }
+
+/* Encadré verdict citoyen (prudent) */
+.carte-verdict {
+  margin-top: var(--space-3); padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius); border-left: 4px solid var(--color-slate);
+  background: var(--color-mist-2); font-size: .95rem;
+}
+.carte-verdict strong { color: var(--color-deep); display: block; margin-bottom: var(--space-1); }
+.carte-verdict p { margin: var(--space-1) 0 0; font-size: .9rem; }
+.carte-verdict__src { color: var(--color-slate); font-style: italic; font-size: .82rem; }
+.carte-verdict--in  { border-left-color: var(--risk-elevee); background: #FBEDED; }
+.carte-verdict--out { border-left-color: var(--color-nature); background: #F0F5EA; }
+
+/* Panneau prochaines étapes */
+.carte-etapes__list { margin: var(--space-2) 0 0; padding-left: 1.3em; }
+.carte-etapes__list li { margin-bottom: var(--space-2); font-size: .95rem; }
 /* Badge de crédit Alto, en pastille blanche sur la carte (bas droite). */
 .map-embed__badge-alto {
   position: absolute; right: 14px; bottom: 14px; z-index: 2;

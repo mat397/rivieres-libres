@@ -12,7 +12,8 @@ export default {
     /* Config runtime de la carte. batimentsPmtiles = URL publique du PMTiles
        des bâtiments (Cloudflare R2). Vide = couche bâtiments désactivée. */
     window.RL_CONFIG = {
-      batimentsPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/batiments-quebec-sud.pmtiles"
+      batimentsPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/batiments-quebec-sud.pmtiles",
+      grillePmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/grille-zi.pmtiles"
     };
   </script>
   <script src="/assets/vendor/maplibre-gl.js" defer></script>
@@ -54,7 +55,19 @@ export default {
                 <input id="carte-recherche-input" type="search" placeholder="Adresse, municipalité…" autocomplete="off">
                 <button class="btn btn--primary" type="submit">Chercher ${ICON_ARROW}</button>
               </form>
+              <button id="carte-geoloc" class="btn btn--secondary" type="button" style="margin-top:var(--space-2)">Utiliser ma position</button>
               <p id="carte-recherche-msg" class="source" role="status" aria-live="polite" style="min-height:1.2em"></p>
+
+              <div id="carte-verdict" class="carte-verdict" role="status" aria-live="polite" hidden></div>
+
+              <div id="carte-etapes" class="carte-etapes">
+                <h3 style="font-size:1rem;margin-top:var(--space-4)">Que faire ensuite ?</h3>
+                <ol class="carte-etapes__list">
+                  <li>Vérifiez votre adresse sur la carte ci-contre.</li>
+                  <li>Confirmez le statut réel auprès de <strong>votre municipalité</strong> : elle seule connaît la réglementation applicable à votre terrain.</li>
+                  <li><a href="/pour-vous/citoyens.html">Découvrez comment adapter votre propriété</a> au besoin.</li>
+                </ol>
+              </div>
 
               <h3 style="font-size:1rem;margin-top:var(--space-4)">Couches à afficher</h3>
               <div id="carte-couches" class="carte-couches"></div>
