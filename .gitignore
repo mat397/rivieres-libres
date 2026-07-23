@@ -19,3 +19,5 @@ npm-debug.log*
 .env.*
 !.env.example
 _range-server.mjs
+
+.vercel

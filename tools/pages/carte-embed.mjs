@@ -14,6 +14,11 @@ export default {
     canonical: "https://rivieres-libres.example/carte-donnees/carte-embed.html",
     active: null,
     headExtra: `  <link href="/assets/vendor/mapbox-gl.css" rel="stylesheet">
+  <!-- Préchargements : le navigateur télécharge le moteur + les données en
+       parallèle du parsing, ce qui réduit le temps jusqu'à carte visible. -->
+  <link rel="preload" href="/assets/vendor/mapbox-gl.js" as="script">
+  <link rel="preconnect" href="https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev" crossorigin>
+  <link rel="preconnect" href="https://api.mapbox.com">
   <script>
     window.RL_CONFIG = {
       mapboxToken: "${globalThis.MAPBOX_TOKEN || ""}",

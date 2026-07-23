@@ -12,6 +12,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <link href="/assets/vendor/mapbox-gl.css" rel="stylesheet">
+  <!-- Préchargements : le navigateur télécharge le moteur + les données en
+       parallèle du parsing, ce qui réduit le temps jusqu'à carte visible. -->
+  <link rel="preload" href="/assets/vendor/mapbox-gl.js" as="script">
+  <link rel="preconnect" href="https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev" crossorigin>
+  <link rel="preconnect" href="https://api.mapbox.com">
   <script>
     window.RL_CONFIG = {
       mapboxToken: "__MAPBOX_TOKEN__",

@@ -425,7 +425,7 @@
       '<span class="lg-item"><i style="background:var(--risk-residuel)"></i>Risque résiduel</span>';
 
     var toggles = [];
-    if (hasGrille) toggles.push({ label: "Zones inondables cartographiées", color: "#D64545", ids: ["grille-fill", "grille-line"], on: true, note: "Secteurs où une cartographie existe." });
+    if (hasGrille) toggles.push({ label: "Zones inondables et de mobilité des cours d'eau", color: "#D64545", ids: ["grille-fill", "grille-line"], on: true, note: "Secteurs où une cartographie existe." });
     LAYERS.forEach(function (l) {
       /* Les couches d'inondations par année (groupe « crues ») sont pilotées par
          le slider temporel en bas, PAS par une case ici : on les exclut du panneau
