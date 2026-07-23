@@ -160,7 +160,7 @@ export default {
         <h2 class="section__intro">${maskLines(["Des réponses selon", "votre réalité"])}</h2>
         <div class="bento" data-reveal-group>
           <a class="bento__cell bento__cell--tall" href="/pour-vous/citoyens.html" data-reveal>
-            <span class="bento__media"><img src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=1200&q=70" alt="" loading="lazy"></span>
+            <span class="bento__media"><img src="https://images.unsplash.com/photo-1662153697623-555bf9bbba48?auto=format&fit=crop&w=1200&q=70" alt="Chalet en bordure d'un lac au Québec" loading="lazy"></span>
             <span class="bento__scrim" aria-hidden="true"></span>
             <h3><span class="bento__q">Ma propriété est-elle concernée ?</span></h3>
             <p>Ce que les nouvelles cartes changent pour vous, et comment vous adapter.</p>
