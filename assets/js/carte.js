@@ -145,6 +145,20 @@
      Voir plus bas (map.on load). Ici : les couches raster secondaires. */
   var MH_WMS = "https://geo.environnement.gouv.qc.ca/donnees/services/Biodiversite/MH_potentiels/MapServer/WMSServer";
   var SDA_WMS = "https://servicescarto.mrnf.gouv.qc.ca/pes/services/Territoire/SDA_WMS/MapServer/WMSServer";
+
+  /* Inondations RÉELLES observées par année (crues du printemps), servies en
+     WMS CC-BY par le Ministère de la Sécurité publique (Centre des opérations
+     gouvernementales). Endpoint unique « complet.fcgi » (validé : GetMap PNG
+     transparent, EPSG:3857). Noms de couche vérifiés en source primaire.
+     NB : la couche-groupe « Inondations_2023 » est cassée côté serveur (fichier
+     source corrompu) — on l'exclut jusqu'à correction gouvernementale. */
+  var MSP_WMS = "https://geoegl.msp.gouv.qc.ca/apis/wss/complet.fcgi";
+  var CRUES = [
+    { id: "crue2017", label: "Inondations 2017", layer: "Inondations_2017", swatch: "#2E6F9E" },
+    { id: "crue2019", label: "Inondations 2019", layer: "Inondations_2019", swatch: "#1E5A85" },
+    { id: "crue2020", label: "Inondations 2020", layer: "Inondations_2020", swatch: "#16496B" }
+  ];
+
   var LAYERS = [
     {
       id: "mh",
@@ -165,22 +179,50 @@
     }
   ];
 
-  /* --- Carte -------------------------------------------------------------- */
+  /* Ajoute chaque crue comme couche WMS activable (opacité 0.55, désactivées
+     par défaut). Groupe « crues » : on les note pour l'attribution MSP/COG et
+     le comparateur avant/après. */
+  CRUES.forEach(function (c) {
+    LAYERS.push({
+      id: c.id,
+      label: c.label,
+      tiles: wms(MSP_WMS, c.layer),
+      opacity: 0.55,
+      on: false,
+      swatch: c.swatch,
+      groupe: "crues",
+      note: "Étendue d'eau réellement observée lors des crues du printemps " +
+            c.label.replace("Inondations ", "") + " (imagerie satellite/radar)."
+    });
+  });
+
+  /* --- Carte (2D, à plat) ------------------------------------------------- */
   var map = new GL.Map({
     container: "carte",
     style: STYLE,
-    center: [-72.3, 46.4],   // Québec habité
-    zoom: 6,
+    center: [-72.3, 46.6],
+    zoom: 6.2,
     attributionControl: false
   });
-  map.addControl(new GL.NavigationControl(), "top-right");
-  map.addControl(new GL.ScaleControl({ unit: "metric" }));
-  map.addControl(new GL.AttributionControl({
-    compact: true,
-    customAttribution:
-      'Données : <a href="https://www.donneesquebec.ca/" target="_blank" rel="noopener">MRNF / MELCCFP</a> (CC-BY 4.0) · ' +
-      'Carte : <a href="https://altogeo.ca" target="_blank" rel="noopener">Alto Géomatique</a>'
-  }), "bottom-right");
+  /* Contrôles Mapbox :
+     - échelle en BAS-CENTRE ;
+     - attribution compacte requise (Mapbox/OSM) en bas-droite.
+     Le zoom (+/−) et le « home » sont des boutons maison rendus SOUS la barre
+     de recherche (voir #carte-navctrls dans le HTML), pour un placement propre. */
+  map.addControl(new GL.ScaleControl({ unit: "metric" }), "bottom-left");
+  map.addControl(new GL.AttributionControl({ compact: true }), "bottom-right");
+
+  /* Contrôles de navigation maison (home, +, −) sous la recherche. */
+  (function initNavCtrls() {
+    var box = document.getElementById("carte-navctrls");
+    if (!box) return;
+    var homeB = box.querySelector("[data-nav='home']");
+    var inB = box.querySelector("[data-nav='in']");
+    var outB = box.querySelector("[data-nav='out']");
+    if (homeB) homeB.addEventListener("click", function () { map.flyTo({ center: [-72.3, 46.6], zoom: 6.2, duration: 900 }); });
+    if (inB) inB.addEventListener("click", function () { map.zoomIn(); });
+    if (outB) outB.addEventListener("click", function () { map.zoomOut(); });
+  })();
 
   var hasBatiments = false;
   var hasGrille = false;
@@ -195,39 +237,24 @@
   function addOverlays() {
     map.resize();
 
-    /* 0) Terrain 3D + ciel (Mapbox uniquement). Le relief se soulève, ce qui
-       aide à comprendre pourquoi l'eau s'accumule dans les vallées. */
-    if (USE_MAPBOX) {
-      if (!map.getSource("mapbox-dem")) {
-        map.addSource("mapbox-dem", {
-          type: "raster-dem",
-          url: "mapbox://mapbox.mapbox-terrain-dem-v1",
-          tileSize: 512, maxzoom: 14
-        });
-      }
-      map.setTerrain({ source: "mapbox-dem", exaggeration: 1.3 });
-      if (!map.getLayer("sky")) {
-        map.addLayer({
-          id: "sky", type: "sky",
-          paint: { "sky-type": "atmosphere", "sky-atmosphere-sun-intensity": 12 }
-        });
-      }
-    }
-
     /* 1) Zones inondables (grille) en PMTiles vecteur — SOUS les autres.
        Vecteur = net à tous les zooms ET interrogeable pour le verdict. */
     if (GRILLE_PMTILES_URL && typeof pmtiles !== "undefined" && !map.getSource("grille")) {
       map.addSource("grille", { type: "vector", url: pmUrl(GRILLE_PMTILES_URL) });
     }
     if (GRILLE_PMTILES_URL && typeof pmtiles !== "undefined") {
-      map.addLayer({
-        id: "grille-fill", type: "fill", source: "grille", "source-layer": "grille_zi",
-        paint: { "fill-color": "#D64545", "fill-opacity": 0.5 }
-      });
-      map.addLayer({
-        id: "grille-line", type: "line", source: "grille", "source-layer": "grille_zi",
-        paint: { "line-color": "#B02E2E", "line-width": 1.4, "line-opacity": 0.9 }
-      });
+      if (!map.getLayer("grille-fill")) {
+        map.addLayer({
+          id: "grille-fill", type: "fill", source: "grille", "source-layer": "grille_zi",
+          paint: { "fill-color": "#D64545", "fill-opacity": 0.5 }
+        });
+      }
+      if (!map.getLayer("grille-line")) {
+        map.addLayer({
+          id: "grille-line", type: "line", source: "grille", "source-layer": "grille_zi",
+          paint: { "line-color": "#B02E2E", "line-width": 1.4, "line-opacity": 0.9 }
+        });
+      }
       hasGrille = true;
     }
 
@@ -236,11 +263,13 @@
       if (!map.getSource(l.id)) {
         map.addSource(l.id, { type: "raster", tiles: [l.tiles], tileSize: 256 });
       }
-      map.addLayer({
-        id: l.id, type: "raster", source: l.id,
-        paint: { "raster-opacity": l.opacity },
-        layout: { visibility: l.on ? "visible" : "none" }
-      });
+      if (!map.getLayer(l.id)) {
+        map.addLayer({
+          id: l.id, type: "raster", source: l.id,
+          paint: { "raster-opacity": l.opacity },
+          layout: { visibility: l.on ? "visible" : "none" }
+        });
+      }
     });
 
     /* 3) Bâtiments (PMTiles R2) — PAR-DESSUS les zones inondables. */
@@ -248,16 +277,20 @@
       if (!map.getSource("batiments")) {
         map.addSource("batiments", { type: "vector", url: pmUrl(BATIMENTS_PMTILES_URL) });
       }
-      map.addLayer({
-        id: "batiments-fill", type: "fill", source: "batiments", "source-layer": "batiments",
-        minzoom: 12,
-        paint: { "fill-color": "#0E3A52", "fill-opacity": 0.45 }
-      });
-      map.addLayer({
-        id: "batiments-line", type: "line", source: "batiments", "source-layer": "batiments",
-        minzoom: 13,
-        paint: { "line-color": "#0A2C3F", "line-width": 0.5 }
-      });
+      if (!map.getLayer("batiments-fill")) {
+        map.addLayer({
+          id: "batiments-fill", type: "fill", source: "batiments", "source-layer": "batiments",
+          minzoom: 12,
+          paint: { "fill-color": "#0E3A52", "fill-opacity": 0.45 }
+        });
+      }
+      if (!map.getLayer("batiments-line")) {
+        map.addLayer({
+          id: "batiments-line", type: "line", source: "batiments", "source-layer": "batiments",
+          minzoom: 13,
+          paint: { "line-color": "#0A2C3F", "line-width": 0.5 }
+        });
+      }
       hasBatiments = true;
     }
 
@@ -278,6 +311,30 @@
     (function () {
       map.on("mouseenter", "batiments-fill", function () { map.getCanvas().style.cursor = "pointer"; });
       map.on("mouseleave", "batiments-fill", function () { map.getCanvas().style.cursor = ""; });
+
+      /* Clic sur un bâtiment : popup avec sa superficie si l'attribut existe
+         dans le référentiel (superficie/aire/shape_area). Sinon, un message
+         neutre — on n'invente aucune donnée. */
+      map.on("click", "batiments-fill", function (e) {
+        if (!e.features || !e.features.length) return;
+        var p = e.features[0].properties || {};
+        /* Le référentiel PMTiles expose l'attribut « Superficie » (m², S majusc.).
+           On garde des variantes en secours, mais Superficie est le bon nom. */
+        var aire = p.Superficie != null ? p.Superficie
+                 : (p.superficie || p.SUPERFICIE || p.aire || p.shape_area || null);
+        var html;
+        if (aire != null && !isNaN(parseFloat(aire))) {
+          var m2 = Math.round(parseFloat(aire));
+          html = '<strong>Bâtiment</strong><br>Superficie au sol : ' +
+                 m2.toLocaleString("fr-CA") + " m&sup2;";
+        } else {
+          html = '<strong>Bâtiment</strong><br>Référentiel du Québec (MRNF).';
+        }
+        new GL.Popup({ closeButton: true, maxWidth: "220px" })
+          .setLngLat(e.lngLat)
+          .setHTML('<div class="carte-popup">' + html + "</div>")
+          .addTo(map);
+      });
     })();
   }
 
@@ -299,30 +356,59 @@
     if (!box || builtOnce) return;
     builtOnce = true;
 
-    /* Sélecteur de fond (seulement si Mapbox actif) */
+    /* Sélecteur de fond dépliable, à vignettes (seulement si Mapbox actif).
+       Un bouton « Fond de carte » ouvre une grille de vignettes-aperçus. */
     if (USE_MAPBOX) {
       var fondBox = document.getElementById("carte-fonds");
       if (fondBox) {
         var fonds = [
-          { key: "rues", label: "Rues" },
-          { key: "clair", label: "Clair" },
-          { key: "satellite", label: "Satellite" },
-          { key: "plein_air", label: "Plein air" }
+          { key: "rues", label: "Rues", img: "/assets/img/fonds/rues.jpg" },
+          { key: "clair", label: "Clair", img: "/assets/img/fonds/clair.jpg" },
+          { key: "satellite", label: "Satellite", img: "/assets/img/fonds/satellite.jpg" },
+          { key: "plein_air", label: "Plein air", img: "/assets/img/fonds/plein-air.jpg" }
         ];
+        function fondLabel(key) { for (var i = 0; i < fonds.length; i++) { if (fonds[i].key === key) return fonds[i].label; } return ""; }
+
+        var trigger = document.createElement("button");
+        trigger.type = "button";
+        trigger.className = "carte-fonds__trigger";
+        trigger.setAttribute("aria-expanded", "false");
+        trigger.innerHTML = '<img src="' + (fonds[0].img) + '" alt="" width="40" height="30">' +
+          '<span class="carte-fonds__trigger-txt">Fond&nbsp;: <b>' + fondLabel(currentFond) + "</b></span>";
+
+        var grid = document.createElement("div");
+        grid.className = "carte-fonds__grid";
+        grid.hidden = true;
+
         fonds.forEach(function (f) {
           var b = document.createElement("button");
           b.type = "button";
-          b.className = "carte-fond-btn" + (f.key === currentFond ? " is-active" : "");
-          b.textContent = f.label;
+          b.className = "carte-fond-vign" + (f.key === currentFond ? " is-active" : "");
+          b.innerHTML = '<img src="' + f.img + '" alt="" width="80" height="60" loading="lazy"><span>' + f.label + "</span>";
           b.addEventListener("click", function () {
+            grid.querySelectorAll(".carte-fond-vign").forEach(function (x) { x.classList.remove("is-active"); });
+            b.classList.add("is-active");
+            grid.hidden = true; trigger.setAttribute("aria-expanded", "false");
+            trigger.querySelector(".carte-fonds__trigger-txt").innerHTML = "Fond&nbsp;: <b>" + f.label + "</b>";
+            trigger.querySelector("img").src = f.img;
             if (f.key === currentFond) return;
             currentFond = f.key;
-            fondBox.querySelectorAll(".carte-fond-btn").forEach(function (x) { x.classList.remove("is-active"); });
-            b.classList.add("is-active");
             map.setStyle(MAPBOX_STYLES[f.key]); /* déclenche style.load -> addOverlays */
           });
-          fondBox.appendChild(b);
+          grid.appendChild(b);
         });
+
+        trigger.addEventListener("click", function (e) {
+          e.stopPropagation();
+          grid.hidden = !grid.hidden;
+          trigger.setAttribute("aria-expanded", grid.hidden ? "false" : "true");
+        });
+        document.addEventListener("click", function (e) {
+          if (!fondBox.contains(e.target)) { grid.hidden = true; trigger.setAttribute("aria-expanded", "false"); }
+        });
+
+        fondBox.appendChild(trigger);
+        fondBox.appendChild(grid);
       }
     }
 
@@ -339,7 +425,7 @@
     var toggles = [];
     if (hasGrille) toggles.push({ label: "Zones inondables cartographiées", color: "#D64545", ids: ["grille-fill", "grille-line"], on: true, note: "Secteurs où une cartographie existe." });
     LAYERS.forEach(function (l) {
-      toggles.push({ label: l.label, color: l.swatch, ids: [l.id], on: l.on, legendImg: l.legend || "" });
+      toggles.push({ label: l.label, color: l.swatch, ids: [l.id], on: l.on, legendImg: l.legend || "", note: l.note || "", groupe: l.groupe || "" });
     });
     if (hasBatiments) toggles.push({ label: "Bâtiments", color: "#0E3A52", ids: ["batiments-fill", "batiments-line"], on: true, note: "Visibles à partir d'un zoom rapproché." });
 
@@ -430,53 +516,127 @@
     });
   }
 
-  /* --- Recherche d'adresse (géocodage Nominatim, biaisé Québec) ----------- */
+  /* --- Recherche d'adresse dynamique (autocomplétion Nominatim, Québec) ---- */
   var form = document.getElementById("carte-recherche");
-  if (form) {
-    var input = form.querySelector("input");
-    var msg = document.getElementById("carte-recherche-msg");
+  var input = form ? form.querySelector("input") : null;
+  var msg = document.getElementById("carte-recherche-msg");
+  var sugBox = document.getElementById("carte-suggestions");
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var q = (input.value || "").trim();
-      if (!q) return;
-      if (msg) { msg.textContent = "Recherche en cours…"; }
+  if (form && input) {
+    var debounceT = null;
+    var lastReq = 0;         // horodatage logique (compteur) pour ignorer les réponses obsolètes
+    var activeIdx = -1;      // index de la suggestion surlignée (clavier)
+    var current = [];        // suggestions affichées
+
+    function closeSug() {
+      if (!sugBox) return;
+      sugBox.hidden = true; sugBox.innerHTML = "";
+      current = []; activeIdx = -1;
+      input.setAttribute("aria-expanded", "false");
+    }
+
+    function choisir(item) {
+      input.value = item.display;
+      closeSug();
       if (verdictEl) { verdictEl.hidden = true; }
+      if (msg) { msg.textContent = ""; }
+      localiser(item.lng, item.lat);
+    }
 
-      var url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ca&q=" +
+    function renderSug(items) {
+      if (!sugBox) return;
+      current = items; activeIdx = -1;
+      if (!items.length) { closeSug(); return; }
+      sugBox.innerHTML = "";
+      items.forEach(function (it, i) {
+        var li = document.createElement("li");
+        li.setAttribute("role", "option");
+        li.id = "sug-" + i;
+        li.textContent = it.display;
+        li.addEventListener("mousedown", function (e) { e.preventDefault(); choisir(it); });
+        sugBox.appendChild(li);
+      });
+      sugBox.hidden = false;
+      input.setAttribute("aria-expanded", "true");
+    }
+
+    function highlight(idx) {
+      var lis = sugBox ? sugBox.querySelectorAll("li") : [];
+      lis.forEach(function (li, i) { li.setAttribute("aria-selected", i === idx ? "true" : "false"); });
+      activeIdx = idx;
+    }
+
+    function fetchSug(q) {
+      var reqId = ++lastReq;
+      var url = "https://nominatim.openstreetmap.org/search?format=json&addressdetails=0&limit=6&countrycodes=ca&q=" +
         encodeURIComponent(q + ", Québec");
       fetch(url, { headers: { "Accept-Language": "fr" } })
         .then(function (r) { return r.json(); })
         .then(function (results) {
-          if (!results || !results.length) {
-            if (msg) { msg.textContent = "Adresse introuvable. Précisez la ville."; }
-            return;
-          }
-          var r = results[0];
-          localiser(parseFloat(r.lon), parseFloat(r.lat));
+          if (reqId !== lastReq) return; // réponse obsolète : une frappe plus récente a eu lieu
+          var items = (results || []).map(function (r) {
+            return { display: r.display_name, lng: parseFloat(r.lon), lat: parseFloat(r.lat) };
+          });
+          renderSug(items);
           if (msg) { msg.textContent = ""; }
         })
         .catch(function () {
+          if (reqId !== lastReq) return;
           if (msg) { msg.textContent = "La recherche a échoué. Réessayez plus tard."; }
         });
+    }
+
+    /* Frappe : on interroge après une courte pause (debounce 280 ms). */
+    input.addEventListener("input", function () {
+      var q = (input.value || "").trim();
+      if (debounceT) { clearTimeout(debounceT); }
+      if (q.length < 3) { closeSug(); return; }
+      debounceT = setTimeout(function () { fetchSug(q); }, 280);
+    });
+
+    /* Navigation clavier dans les suggestions. */
+    input.addEventListener("keydown", function (e) {
+      if (sugBox && sugBox.hidden) return;
+      if (e.key === "ArrowDown") { e.preventDefault(); highlight(Math.min(activeIdx + 1, current.length - 1)); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); highlight(Math.max(activeIdx - 1, 0)); }
+      else if (e.key === "Escape") { closeSug(); }
+      else if (e.key === "Enter" && activeIdx >= 0) { e.preventDefault(); choisir(current[activeIdx]); }
+    });
+
+    /* Soumission (bouton flèche ou Entrée sans suggestion surlignée) :
+       on prend la 1re suggestion, sinon on géocode directement. */
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (activeIdx >= 0 && current[activeIdx]) { choisir(current[activeIdx]); return; }
+      if (current.length) { choisir(current[0]); return; }
+      var q = (input.value || "").trim();
+      if (!q) return;
+      if (msg) { msg.textContent = "Recherche en cours…"; }
+      fetchSug(q);
+    });
+
+    /* Fermer les suggestions au clic hors du champ. */
+    document.addEventListener("click", function (e) {
+      if (form && !form.contains(e.target) && sugBox && !sugBox.contains(e.target)) { closeSug(); }
     });
   }
 
-  /* --- Géolocalisation « autour de moi » --------------------------------- */
+  /* --- Géolocalisation « autour de moi » (bouton icône) ------------------- */
   var geoBtn = document.getElementById("carte-geoloc");
   if (geoBtn && "geolocation" in navigator) {
     geoBtn.addEventListener("click", function () {
       geoBtn.disabled = true;
-      var prev = geoBtn.textContent;
-      geoBtn.textContent = "Localisation…";
+      geoBtn.classList.add("is-loading"); /* icône conservée, style d'attente via CSS */
+      if (msg) { msg.textContent = "Localisation en cours…"; }
       navigator.geolocation.getCurrentPosition(
         function (pos) {
           localiser(pos.coords.longitude, pos.coords.latitude);
-          geoBtn.disabled = false; geoBtn.textContent = prev;
+          geoBtn.disabled = false; geoBtn.classList.remove("is-loading");
+          if (msg) { msg.textContent = ""; }
         },
         function () {
           if (msg) { msg.textContent = "Localisation refusée ou indisponible."; }
-          geoBtn.disabled = false; geoBtn.textContent = prev;
+          geoBtn.disabled = false; geoBtn.classList.remove("is-loading");
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
@@ -484,4 +644,370 @@
   } else if (geoBtn) {
     geoBtn.hidden = true;
   }
+
+  /* --- Pop-up de bienvenue (affiché une fois, mémorisé) ------------------- */
+  var welcome = document.getElementById("carte-welcome");
+  var helpBtn = document.getElementById("carte-help");
+  if (welcome) {
+    var SEEN_KEY = "rl-carte-welcome-seen";
+    var seen = false;
+    try { seen = localStorage.getItem(SEEN_KEY) === "1"; } catch (e) {}
+
+    function openWelcome() {
+      /* Réinitialiser tous les styles inline posés par la fermeture (opacity,
+         transform, animation:none, transition) pour que le pop-up réapparaisse
+         proprement, avec l'animation d'entrée CSS. */
+      welcome.hidden = false;
+      welcome.style.opacity = "";
+      welcome.style.transition = "";
+      welcome.style.animation = "";
+      var c0 = welcome.querySelector(".carte-welcome__card");
+      if (c0) {
+        c0.style.transform = "";
+        c0.style.opacity = "";
+        c0.style.transition = "";
+        c0.style.animation = "";
+      }
+    }
+    function closeWelcome(withWipe) {
+      try { localStorage.setItem(SEEN_KEY, "1"); } catch (e) {}
+      if (helpBtn) { helpBtn.hidden = false; }
+
+      var card = welcome.querySelector(".carte-welcome__card");
+
+      if (!REDUCED) {
+        /* Retirer l'animation CSS d'entrée (elle a `both` et figerait opacity:1,
+           écrasant notre fondu inline). Puis appliquer le fondu de sortie. */
+        welcome.style.animation = "none";
+        if (card) { card.style.animation = "none"; }
+        /* Forcer un reflow pour que la transition inline suivante s'applique. */
+        void welcome.offsetHeight;
+        welcome.style.transition = "opacity .45s cubic-bezier(.16,1,.3,1)";
+        welcome.style.opacity = "0";
+        if (card) {
+          card.style.transition = "transform .45s cubic-bezier(.16,1,.3,1), opacity .45s ease";
+          card.style.transform = "scale(1.05)";
+          card.style.opacity = "0";
+        }
+        /* Léger zoom de la carte. */
+        if (withWipe && map && map.getZoom) {
+          map.easeTo({ zoom: map.getZoom() + 0.6, duration: 1300, easing: function (t) { return 1 - Math.pow(1 - t, 3); } });
+        }
+        if (withWipe) { playWipe(); }
+        setTimeout(function () { welcome.hidden = true; }, 480);
+      } else {
+        welcome.hidden = true;
+        if (withWipe) { playWipe(); }
+      }
+    }
+
+    /* À la première visite : le rideau couvre l'écran sous le pop-up, et le wipe
+       le retire au clic « Explorer ». */
+    if (!seen) {
+      if (!REDUCED) {
+        var wsvg = document.getElementById("carte-wipe");
+        if (wsvg) { wsvg.hidden = false; }
+      }
+      openWelcome();
+    } else if (helpBtn) { helpBtn.hidden = false; }
+
+    /* Le bouton « Explorer la carte » déclenche le wipe ; le fond/Échap non. */
+    var cta = welcome.querySelector(".carte-welcome__cta");
+    welcome.querySelectorAll("[data-cw-close]").forEach(function (b) {
+      b.addEventListener("click", function () { closeWelcome(b === cta); });
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !welcome.hidden) { closeWelcome(false); }
+    });
+    if (helpBtn) { helpBtn.addEventListener("click", openWelcome); }
+  }
+
+  /* --- Wipe de transition (rideau SVG à bord courbe) --------------------- */
+  /* Reproduit l'effet Codrops (021, vertical) : le rideau plein écran se retire
+     vers le haut avec un bord courbe qui ondule. Animé avec GSAP (mêmes paths
+     et eases que la démo) pour un rendu fidèle. Instantané en reduced-motion. */
+  var WIPE_PATHS = {
+    filled: "M 0 0 V 100 Q 50 100 100 100 V 0 z",
+    inBetween: "M 0 0 V 50 Q 50 0 100 50 V 0 z",
+    unfilled: "M 0 0 V 0 Q 50 0 100 0 V 0 z"
+  };
+  function playWipe() {
+    var svg = document.getElementById("carte-wipe");
+    if (!svg) return;
+    var path = svg.querySelector(".carte-wipe__path");
+    if (!path) return;
+    if (REDUCED || typeof gsap === "undefined") {
+      svg.hidden = true; return; /* on GARDE le SVG pour pouvoir rejouer le wipe */
+    }
+    svg.hidden = false;
+    gsap.timeline({
+      onComplete: function () { svg.hidden = true; }
+    })
+      .set(path, { attr: { d: WIPE_PATHS.filled } })
+      .to(path, { duration: 0.25, ease: "sine.in", attr: { d: WIPE_PATHS.inBetween } })
+      .to(path, { duration: 1, ease: "power4", attr: { d: WIPE_PATHS.unfilled } });
+  }
+
+  /* ======================================================================
+     COMPARATEUR AVANT / APRÈS (slider « swipe »)
+     Compare deux années de crues côte à côte. Technique : une 2e carte
+     superposée (#carte-compare) montrant la couche B, synchronisée avec la
+     carte principale (montrant A), et clippée par un slider vertical.
+     Sans dépendance (équivalent maison de mapbox-gl-compare).
+     ====================================================================== */
+  var compareMap = null;
+  var compareOn = false;
+  var compareEls = null; // { wrap, slider, canvasB, selA, selB }
+
+  function crueTiles(layerName) {
+    return wms(MSP_WMS, layerName);
+  }
+  function crueLayerName(id) {
+    for (var i = 0; i < CRUES.length; i++) { if (CRUES[i].id === id) return CRUES[i].layer; }
+    return null;
+  }
+
+  function syncFrom(a, b) {
+    // Recopie la vue de a vers b sans boucle d'événements.
+    b.jumpTo({ center: a.getCenter(), zoom: a.getZoom(), bearing: a.getBearing(), pitch: a.getPitch() });
+  }
+
+  function setCompareLayer(mapObj, layerName) {
+    if (mapObj.getLayer("compare-crue")) { mapObj.removeLayer("compare-crue"); }
+    if (mapObj.getSource("compare-crue")) { mapObj.removeSource("compare-crue"); }
+    mapObj.addSource("compare-crue", { type: "raster", tiles: [crueTiles(layerName)], tileSize: 256 });
+    mapObj.addLayer({ id: "compare-crue", type: "raster", source: "compare-crue", paint: { "raster-opacity": 0.75 } });
+  }
+
+  function positionSlider(x) {
+    if (!compareEls) return;
+    var w = compareEls.wrap.clientWidth || 1;
+    var pct = Math.max(0, Math.min(100, (x / w) * 100));
+    compareEls.canvasB.style.clipPath = "inset(0 0 0 " + pct + "%)";
+    compareEls.canvasB.style.webkitClipPath = "inset(0 0 0 " + pct + "%)";
+    compareEls.slider.style.left = pct + "%";
+  }
+
+  function ouvrirComparateur() {
+    if (compareOn) return;
+    var wrap = document.getElementById("carte-compare-wrap");
+    var canvasB = document.getElementById("carte-compare");
+    var slider = document.getElementById("carte-compare-slider");
+    var selA = document.getElementById("cmp-annee-a");
+    var selB = document.getElementById("cmp-annee-b");
+    if (!wrap || !canvasB || !slider || !selA || !selB) return;
+    compareEls = { wrap: wrap, canvasB: canvasB, slider: slider, selA: selA, selB: selB };
+    wrap.hidden = false;
+    compareOn = true;
+
+    // Carte B (couche de droite), même fond que la principale.
+    compareMap = new GL.Map({
+      container: "carte-compare", style: USE_MAPBOX ? MAPBOX_STYLES[currentFond] : STYLE,
+      center: map.getCenter(), zoom: map.getZoom(), attributionControl: false, interactive: false
+    });
+    compareMap.on("load", function () {
+      setCompareLayer(compareMap, crueLayerName(selB.value) || CRUES[1].layer);
+    });
+
+    // Couche A sur la carte principale.
+    setCompareLayer(map, crueLayerName(selA.value) || CRUES[0].layer);
+
+    // Synchronisation : la principale pilote, B suit.
+    var syncing = false;
+    function relay() { if (syncing) return; syncing = true; syncFrom(map, compareMap); syncing = false; }
+    map.on("move", relay);
+    compareEls._relay = relay;
+
+    // Slider drag.
+    positionSlider(wrap.clientWidth / 2);
+    function onDrag(clientX) {
+      var rect = wrap.getBoundingClientRect();
+      positionSlider(clientX - rect.left);
+    }
+    var dragging = false;
+    slider.addEventListener("mousedown", function () { dragging = true; document.body.style.userSelect = "none"; });
+    window.addEventListener("mousemove", function (e) { if (dragging) onDrag(e.clientX); });
+    window.addEventListener("mouseup", function () { dragging = false; document.body.style.userSelect = ""; });
+    slider.addEventListener("touchstart", function () { dragging = true; }, { passive: true });
+    window.addEventListener("touchmove", function (e) { if (dragging && e.touches[0]) onDrag(e.touches[0].clientX); }, { passive: true });
+    window.addEventListener("touchend", function () { dragging = false; });
+
+    // Changement d'année.
+    selA.addEventListener("change", function () { setCompareLayer(map, crueLayerName(selA.value)); });
+    selB.addEventListener("change", function () { if (compareMap) setCompareLayer(compareMap, crueLayerName(selB.value)); });
+  }
+
+  function fermerComparateur() {
+    if (!compareOn) return;
+    compareOn = false;
+    if (compareEls && compareEls._relay) { map.off("move", compareEls._relay); }
+    if (map.getLayer("compare-crue")) { map.removeLayer("compare-crue"); }
+    if (map.getSource("compare-crue")) { map.removeSource("compare-crue"); }
+    if (compareMap) { compareMap.remove(); compareMap = null; }
+    if (compareEls) { compareEls.wrap.hidden = true; }
+  }
+
+  (function initComparateurBtn() {
+    var btn = document.getElementById("carte-compare-btn");
+    var closeBtn = document.getElementById("carte-compare-close");
+    if (btn) {
+      btn.addEventListener("click", function () { compareOn ? fermerComparateur() : ouvrirComparateur(); });
+    }
+    if (closeBtn) { closeBtn.addEventListener("click", fermerComparateur); }
+    // Peupler les menus d'années à partir de CRUES.
+    ["cmp-annee-a", "cmp-annee-b"].forEach(function (selId, idx) {
+      var sel = document.getElementById(selId);
+      if (!sel) return;
+      CRUES.forEach(function (c) {
+        var o = document.createElement("option");
+        o.value = c.id; o.textContent = c.label.replace("Inondations ", "");
+        sel.appendChild(o);
+      });
+      sel.value = CRUES[Math.min(idx, CRUES.length - 1)].id; // A=1re, B=2e année par défaut
+    });
+  })();
+
+  /* ======================================================================
+     PARTAGE (copier le lien + réseaux sociaux)
+     ====================================================================== */
+  (function initPartage() {
+    var btn = document.getElementById("carte-share-btn");
+    var menu = document.getElementById("carte-share-menu");
+    if (!btn || !menu) return;
+
+    function pageUrl() {
+      // Lien vers la carte (canonique portail si en iframe, sinon URL courante).
+      try { return window.location.href; } catch (e) { return ""; }
+    }
+    function toggleMenu(open) {
+      menu.hidden = (open === undefined) ? !menu.hidden : !open;
+      btn.setAttribute("aria-expanded", menu.hidden ? "false" : "true");
+    }
+    btn.addEventListener("click", function (e) { e.stopPropagation(); toggleMenu(); });
+    document.addEventListener("click", function (e) {
+      if (!menu.contains(e.target) && e.target !== btn) { toggleMenu(false); }
+    });
+
+    var copierBtn = menu.querySelector("[data-share='copier']");
+    if (copierBtn) {
+      copierBtn.addEventListener("click", function () {
+        var u = pageUrl();
+        var done = function () { copierBtn.textContent = "Lien copié !"; setTimeout(function () { copierBtn.textContent = "Copier le lien"; }, 1800); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(u).then(done).catch(done);
+        } else {
+          var t = document.createElement("textarea"); t.value = u; document.body.appendChild(t);
+          t.select(); try { document.execCommand("copy"); } catch (e) {} document.body.removeChild(t); done();
+        }
+      });
+    }
+    menu.querySelectorAll("[data-share-net]").forEach(function (a) {
+      a.addEventListener("click", function () {
+        var u = encodeURIComponent(pageUrl());
+        var txt = encodeURIComponent("Carte des zones inondables du Québec — Rivières Libres");
+        var net = a.getAttribute("data-share-net");
+        var href = "";
+        if (net === "facebook") href = "https://www.facebook.com/sharer/sharer.php?u=" + u;
+        else if (net === "x") href = "https://twitter.com/intent/tweet?url=" + u + "&text=" + txt;
+        else if (net === "linkedin") href = "https://www.linkedin.com/sharing/share-offsite/?url=" + u;
+        else if (net === "courriel") href = "mailto:?subject=" + txt + "&body=" + u;
+        if (href) { window.open(href, net === "courriel" ? "_self" : "_blank", "noopener,width=600,height=500"); }
+        toggleMenu(false);
+      });
+    });
+  })();
+
+  /* ======================================================================
+     NOTATION 1 à 5 étoiles (feedback)
+     ====================================================================== */
+  (function initNotation() {
+    var btn = document.getElementById("carte-rate-btn");
+    var pop = document.getElementById("carte-rate-pop");
+    if (!btn || !pop) return;
+    var RATE_KEY = "rl-carte-note";
+    var stars = pop.querySelectorAll(".carte-rate__star");
+    var msgEl = pop.querySelector(".carte-rate__msg");
+
+    var saved = 0;
+    try { saved = parseInt(localStorage.getItem(RATE_KEY) || "0", 10) || 0; } catch (e) {}
+
+    function paint(n) {
+      stars.forEach(function (s, i) { s.classList.toggle("is-on", i < n); });
+    }
+    function togglePop(open) {
+      pop.hidden = (open === undefined) ? !pop.hidden : !open;
+      btn.setAttribute("aria-expanded", pop.hidden ? "false" : "true");
+      if (!pop.hidden) { paint(saved); }
+    }
+    btn.addEventListener("click", function (e) { e.stopPropagation(); togglePop(); });
+    document.addEventListener("click", function (e) {
+      if (!pop.contains(e.target) && e.target !== btn) { togglePop(false); }
+    });
+
+    stars.forEach(function (s, i) {
+      s.addEventListener("mouseenter", function () { paint(i + 1); });
+      s.addEventListener("mouseleave", function () { paint(saved); });
+      s.addEventListener("click", function () {
+        saved = i + 1;
+        try { localStorage.setItem(RATE_KEY, String(saved)); } catch (e) {}
+        paint(saved);
+        if (msgEl) { msgEl.textContent = "Merci pour votre avis !"; }
+      });
+    });
+    if (saved > 0) { paint(saved); }
+  })();
+
+  /* ======================================================================
+     SOURCES (popover « i » en bas-droite)
+     ====================================================================== */
+  (function initSources() {
+    var btn = document.getElementById("carte-src-btn");
+    var pop = document.getElementById("carte-src-pop");
+    if (!btn || !pop) return;
+    function toggle(open) {
+      pop.hidden = (open === undefined) ? !pop.hidden : !open;
+      btn.setAttribute("aria-expanded", pop.hidden ? "false" : "true");
+    }
+    btn.addEventListener("click", function (e) { e.stopPropagation(); toggle(); });
+    document.addEventListener("click", function (e) {
+      if (!pop.contains(e.target) && e.target !== btn) { toggle(false); }
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") { toggle(false); } });
+  })();
+
+  /* ======================================================================
+     PANNEAU COUCHES REPLIABLE
+     ====================================================================== */
+  (function initLayersCollapse() {
+    var toggle = document.querySelector(".embed-map__layers-toggle");
+    var body = document.getElementById("carte-couches-body");
+    if (!toggle || !body) return;
+    toggle.addEventListener("click", function () {
+      var open = toggle.getAttribute("aria-expanded") === "true";
+      toggle.setAttribute("aria-expanded", open ? "false" : "true");
+      body.hidden = open;
+    });
+  })();
+
+  /* ======================================================================
+     PLEIN ÉCRAN natif (API Fullscreen)
+     ====================================================================== */
+  (function initFullscreen() {
+    var btn = document.getElementById("carte-fs-btn");
+    if (!btn) return;
+    var target = document.querySelector(".embed-map") || el;
+    function isFs() { return document.fullscreenElement || document.webkitFullscreenElement; }
+    btn.addEventListener("click", function () {
+      if (isFs()) {
+        (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      } else {
+        var req = target.requestFullscreen || target.webkitRequestFullscreen;
+        if (req) { req.call(target); }
+      }
+    });
+    document.addEventListener("fullscreenchange", function () {
+      btn.classList.toggle("is-active", !!isFs());
+      setTimeout(function () { map.resize(); if (compareMap) compareMap.resize(); }, 120);
+    });
+  })();
 })();

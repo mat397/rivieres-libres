@@ -36,7 +36,7 @@ export default {
             <span class="map-launch__label">Carte interactive</span>
             <span class="map-launch__title">Ouvrir la carte plein écran</span>
             <span class="map-launch__desc">Recherchez une adresse, activez les couches, explorez en 3D. La carte s'ouvre en plein écran.</span>
-            <span class="btn btn--primary map-launch__btn">Vérifier une adresse ${ICON_ARROW}</span>
+            <span class="btn btn--primary map-launch__btn">Ouvrir la carte ${ICON_ARROW}</span>
           </span>
         </a>
         <p class="map-credit">

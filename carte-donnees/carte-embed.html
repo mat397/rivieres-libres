@@ -9,7 +9,7 @@
   <meta name="robots" content="noindex">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <link href="/assets/vendor/mapbox-gl.css" rel="stylesheet">
   <script>
@@ -22,6 +22,7 @@
   </script>
   <script src="/assets/vendor/mapbox-gl.js" defer></script>
   <script src="/assets/vendor/pmtiles.js" defer></script>
+  <script src="/assets/vendor/gsap.min.js" defer></script>
   <script src="/assets/js/carte.js" defer></script>
 </head>
 <body class="is-embed">
@@ -37,23 +38,89 @@
           <p>Recherchez une adresse, activez les couches et explorez les zones inondables, les milieux humides et les bâtiments du Québec.</p>
           <ul class="carte-welcome__steps">
             <li>Tapez une adresse ou utilisez votre position.</li>
-            <li>Activez les couches et changez de fond (rues, satellite, 3D).</li>
+            <li>Activez les couches et changez de fond (rues, satellite, plein air).</li>
             <li>Cliquez un bâtiment pour voir sa superficie.</li>
           </ul>
           <p class="carte-welcome__legal">Information à valeur indicative, sans portée légale. Pour le statut réel d'un terrain, consultez votre municipalité.</p>
-          <button type="button" class="btn btn--primary carte-welcome__cta" data-cw-close>Explorer la carte</button>
+          <a class="carte-welcome__alto" href="https://altogeo.ca" rel="noopener" target="_blank">
+            <img src="/assets/img/logo-alto-couleur.png" alt="Alto Géomatique" width="1280" height="714">
+            <span>Une initiative offerte gratuitement et <strong>financée à 100&nbsp;% par Alto Géomatique</strong>.</span>
+          </a>
+          <button type="button" class="btn btn--primary carte-welcome__cta" data-cw-close>Merci Alto&nbsp;! Ouvrir la carte</button>
         </div>
       </div>
-      <button id="carte-help" class="carte-help" type="button" aria-label="Revoir le message de bienvenue" hidden>i</button>
 
-      <a class="embed-map__back" href="/index.html" aria-label="Retour au site Rivières Libres">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Retour au site
-      </a>
+      <!-- Rideau de transition SVG (bord courbe qui balaie, inspiration Codrops).
+           Couvre l'écran au départ ; au clic « Explorer », le path s'anime vers
+           le bas et révèle la carte. Retiré du DOM après l'animation. -->
+      <svg id="carte-wipe" class="carte-wipe" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" hidden>
+        <defs>
+          <linearGradient id="wipeGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0A2C3F"/>
+            <stop offset="55%" stop-color="#0E3A52"/>
+            <stop offset="100%" stop-color="#1E8AA0"/>
+          </linearGradient>
+        </defs>
+        <path class="carte-wipe__path" fill="url(#wipeGrad)" d="M 0 0 V 100 Q 50 100 100 100 V 0 z" />
+      </svg>
+
+      <!-- Comparateur avant/après : 2e carte clippée + slider. Caché par défaut. -->
+      <div id="carte-compare-wrap" class="carte-compare" hidden>
+        <div id="carte-compare" class="carte-compare__canvas"></div>
+        <div id="carte-compare-slider" class="carte-compare__slider" role="separator" aria-label="Glisser pour comparer">
+          <span class="carte-compare__handle" aria-hidden="true"></span>
+        </div>
+        <div class="carte-compare__labels">
+          <label>Gauche <select id="cmp-annee-a" aria-label="Année de gauche"></select></label>
+          <label>Droite <select id="cmp-annee-b" aria-label="Année de droite"></select></label>
+          <button type="button" id="carte-compare-close" class="carte-compare__close" aria-label="Fermer le comparateur">Fermer</button>
+        </div>
+      </div>
+
+      <!-- HAUT-DROITE : barre d'actions (aide, partage, notation, plein écran, retour) -->
+      <div class="embed-map__actions">
+        <button id="carte-help" class="map-act" type="button" aria-label="Revoir le message d'accueil" title="Aide">
+          <span class="map-act__i">i</span>
+        </button>
+        <div class="map-act-wrap">
+          <button id="carte-share-btn" class="map-act" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Partager" title="Partager">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a3 3 0 10-2.8-4H15a3 3 0 00.2 4l-6.3 3.6a3 3 0 100 3.6l6.3 3.6A3 3 0 1018 20a3 3 0 00-2.8-2l-6.3-3.6a3 3 0 000-.8L15.2 10A3 3 0 0018 8z" fill="currentColor"/></svg>
+          </button>
+          <div id="carte-share-menu" class="map-menu" hidden>
+            <button type="button" data-share="copier">Copier le lien</button>
+            <button type="button" data-share-net="facebook">Facebook</button>
+            <button type="button" data-share-net="x">X (Twitter)</button>
+            <button type="button" data-share-net="linkedin">LinkedIn</button>
+            <button type="button" data-share-net="courriel">Courriel</button>
+          </div>
+        </div>
+        <div class="map-act-wrap">
+          <button id="carte-rate-btn" class="map-act" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Donner mon avis" title="Noter">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z" fill="currentColor"/></svg>
+          </button>
+          <div id="carte-rate-pop" class="map-menu map-menu--rate" hidden>
+            <p class="carte-rate__title">Votre avis sur la carte&nbsp;?</p>
+            <div class="carte-rate__stars" role="group" aria-label="Note de 1 à 5 étoiles">
+              <button type="button" class="carte-rate__star" aria-label="1 étoile">&#9733;</button>
+              <button type="button" class="carte-rate__star" aria-label="2 étoiles">&#9733;</button>
+              <button type="button" class="carte-rate__star" aria-label="3 étoiles">&#9733;</button>
+              <button type="button" class="carte-rate__star" aria-label="4 étoiles">&#9733;</button>
+              <button type="button" class="carte-rate__star" aria-label="5 étoiles">&#9733;</button>
+            </div>
+            <p class="carte-rate__msg" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+        <button id="carte-fs-btn" class="map-act" type="button" aria-label="Plein écran" title="Plein écran">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <a class="embed-map__back map-act--back" href="/carte-donnees/carte.html" aria-label="Retour à la page Cartes et données">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="map-act--back-txt">Retour au site web</span>
+        </a>
+      </div>
       <script>
         /* Le bouton retour est visible par défaut (plein écran). On le masque
-           UNIQUEMENT si la page est intégrée en iframe sur un site tiers,
-           pour ne pas polluer l'intégration. */
+           UNIQUEMENT si la page est intégrée en iframe sur un site tiers. */
         (function () {
           try { if (window.self !== window.top) {
             var b = document.querySelector(".embed-map__back"); if (b) b.hidden = true;
@@ -61,27 +128,74 @@
         })();
       </script>
 
-      <div class="embed-map__panel">
-        <form id="carte-recherche" class="map-search" role="search" aria-label="Rechercher une adresse">
+      <!-- HAUT-GAUCHE : recherche subtile, puis contrôles (home, +, −) dessous -->
+      <div class="embed-map__search">
+        <form id="carte-recherche" class="map-search" role="search" aria-label="Rechercher une adresse" autocomplete="off">
           <label class="visually-hidden" for="carte-recherche-input">Adresse ou municipalité</label>
-          <input id="carte-recherche-input" type="search" placeholder="Adresse, municipalité…" autocomplete="off">
-          <button class="btn btn--primary" type="submit" aria-label="Chercher"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <input id="carte-recherche-input" type="search" placeholder="Rechercher une adresse…" autocomplete="off"
+                 role="combobox" aria-expanded="false" aria-controls="carte-suggestions" aria-autocomplete="list">
+          <button class="map-search__go" type="submit" aria-label="Chercher"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </form>
-        <button id="carte-geoloc" class="btn btn--secondary" type="button" style="margin-top:.4rem;width:100%">Utiliser ma position</button>
+        <ul id="carte-suggestions" class="carte-suggestions" role="listbox" aria-label="Suggestions d'adresses" hidden></ul>
+
+        <!-- Contrôles sous la recherche : home, +, −, ma position -->
+        <div id="carte-navctrls" class="carte-navctrls" role="group" aria-label="Navigation de la carte">
+          <button data-nav="home" type="button" class="carte-navbtn" aria-label="Recentrer sur le Québec" title="Recentrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button data-nav="in" type="button" class="carte-navbtn" aria-label="Zoom avant" title="Zoom avant">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+          </button>
+          <button data-nav="out" type="button" class="carte-navbtn" aria-label="Zoom arrière" title="Zoom arrière">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+          </button>
+          <button id="carte-geoloc" type="button" class="carte-navbtn carte-navbtn--pos" aria-label="Utiliser ma position" title="Utiliser ma position">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M12 5a7 7 0 100 14 7 7 0 000-14z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+        </div>
+
         <p id="carte-recherche-msg" class="source" role="status" aria-live="polite" style="min-height:1em;margin:.3rem 0 0"></p>
         <div id="carte-verdict" class="carte-verdict" role="status" aria-live="polite" hidden></div>
-        <div id="carte-fonds" class="carte-fonds" role="group" aria-label="Fond de carte"></div>
-        <div id="carte-couches" class="carte-couches" style="margin-top:.6rem"></div>
       </div>
 
-      <a class="embed-map__badge" href="https://altogeo.ca" rel="noopener" target="_blank" aria-label="Une initiative d'Alto Géomatique">
-        <img src="/assets/img/logo-alto-couleur.png" alt="Alto Géomatique" width="1280" height="714" loading="lazy">
-      </a>
+      <!-- HAUT-DROITE (sous la barre d'actions) : couches et filtres REPLIABLES -->
+      <div class="embed-map__layers">
+        <button type="button" class="embed-map__layers-toggle" aria-expanded="true" aria-controls="carte-couches-body">
+          <span>Couches et filtres</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div id="carte-couches-body" class="embed-map__layers-body">
+          <div id="carte-couches" class="carte-couches"></div>
+          <button type="button" id="carte-compare-btn" class="carte-compare-btn">Comparer deux années</button>
+        </div>
+      </div>
 
-      <p class="embed-map__legal">
-        Valeur indicative, aucune portée légale. Données : MRNF, MELCCFP (CC-BY 4.0).
-        <a href="https://rivieres-libres.example/carte-donnees/carte.html" rel="noopener" target="_blank">Voir le portail</a>
-      </p>
+      <!-- BAS-GAUCHE : sélecteur de fond dépliable (vignettes) -->
+      <div id="carte-fonds" class="carte-fonds" role="group" aria-label="Fond de carte"></div>
+
+      <!-- BAS-DROITE : crédit Alto + bouton Sources (popover) -->
+      <div class="embed-map__br">
+        <a class="embed-map__badge" href="https://altogeo.ca" rel="noopener" target="_blank" aria-label="Une initiative 100% financée par Alto Géomatique">
+          <span class="embed-map__badge-txt">Une initiative 100&nbsp;% financée par</span>
+          <img src="/assets/img/logo-alto-couleur.png" alt="Alto Géomatique" width="1280" height="714" loading="lazy">
+        </a>
+        <div class="map-act-wrap map-act-wrap--src">
+          <button id="carte-src-btn" class="map-act map-act--src" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Sources et mentions" title="Sources">
+            <span class="map-act__i">i</span>
+          </button>
+          <div id="carte-src-pop" class="map-menu map-menu--src" hidden>
+            <p class="map-src__legal"><strong>Information à valeur indicative, sans portée légale.</strong> Pour le statut réel d'un terrain, consultez votre municipalité.</p>
+            <p class="map-src__list">Sources (CC-BY 4.0) :</p>
+            <ul class="map-src__ul">
+              <li>Zones inondables cartographiées — MRNF</li>
+              <li>Milieux humides potentiels — MELCCFP</li>
+              <li>Inondations observées (2017-2020) — MSP, Centre des opérations gouvernementales</li>
+              <li>Bâtiments — Référentiel du Québec (MRNF)</li>
+            </ul>
+            <p class="map-src__portail"><a href="/carte-donnees/carte.html" target="_blank" rel="noopener">Voir le portail Rivières Libres</a></p>
+          </div>
+        </div>
+      </div>
 
       <div id="carte-etapes" hidden></div>
     </div>
