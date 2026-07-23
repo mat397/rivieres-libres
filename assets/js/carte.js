@@ -49,10 +49,15 @@
   };
   var currentFond = "rues";
 
-  /* Protocole PMTiles (fonctionne avec Mapbox GL v3 comme avec MapLibre). */
-  if (typeof pmtiles !== "undefined" && GL.addProtocol) {
+  /* PMTiles : Mapbox GL JS v3.21+ lit nativement les sources .pmtiles (détection
+     par l'extension), SANS addProtocol ni préfixe pmtiles://. MapLibre, lui,
+     a besoin d'addProtocol + du préfixe. On adapte selon le moteur. */
+  var PM_PREFIX = ""; // Mapbox v3.21 : URL directe
+  if (!USE_MAPBOX && typeof pmtiles !== "undefined" && GL.addProtocol) {
     GL.addProtocol("pmtiles", new pmtiles.Protocol().tile);
+    PM_PREFIX = "pmtiles://";
   }
+  function pmUrl(u) { return PM_PREFIX + u; }
 
   /* --- Fond de carte ----------------------------------------------------- */
   var STYLE;
@@ -63,7 +68,7 @@
       version: 8,
       sources: {
         fond: {
-          type: "vector", url: "pmtiles://" + FOND_PMTILES_URL,
+          type: "vector", url: pmUrl(FOND_PMTILES_URL),
           attribution: '© <a href="https://openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
         }
       },
@@ -212,7 +217,7 @@
     /* 1) Zones inondables (grille) en PMTiles vecteur — SOUS les autres.
        Vecteur = net à tous les zooms ET interrogeable pour le verdict. */
     if (GRILLE_PMTILES_URL && typeof pmtiles !== "undefined" && !map.getSource("grille")) {
-      map.addSource("grille", { type: "vector", url: "pmtiles://" + GRILLE_PMTILES_URL });
+      map.addSource("grille", { type: "vector", url: pmUrl(GRILLE_PMTILES_URL) });
     }
     if (GRILLE_PMTILES_URL && typeof pmtiles !== "undefined") {
       map.addLayer({
@@ -241,7 +246,7 @@
     /* 3) Bâtiments (PMTiles R2) — PAR-DESSUS les zones inondables. */
     if (BATIMENTS_PMTILES_URL && typeof pmtiles !== "undefined") {
       if (!map.getSource("batiments")) {
-        map.addSource("batiments", { type: "vector", url: "pmtiles://" + BATIMENTS_PMTILES_URL });
+        map.addSource("batiments", { type: "vector", url: pmUrl(BATIMENTS_PMTILES_URL) });
       }
       map.addLayer({
         id: "batiments-fill", type: "fill", source: "batiments", "source-layer": "batiments",

@@ -299,6 +299,23 @@
     if (el) { el.textContent = String(new Date().getFullYear()); }
   }
 
+  /* --- CTA carte : bascule de l'aperçu vers la carte ------------------------ */
+  /* Au clic, l'aperçu grandit et s'estompe (is-launching), puis on navigue.
+     Sans JS ou en reduced-motion, le lien fonctionne normalement (instantané). */
+  function initMapLaunch() {
+    var link = document.querySelector(".map-launch");
+    if (!link) return;
+    var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (REDUCED) return;
+    link.addEventListener("click", function (e) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey) return; // laisser l'ouverture dans un onglet
+      e.preventDefault();
+      var href = link.getAttribute("href");
+      link.classList.add("is-launching");
+      setTimeout(function () { window.location.href = href; }, 480);
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     initHeader();
     initMenu();
@@ -307,6 +324,7 @@
     initCounters();
     initAccordions();
     initZoneSelector();
+    initMapLaunch();
     initYear();
   });
 })();

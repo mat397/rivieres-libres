@@ -29,6 +29,24 @@ export default {
   body: `    <div class="embed-map">
       <div id="carte" class="embed-map__canvas" role="application" aria-label="Carte interactive des zones inondables, milieux humides et bâtiments du Québec"></div>
 
+      <!-- Pop-up de bienvenue (fondu + léger zoom, affiché une fois). -->
+      <div id="carte-welcome" class="carte-welcome" role="dialog" aria-modal="true" aria-labelledby="cw-title" hidden>
+        <div class="carte-welcome__backdrop" data-cw-close></div>
+        <div class="carte-welcome__card" role="document">
+          <span class="carte-welcome__kicker">Rivières Libres</span>
+          <h2 id="cw-title" class="carte-welcome__title">Votre secteur est-il en zone inondable&nbsp;?</h2>
+          <p>Recherchez une adresse, activez les couches et explorez les zones inondables, les milieux humides et les bâtiments du Québec.</p>
+          <ul class="carte-welcome__steps">
+            <li>Tapez une adresse ou utilisez votre position.</li>
+            <li>Activez les couches et changez de fond (rues, satellite, 3D).</li>
+            <li>Cliquez un bâtiment pour voir sa superficie.</li>
+          </ul>
+          <p class="carte-welcome__legal">Information à valeur indicative, sans portée légale. Pour le statut réel d'un terrain, consultez votre municipalité.</p>
+          <button type="button" class="btn btn--primary carte-welcome__cta" data-cw-close>Explorer la carte</button>
+        </div>
+      </div>
+      <button id="carte-help" class="carte-help" type="button" aria-label="Revoir le message de bienvenue" hidden>i</button>
+
       <a class="embed-map__back" href="/index.html" aria-label="Retour au site Rivières Libres">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Retour au site
