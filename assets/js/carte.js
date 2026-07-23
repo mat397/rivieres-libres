@@ -146,19 +146,6 @@
   var MH_WMS = "https://geo.environnement.gouv.qc.ca/donnees/services/Biodiversite/MH_potentiels/MapServer/WMSServer";
   var SDA_WMS = "https://servicescarto.mrnf.gouv.qc.ca/pes/services/Territoire/SDA_WMS/MapServer/WMSServer";
 
-  /* Inondations RÉELLES observées par année (crues du printemps), servies en
-     WMS CC-BY par le Ministère de la Sécurité publique (Centre des opérations
-     gouvernementales). Endpoint unique « complet.fcgi » (validé : GetMap PNG
-     transparent, EPSG:3857). Noms de couche vérifiés en source primaire.
-     NB : la couche-groupe « Inondations_2023 » est cassée côté serveur (fichier
-     source corrompu) — on l'exclut jusqu'à correction gouvernementale. */
-  var MSP_WMS = "https://geoegl.msp.gouv.qc.ca/apis/wss/complet.fcgi";
-  var CRUES = [
-    { id: "crue2017", label: "Inondations 2017", layer: "Inondations_2017", swatch: "#2E6F9E" },
-    { id: "crue2019", label: "Inondations 2019", layer: "Inondations_2019", swatch: "#1E5A85" },
-    { id: "crue2020", label: "Inondations 2020", layer: "Inondations_2020", swatch: "#16496B" }
-  ];
-
   var LAYERS = [
     {
       id: "mh",
@@ -179,23 +166,6 @@
     }
   ];
 
-  /* Ajoute chaque crue comme couche WMS activable (opacité 0.55, désactivées
-     par défaut). Groupe « crues » : on les note pour l'attribution MSP/COG et
-     le comparateur avant/après. */
-  CRUES.forEach(function (c) {
-    LAYERS.push({
-      id: c.id,
-      label: c.label,
-      tiles: wms(MSP_WMS, c.layer),
-      opacity: 0.55,
-      on: false,
-      swatch: c.swatch,
-      groupe: "crues",
-      note: "Étendue d'eau réellement observée lors des crues du printemps " +
-            c.label.replace("Inondations ", "") + " (imagerie satellite/radar)."
-    });
-  });
-
   /* --- Carte (2D, à plat) ------------------------------------------------- */
   var map = new GL.Map({
     container: "carte",
@@ -210,7 +180,11 @@
      Le zoom (+/−) et le « home » sont des boutons maison rendus SOUS la barre
      de recherche (voir #carte-navctrls dans le HTML), pour un placement propre. */
   map.addControl(new GL.ScaleControl({ unit: "metric" }), "bottom-left");
-  map.addControl(new GL.AttributionControl({ compact: true }), "bottom-right");
+  /* Attribution : on garde le LOGO Mapbox (obligatoire) mais on masque le bouton
+     « i » texte via CSS (.embed-map .mapboxgl-ctrl-attrib-button). L'attribution
+     complète (Mapbox, OSM + sources gouvernementales) est reprise dans le popover
+     « Sources » du portail, pour éviter le doublon de « i » en bas-droite. */
+  map.addControl(new GL.AttributionControl({ compact: true }), "bottom-left");
 
   /* Contrôles de navigation maison (home, +, −) sous la recherche. */
   (function initNavCtrls() {
@@ -425,6 +399,10 @@
     var toggles = [];
     if (hasGrille) toggles.push({ label: "Zones inondables cartographiées", color: "#D64545", ids: ["grille-fill", "grille-line"], on: true, note: "Secteurs où une cartographie existe." });
     LAYERS.forEach(function (l) {
+      /* Les couches d'inondations par année (groupe « crues ») sont pilotées par
+         le slider temporel en bas, PAS par une case ici : on les exclut du panneau
+         pour l'alléger. */
+      if (l.groupe === "crues") { return; }
       toggles.push({ label: l.label, color: l.swatch, ids: [l.id], on: l.on, legendImg: l.legend || "", note: l.note || "", groupe: l.groupe || "" });
     });
     if (hasBatiments) toggles.push({ label: "Bâtiments", color: "#0E3A52", ids: ["batiments-fill", "batiments-line"], on: true, note: "Visibles à partir d'un zoom rapproché." });
@@ -749,125 +727,6 @@
   }
 
   /* ======================================================================
-     COMPARATEUR AVANT / APRÈS (slider « swipe »)
-     Compare deux années de crues côte à côte. Technique : une 2e carte
-     superposée (#carte-compare) montrant la couche B, synchronisée avec la
-     carte principale (montrant A), et clippée par un slider vertical.
-     Sans dépendance (équivalent maison de mapbox-gl-compare).
-     ====================================================================== */
-  var compareMap = null;
-  var compareOn = false;
-  var compareEls = null; // { wrap, slider, canvasB, selA, selB }
-
-  function crueTiles(layerName) {
-    return wms(MSP_WMS, layerName);
-  }
-  function crueLayerName(id) {
-    for (var i = 0; i < CRUES.length; i++) { if (CRUES[i].id === id) return CRUES[i].layer; }
-    return null;
-  }
-
-  function syncFrom(a, b) {
-    // Recopie la vue de a vers b sans boucle d'événements.
-    b.jumpTo({ center: a.getCenter(), zoom: a.getZoom(), bearing: a.getBearing(), pitch: a.getPitch() });
-  }
-
-  function setCompareLayer(mapObj, layerName) {
-    if (mapObj.getLayer("compare-crue")) { mapObj.removeLayer("compare-crue"); }
-    if (mapObj.getSource("compare-crue")) { mapObj.removeSource("compare-crue"); }
-    mapObj.addSource("compare-crue", { type: "raster", tiles: [crueTiles(layerName)], tileSize: 256 });
-    mapObj.addLayer({ id: "compare-crue", type: "raster", source: "compare-crue", paint: { "raster-opacity": 0.75 } });
-  }
-
-  function positionSlider(x) {
-    if (!compareEls) return;
-    var w = compareEls.wrap.clientWidth || 1;
-    var pct = Math.max(0, Math.min(100, (x / w) * 100));
-    compareEls.canvasB.style.clipPath = "inset(0 0 0 " + pct + "%)";
-    compareEls.canvasB.style.webkitClipPath = "inset(0 0 0 " + pct + "%)";
-    compareEls.slider.style.left = pct + "%";
-  }
-
-  function ouvrirComparateur() {
-    if (compareOn) return;
-    var wrap = document.getElementById("carte-compare-wrap");
-    var canvasB = document.getElementById("carte-compare");
-    var slider = document.getElementById("carte-compare-slider");
-    var selA = document.getElementById("cmp-annee-a");
-    var selB = document.getElementById("cmp-annee-b");
-    if (!wrap || !canvasB || !slider || !selA || !selB) return;
-    compareEls = { wrap: wrap, canvasB: canvasB, slider: slider, selA: selA, selB: selB };
-    wrap.hidden = false;
-    compareOn = true;
-
-    // Carte B (couche de droite), même fond que la principale.
-    compareMap = new GL.Map({
-      container: "carte-compare", style: USE_MAPBOX ? MAPBOX_STYLES[currentFond] : STYLE,
-      center: map.getCenter(), zoom: map.getZoom(), attributionControl: false, interactive: false
-    });
-    compareMap.on("load", function () {
-      setCompareLayer(compareMap, crueLayerName(selB.value) || CRUES[1].layer);
-    });
-
-    // Couche A sur la carte principale.
-    setCompareLayer(map, crueLayerName(selA.value) || CRUES[0].layer);
-
-    // Synchronisation : la principale pilote, B suit.
-    var syncing = false;
-    function relay() { if (syncing) return; syncing = true; syncFrom(map, compareMap); syncing = false; }
-    map.on("move", relay);
-    compareEls._relay = relay;
-
-    // Slider drag.
-    positionSlider(wrap.clientWidth / 2);
-    function onDrag(clientX) {
-      var rect = wrap.getBoundingClientRect();
-      positionSlider(clientX - rect.left);
-    }
-    var dragging = false;
-    slider.addEventListener("mousedown", function () { dragging = true; document.body.style.userSelect = "none"; });
-    window.addEventListener("mousemove", function (e) { if (dragging) onDrag(e.clientX); });
-    window.addEventListener("mouseup", function () { dragging = false; document.body.style.userSelect = ""; });
-    slider.addEventListener("touchstart", function () { dragging = true; }, { passive: true });
-    window.addEventListener("touchmove", function (e) { if (dragging && e.touches[0]) onDrag(e.touches[0].clientX); }, { passive: true });
-    window.addEventListener("touchend", function () { dragging = false; });
-
-    // Changement d'année.
-    selA.addEventListener("change", function () { setCompareLayer(map, crueLayerName(selA.value)); });
-    selB.addEventListener("change", function () { if (compareMap) setCompareLayer(compareMap, crueLayerName(selB.value)); });
-  }
-
-  function fermerComparateur() {
-    if (!compareOn) return;
-    compareOn = false;
-    if (compareEls && compareEls._relay) { map.off("move", compareEls._relay); }
-    if (map.getLayer("compare-crue")) { map.removeLayer("compare-crue"); }
-    if (map.getSource("compare-crue")) { map.removeSource("compare-crue"); }
-    if (compareMap) { compareMap.remove(); compareMap = null; }
-    if (compareEls) { compareEls.wrap.hidden = true; }
-  }
-
-  (function initComparateurBtn() {
-    var btn = document.getElementById("carte-compare-btn");
-    var closeBtn = document.getElementById("carte-compare-close");
-    if (btn) {
-      btn.addEventListener("click", function () { compareOn ? fermerComparateur() : ouvrirComparateur(); });
-    }
-    if (closeBtn) { closeBtn.addEventListener("click", fermerComparateur); }
-    // Peupler les menus d'années à partir de CRUES.
-    ["cmp-annee-a", "cmp-annee-b"].forEach(function (selId, idx) {
-      var sel = document.getElementById(selId);
-      if (!sel) return;
-      CRUES.forEach(function (c) {
-        var o = document.createElement("option");
-        o.value = c.id; o.textContent = c.label.replace("Inondations ", "");
-        sel.appendChild(o);
-      });
-      sel.value = CRUES[Math.min(idx, CRUES.length - 1)].id; // A=1re, B=2e année par défaut
-    });
-  })();
-
-  /* ======================================================================
      PARTAGE (copier le lien + réseaux sociaux)
      ====================================================================== */
   (function initPartage() {
@@ -1007,7 +866,7 @@
     });
     document.addEventListener("fullscreenchange", function () {
       btn.classList.toggle("is-active", !!isFs());
-      setTimeout(function () { map.resize(); if (compareMap) compareMap.resize(); }, 120);
+      setTimeout(function () { map.resize(); }, 120);
     });
   })();
 })();

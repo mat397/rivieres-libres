@@ -1005,21 +1005,27 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 html:has(body.is-embed), body.is-embed { height: 100%; overflow: hidden; }
 .embed-map { position: fixed; inset: 0; }
 .embed-map__canvas { position: absolute; inset: 0; width: 100%; height: 100%; background: #dfe8ec; }
-/* Échelle Mapbox : BAS-CENTRE. On la déplace au centre bas de la carte. */
+/* Contrôles Mapbox bas-gauche : logo + échelle + attribution, discrets. */
 .embed-map .mapboxgl-ctrl-bottom-left,
-.embed-map .maplibregl-ctrl-bottom-left {
-  left: 50%; transform: translateX(-50%); bottom: 8px;
-}
+.embed-map .maplibregl-ctrl-bottom-left { left: 8px; bottom: 8px; }
 .embed-map .mapboxgl-ctrl-scale,
 .embed-map .maplibregl-ctrl-scale {
-  background: rgba(255,255,255,.85); border-color: var(--color-slate);
-  border-top: none; color: var(--color-ink); font-size: 11px;
+  background: rgba(255,255,255,.8); border-color: var(--color-slate);
+  border-top: none; color: var(--color-ink); font-size: 11px; margin-bottom: 2px;
 }
+/* On MASQUE le bouton « i » texte de l'attribution (doublon) mais on GARDE le
+   logo Mapbox (obligatoire). L'attribution complète est dans le popover Sources. */
+.embed-map .mapboxgl-ctrl-attrib-button,
+.embed-map .maplibregl-ctrl-attrib-button { display: none; }
+.embed-map .mapboxgl-ctrl-attrib.mapboxgl-compact,
+.embed-map .maplibregl-ctrl-attrib.maplibregl-compact { min-height: 0; background: none; box-shadow: none; }
+.embed-map .mapboxgl-ctrl-attrib-inner { display: none; } /* texte masqué, logo conservé */
+.embed-map .mapboxgl-ctrl-logo { opacity: .7; }
 
-/* HAUT-GAUCHE : bloc recherche SANS encadré (éléments flottants libres). */
+/* HAUT-GAUCHE : bloc recherche compact, SANS encadré (éléments flottants). */
 .embed-map__search {
   position: absolute; top: 12px; left: 12px; z-index: 8;
-  width: min(340px, calc(100% - 24px));
+  width: min(300px, calc(100% - 24px));
   background: none; box-shadow: none; padding: 0;
   max-height: calc(100% - 24px);
 }
@@ -1091,37 +1097,6 @@ html:has(body.is-embed), body.is-embed { height: 100%; overflow: hidden; }
 }
 .embed-map__layers-body[hidden] { display: none; }
 .embed-map__layers .carte-couche { font-size: .9rem; }
-
-/* Bouton « Comparer deux années » */
-.carte-compare-btn {
-  margin-top: var(--space-3); width: 100%; font: inherit; font-size: .88rem; font-weight: 600;
-  color: #fff; background: var(--color-river); border: 0; border-radius: var(--radius-pill);
-  padding: .5rem .8rem; cursor: pointer; transition: background-color var(--dur-fast) ease;
-}
-.carte-compare-btn:hover { background: var(--color-deep); }
-
-/* ===== Comparateur avant/après (2 cartes + slider) ===== */
-.carte-compare { position: absolute; inset: 0; z-index: 10; }
-.carte-compare[hidden] { display: none; }
-.carte-compare__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.carte-compare__slider {
-  position: absolute; top: 0; bottom: 0; left: 50%; width: 4px; margin-left: -2px;
-  background: #fff; box-shadow: 0 0 0 1px rgba(10,44,63,.25); cursor: ew-resize; z-index: 12;
-}
-.carte-compare__handle {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  width: 40px; height: 40px; border-radius: 50%; background: #fff;
-  box-shadow: 0 2px 10px rgba(10,44,63,.35);
-  background-image: linear-gradient(90deg, transparent 44%, var(--color-deep) 44%, var(--color-deep) 46%, transparent 46%, transparent 54%, var(--color-deep) 54%, var(--color-deep) 56%, transparent 56%);
-}
-.carte-compare__labels {
-  position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 13;
-  display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; justify-content: center;
-  background: rgba(255,255,255,.96); border-radius: var(--radius-pill); padding: .4rem .8rem;
-  box-shadow: var(--shadow-lg); font-size: .85rem; color: var(--color-deep); font-weight: 600;
-}
-.carte-compare__labels select { font: inherit; padding: .2rem .4rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border); }
-.carte-compare__close { font: inherit; font-weight: 600; font-size: .85rem; color: #fff; background: var(--color-deep); border: 0; border-radius: var(--radius-pill); padding: .3rem .8rem; cursor: pointer; }
 
 /* ===== BAS-DROITE : crédit Alto + bouton Sources (popover) ===== */
 .embed-map__br {

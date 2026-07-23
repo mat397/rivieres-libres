@@ -64,19 +64,6 @@
         <path class="carte-wipe__path" fill="url(#wipeGrad)" d="M 0 0 V 100 Q 50 100 100 100 V 0 z" />
       </svg>
 
-      <!-- Comparateur avant/après : 2e carte clippée + slider. Caché par défaut. -->
-      <div id="carte-compare-wrap" class="carte-compare" hidden>
-        <div id="carte-compare" class="carte-compare__canvas"></div>
-        <div id="carte-compare-slider" class="carte-compare__slider" role="separator" aria-label="Glisser pour comparer">
-          <span class="carte-compare__handle" aria-hidden="true"></span>
-        </div>
-        <div class="carte-compare__labels">
-          <label>Gauche <select id="cmp-annee-a" aria-label="Année de gauche"></select></label>
-          <label>Droite <select id="cmp-annee-b" aria-label="Année de droite"></select></label>
-          <button type="button" id="carte-compare-close" class="carte-compare__close" aria-label="Fermer le comparateur">Fermer</button>
-        </div>
-      </div>
-
       <!-- HAUT-DROITE : barre d'actions (aide, partage, notation, plein écran, retour) -->
       <div class="embed-map__actions">
         <button id="carte-help" class="map-act" type="button" aria-label="Revoir le message d'accueil" title="Aide">
@@ -166,7 +153,6 @@
         </button>
         <div id="carte-couches-body" class="embed-map__layers-body">
           <div id="carte-couches" class="carte-couches"></div>
-          <button type="button" id="carte-compare-btn" class="carte-compare-btn">Comparer deux années</button>
         </div>
       </div>
 
@@ -180,19 +166,26 @@
           <img src="/assets/img/logo-alto-couleur.png" alt="Alto Géomatique" width="1280" height="714" loading="lazy">
         </a>
         <div class="map-act-wrap map-act-wrap--src">
-          <button id="carte-src-btn" class="map-act map-act--src" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Sources et mentions" title="Sources">
-            <span class="map-act__i">i</span>
+          <button id="carte-src-btn" class="map-act map-act--src" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Sources et mentions" title="Sources et mentions">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v5h5M14 3l5 5v11a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zM8 12h8M8 16h8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
           <div id="carte-src-pop" class="map-menu map-menu--src" hidden>
             <p class="map-src__legal"><strong>Information à valeur indicative, sans portée légale.</strong> Pour le statut réel d'un terrain, consultez votre municipalité.</p>
-            <p class="map-src__list">Sources (CC-BY 4.0) :</p>
+            <p class="map-src__list">Données (CC-BY 4.0) :</p>
             <ul class="map-src__ul">
               <li>Zones inondables cartographiées — MRNF</li>
               <li>Milieux humides potentiels — MELCCFP</li>
-              <li>Inondations observées (2017-2020) — MSP, Centre des opérations gouvernementales</li>
               <li>Bâtiments — Référentiel du Québec (MRNF)</li>
             </ul>
-            <p class="map-src__portail"><a href="/carte-donnees/carte.html" target="_blank" rel="noopener">Voir le portail Rivières Libres</a></p>
+            <p class="map-src__list">Fond de carte :</p>
+            <ul class="map-src__ul">
+              <li>&copy; <a href="https://www.mapbox.com/about/maps/" target="_blank" rel="noopener">Mapbox</a></li>
+              <li>&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></li>
+            </ul>
+            <p class="map-src__portail">
+              <a href="/carte-donnees/carte.html" target="_blank" rel="noopener">Voir le portail Rivières Libres</a> ·
+              Carte : <a href="https://altogeo.ca" target="_blank" rel="noopener">Alto Géomatique</a>
+            </p>
           </div>
         </div>
       </div>
