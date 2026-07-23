@@ -1137,10 +1137,31 @@ html:has(body.is-embed), body.is-embed { height: 100%; overflow: hidden; }
 .embed-map__layers-body[hidden] { display: none; }
 .embed-map__layers .carte-couche { font-size: .9rem; }
 
-/* ===== BAS-DROITE : crédit Alto + bouton Sources (popover) ===== */
+/* ===== BAS-DROITE : bouton café + crédit Alto + Sources (popover) ===== */
 .embed-map__br {
   position: absolute; right: 12px; bottom: 40px; z-index: 6;
   display: flex; align-items: flex-end; gap: .5rem;
+}
+/* Bouton « Payez-moi un café » (Ko-fi) — gros, couleur qui pop, effet vivant. */
+.carte-coffee {
+  display: inline-flex; align-items: center; gap: .45rem;
+  background: #FF5E5B; color: #fff; text-decoration: none;
+  font-weight: 700; font-size: .9rem; padding: .6rem 1.05rem;
+  border-radius: var(--radius-pill); box-shadow: 0 4px 16px rgba(255, 94, 91, .45);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) ease, background-color var(--dur-fast) ease;
+}
+.carte-coffee:hover { background: #FF423F; transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 20px rgba(255, 94, 91, .55); }
+.carte-coffee__emoji { font-size: 1.15rem; line-height: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .carte-coffee { animation: coffee-pulse 2.6s var(--ease) infinite; }
+}
+@keyframes coffee-pulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(255, 94, 91, .45); }
+  50% { box-shadow: 0 4px 22px rgba(255, 94, 91, .7); }
+}
+@media (max-width: 640px) {
+  /* Sur mobile, le bouton café se réduit au texte court. */
+  .carte-coffee { font-size: .82rem; padding: .5rem .8rem; }
 }
 .embed-map__badge {
   display: inline-flex; align-items: center; gap: .55rem;

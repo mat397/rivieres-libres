@@ -24,6 +24,7 @@
   var CFG = window.RL_CONFIG || {};
   var BATIMENTS_PMTILES_URL = CFG.batimentsPmtiles || "";
   var GRILLE_PMTILES_URL = CFG.grillePmtiles || "";
+  var BDZI_PMTILES_URL = CFG.bdziPmtiles || "";
   var FOND_PMTILES_URL = CFG.fondPmtiles || "";
   var MAPBOX_TOKEN = CFG.mapboxToken || "";
 
@@ -146,32 +147,20 @@
   var MH_WMS = "https://geo.environnement.gouv.qc.ca/donnees/services/Biodiversite/MH_potentiels/MapServer/WMSServer";
   var SDA_WMS = "https://servicescarto.mrnf.gouv.qc.ca/pes/services/Territoire/SDA_WMS/MapServer/WMSServer";
   /* BDZI — Base de données des zones à risque d'inondation (MELCCFP / CEHQ).
-     Cartographie réglementaire VECTORIELLE, symbologie officielle (grand courant,
-     faible courant, crue 0-100 ans). WMS CC-BY, EPSG:3857, PNG transparent
-     (vérifié). Donnée PRÉLIMINAIRE, sujette à révision — signalé dans la note. */
-  var BDZI_WMS = "https://www.servicesgeo.enviroweb.gouv.qc.ca/donnees/services/Public/Themes_publics/MapServer/WMSServer";
-  var BDZI_LAYER = "Polygones_de_zones_inondables42752";
+     Servie en PMTiles VECTEUR (self-host R2), donc INTERROGEABLE (croisement
+     bâtiment × zone fiable) et colorée par classe officielle (grand courant,
+     faible courant, crue 0-100 ans). Voir addOverlays(). Donnée PRÉLIMINAIRE. */
 
   var LAYERS = [
-    {
-      id: "bdzi",
-      label: "Zones inondables (BDZI)",
-      tiles: wms(BDZI_WMS, BDZI_LAYER),
-      legend: wmsLegend(BDZI_WMS, BDZI_LAYER),
-      opacity: 0.7,
-      on: false,
-      swatch: "#C0392B",
-      note: "Cartographie réglementaire par force du courant et récurrence (2, 20, 100 ans). " +
-            "Donnée préliminaire, sujette à révision. Source : MELCCFP / CEHQ."
-    },
     {
       id: "mh",
       label: "Milieux humides potentiels",
       tiles: wms(MH_WMS, "Milieux_humides_potentiels11904"),
-      legend: wmsLegend(MH_WMS, "Milieux_humides_potentiels11904"),
       opacity: 0.6,
       on: false,
-      swatch: "#5E8C3F"
+      swatch: "#5E8C3F",
+      note: "Marais, marécages, tourbières et étangs potentiels (plusieurs types). Source : MELCCFP.",
+      simpleSwatch: "#5E8C3F"
     },
     {
       id: "muni",
@@ -217,6 +206,7 @@
 
   var hasBatiments = false;
   var hasGrille = false;
+  var hasBdzi = false;
   var overlaysReady = false;
 
   /* Filet de sécurité : forcer un recalcul de taille (conteneur parfois
@@ -247,6 +237,38 @@
         });
       }
       hasGrille = true;
+    }
+
+    /* 1b) BDZI (PMTiles vecteur, self-host R2) — cartographie réglementaire
+       colorée par classe officielle (Description). Désactivée par défaut.
+       Interrogeable (croisement bâtiment × zone). */
+    if (BDZI_PMTILES_URL && typeof pmtiles !== "undefined") {
+      if (!map.getSource("bdzi")) {
+        map.addSource("bdzi", { type: "vector", url: pmUrl(BDZI_PMTILES_URL) });
+      }
+      /* Couleurs officielles MELCCFP par classe (match sur le champ Description,
+         y compris les variantes « - Pont »). */
+      var BDZI_COLOR = ["match", ["get", "Description"],
+        ["Zone de grand courant", "Zone de grand courant - Pont"], "#3E7CB1",
+        ["Zone de faible courant", "Zone de faible courant - Pont"], "#8FB8DE",
+        ["Zone de crue 0-100 ans", "Zone de crue 0-100 ans - Pont"], "#D64545",
+        "#6B7B8C" /* Autre zone inondable + défaut */
+      ];
+      if (!map.getLayer("bdzi-fill")) {
+        map.addLayer({
+          id: "bdzi-fill", type: "fill", source: "bdzi", "source-layer": "bdzi",
+          paint: { "fill-color": BDZI_COLOR, "fill-opacity": 0.55 },
+          layout: { visibility: "none" }
+        });
+      }
+      if (!map.getLayer("bdzi-line")) {
+        map.addLayer({
+          id: "bdzi-line", type: "line", source: "bdzi", "source-layer": "bdzi",
+          paint: { "line-color": BDZI_COLOR, "line-width": 0.8, "line-opacity": 0.9 },
+          layout: { visibility: "none" }
+        });
+      }
+      hasBdzi = true;
     }
 
     /* 2) Couches raster secondaires (milieux humides, municipalités) */
@@ -315,23 +337,30 @@
           ? Math.round(parseFloat(aire)).toLocaleString("fr-CA") + " m&sup2;"
           : "Référentiel du Québec (MRNF)";
 
-        // Croisement au point avec la GRILLE vecteur (zones inondables + mobilité).
-        // NB : la BDZI (couche réglementaire) est servie en raster et n'est pas
-        // interrogeable au point ; le badge ne reflète donc QUE la grille. On le
-        // dit explicitement pour ne pas induire en erreur si la BDZI diffère.
+        // Croisement au point avec les couches VECTEUR interrogeables. La BDZI est
+        // désormais vecteur : si elle est activée, on lit sa CLASSE au point
+        // (grand courant / crue 0-100 ans…). Sinon on se rabat sur la grille.
+        var pt2 = map.project([e.lngLat.lng, e.lngLat.lat]);
+        var bdziFeat = (hasBdzi && map.getLayer("bdzi-fill") && map.getLayoutProperty("bdzi-fill", "visibility") === "visible")
+          ? map.queryRenderedFeatures(pt2, { layers: ["bdzi-fill"] }) : [];
         var enGrille = pointDansGrille(e.lngLat.lng, e.lngLat.lat);
-        var badge = enGrille
-          ? '<span class="carte-popup__zone carte-popup__zone--in">Dans la grille (zone inondable ou de mobilité)</span>'
-          : '<span class="carte-popup__zone carte-popup__zone--out">Hors grille cartographiée</span>';
+
+        var badge, note;
+        if (bdziFeat && bdziFeat.length) {
+          var classe = (bdziFeat[0].properties || {}).Description || "Zone inondable";
+          badge = '<span class="carte-popup__zone carte-popup__zone--in">BDZI : ' + classe + "</span>";
+          note = "Ce bâtiment touche une zone inondable réglementaire (BDZI). « Cartographié » ne veut pas dire « sera inondé » : vérifiez auprès de votre municipalité.";
+        } else if (enGrille) {
+          badge = '<span class="carte-popup__zone carte-popup__zone--in">Dans la grille (zone inondable ou de mobilité)</span>';
+          note = "Activez la couche « Zones inondables réglementaires (BDZI) » pour la classe précise. Vérifiez auprès de votre municipalité.";
+        } else {
+          badge = '<span class="carte-popup__zone carte-popup__zone--out">Hors zone cartographiée</span>';
+          note = "L'absence de cartographie ne garantit pas l'absence de risque. Activez la couche BDZI pour plus de détail.";
+        }
 
         var html = '<strong>Bâtiment</strong>' + badge +
           '<span class="carte-popup__sup">Superficie au sol : ' + superf + "</span>" +
-          '<span class="carte-popup__note">' +
-          "Activez la couche « Zones inondables (BDZI) » pour la cartographie réglementaire détaillée. " +
-          (enGrille
-            ? "« Cartographié » ne veut pas dire « sera inondé » : vérifiez auprès de votre municipalité."
-            : "L'absence dans la grille ne garantit pas l'absence de risque.") +
-          "</span>";
+          '<span class="carte-popup__note">' + note + "</span>";
 
         new GL.Popup({ closeButton: true, maxWidth: "240px" })
           .setLngLat(e.lngLat)
@@ -422,14 +451,23 @@
     var GRILLE_LEGEND =
       '<span class="lg-item"><i style="background:#D64545"></i>Secteur cartographié</span>';
 
+    /* Légende BDZI dessinée — mêmes couleurs que le rendu de la couche vecteur
+       (classes officielles MELCCFP). */
+    var BDZI_LEGEND =
+      '<span class="lg-item"><i style="background:#3E7CB1"></i>Zone de grand courant</span>' +
+      '<span class="lg-item"><i style="background:#8FB8DE"></i>Zone de faible courant</span>' +
+      '<span class="lg-item"><i style="background:#D64545"></i>Zone de crue 0-100 ans</span>' +
+      '<span class="lg-item"><i style="background:#6B7B8C"></i>Autre zone inondable</span>';
+
     var toggles = [];
     if (hasGrille) toggles.push({ label: "Zones inondables et de mobilité des cours d'eau", color: "#D64545", ids: ["grille-fill", "grille-line"], on: true, note: "Secteurs où une cartographie existe." });
+    if (hasBdzi) toggles.push({ label: "Zones inondables réglementaires (BDZI)", color: "#3E7CB1", ids: ["bdzi-fill", "bdzi-line"], on: false, bdziLegend: true, note: "Cartographie réglementaire par force du courant et récurrence (crue 0-100 ans). Donnée préliminaire, sujette à révision. Source : MELCCFP / CEHQ." });
     LAYERS.forEach(function (l) {
       /* Les couches d'inondations par année (groupe « crues ») sont pilotées par
          le slider temporel en bas, PAS par une case ici : on les exclut du panneau
          pour l'alléger. */
       if (l.groupe === "crues") { return; }
-      toggles.push({ label: l.label, color: l.swatch, ids: [l.id], on: l.on, legendImg: l.legend || "", note: l.note || "", groupe: l.groupe || "" });
+      toggles.push({ label: l.label, color: l.swatch, ids: [l.id], on: l.on, legendImg: l.legend || "", note: l.note || "", groupe: l.groupe || "", simpleSwatch: l.simpleSwatch || "" });
     });
     if (hasBatiments) toggles.push({ label: "Bâtiments", color: "#0E3A52", ids: ["batiments-fill", "batiments-line"], on: true, note: "Visibles à partir d'un zoom rapproché." });
 
@@ -452,6 +490,8 @@
       leg.hidden = !t.on;
       if (t.note) { leg.innerHTML = '<p class="carte-legende__note">' + t.note + "</p>"; }
       if (t.ids.indexOf("grille-fill") !== -1) { leg.innerHTML += '<div class="lg-items">' + GRILLE_LEGEND + "</div>"; }
+      if (t.bdziLegend) { leg.innerHTML += '<div class="lg-items">' + BDZI_LEGEND + "</div>"; }
+      if (t.simpleSwatch) { leg.innerHTML += '<div class="lg-items"><span class="lg-item"><i style="background:' + t.simpleSwatch + '"></i>' + t.label + "</span></div>"; }
       if (t.legendImg) {
         var img = document.createElement("img");
         img.className = "carte-legende__img";

@@ -24,6 +24,7 @@ export default {
       mapboxToken: "${globalThis.MAPBOX_TOKEN || ""}",
       batimentsPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/batiments-quebec-sud.pmtiles",
       grillePmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/grille-zi.pmtiles",
+      bdziPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/bdzi.pmtiles",
       fondPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/fond-quebec.pmtiles"
     };
   </script>
@@ -50,7 +51,7 @@ export default {
           <p class="carte-welcome__legal">Information à valeur indicative, sans portée légale. Pour le statut réel d'un terrain, consultez votre municipalité.</p>
           <a class="carte-welcome__alto" href="https://altogeo.ca" rel="noopener" target="_blank">
             <img src="/assets/img/logo-alto-couleur.png" alt="Alto Géomatique" width="1280" height="714">
-            <span>Une initiative offerte gratuitement et <strong>financée à 100&nbsp;% par Alto Géomatique</strong>.</span>
+            <span>Une carte gratuite, <strong>réalisée bénévolement par Alto Géomatique</strong>. Un café pour encourager le projet&nbsp;? &#9749;</span>
           </a>
           <button type="button" class="btn btn--primary carte-welcome__cta" data-cw-close>Merci Alto&nbsp;! Ouvrir la carte</button>
         </div>
@@ -167,8 +168,12 @@ export default {
 
       <!-- BAS-DROITE : crédit Alto + bouton Sources (popover) -->
       <div class="embed-map__br">
-        <a class="embed-map__badge" href="https://altogeo.ca" rel="noopener" target="_blank" aria-label="Une initiative 100% financée par Alto Géomatique">
-          <span class="embed-map__badge-txt">Une initiative 100&nbsp;% financée par</span>
+        <a class="carte-coffee" href="https://ko-fi.com/mathieusimardalto" rel="noopener" target="_blank" aria-label="Soutenir le projet — payez-moi un café">
+          <span class="carte-coffee__emoji" aria-hidden="true">&#9749;</span>
+          Payez-moi un café
+        </a>
+        <a class="embed-map__badge" href="https://altogeo.ca" rel="noopener" target="_blank" aria-label="Carte réalisée bénévolement par Alto Géomatique">
+          <span class="embed-map__badge-txt">Réalisée bénévolement par</span>
           <img src="/assets/img/logo-alto-couleur.png" alt="Alto Géomatique" width="1280" height="714" loading="lazy">
         </a>
         <div class="map-act-wrap map-act-wrap--src">
