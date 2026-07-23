@@ -145,8 +145,25 @@
      Voir plus bas (map.on load). Ici : les couches raster secondaires. */
   var MH_WMS = "https://geo.environnement.gouv.qc.ca/donnees/services/Biodiversite/MH_potentiels/MapServer/WMSServer";
   var SDA_WMS = "https://servicescarto.mrnf.gouv.qc.ca/pes/services/Territoire/SDA_WMS/MapServer/WMSServer";
+  /* BDZI — Base de données des zones à risque d'inondation (MELCCFP / CEHQ).
+     Cartographie réglementaire VECTORIELLE, symbologie officielle (grand courant,
+     faible courant, crue 0-100 ans). WMS CC-BY, EPSG:3857, PNG transparent
+     (vérifié). Donnée PRÉLIMINAIRE, sujette à révision — signalé dans la note. */
+  var BDZI_WMS = "https://www.servicesgeo.enviroweb.gouv.qc.ca/donnees/services/Public/Themes_publics/MapServer/WMSServer";
+  var BDZI_LAYER = "Polygones_de_zones_inondables42752";
 
   var LAYERS = [
+    {
+      id: "bdzi",
+      label: "Zones inondables (BDZI)",
+      tiles: wms(BDZI_WMS, BDZI_LAYER),
+      legend: wmsLegend(BDZI_WMS, BDZI_LAYER),
+      opacity: 0.7,
+      on: false,
+      swatch: "#C0392B",
+      note: "Cartographie réglementaire par force du courant et récurrence (2, 20, 100 ans). " +
+            "Donnée préliminaire, sujette à révision. Source : MELCCFP / CEHQ."
+    },
     {
       id: "mh",
       label: "Milieux humides potentiels",
@@ -298,18 +315,21 @@
           ? Math.round(parseFloat(aire)).toLocaleString("fr-CA") + " m&sup2;"
           : "Référentiel du Québec (MRNF)";
 
-        // Le bâtiment est-il en zone ? On teste la grille au point cliqué.
+        // Le bâtiment est-il en zone ? On teste les couches VECTEUR interrogeables
+        // au point : la grille (zones inondables + mobilité) et la BDZI si elle est
+        // servie en vecteur. La BDZI WMS raster n'est pas interrogeable ; on invite
+        // alors à activer la couche pour la lecture réglementaire détaillée.
         var enZone = pointDansGrille(e.lngLat.lng, e.lngLat.lat);
         var badge = enZone
-          ? '<span class="carte-popup__zone carte-popup__zone--in">En zone inondable cartographiée</span>'
+          ? '<span class="carte-popup__zone carte-popup__zone--in">En zone inondable ou de mobilité</span>'
           : '<span class="carte-popup__zone carte-popup__zone--out">Hors zone cartographiée</span>';
 
         var html = '<strong>Bâtiment</strong>' + badge +
           '<span class="carte-popup__sup">Superficie au sol : ' + superf + "</span>" +
           '<span class="carte-popup__note">' +
           (enZone
-            ? "« Cartographié » ne veut pas dire « sera inondé ». Vérifiez auprès de votre municipalité."
-            : "L'absence de cartographie ne garantit pas l'absence de risque.") +
+            ? "« Cartographié » ne veut pas dire « sera inondé ». Activez la couche « Zones inondables (BDZI) » pour la cartographie réglementaire, et vérifiez auprès de votre municipalité."
+            : "L'absence de cartographie ne garantit pas l'absence de risque. Activez la couche « Zones inondables (BDZI) » pour plus de détail.") +
           "</span>";
 
         new GL.Popup({ closeButton: true, maxWidth: "240px" })
@@ -498,20 +518,20 @@
     if (dansZone) {
       cls = "carte-verdict--in";
       if (bati) {
-        titre = "Un bâtiment de ce point se trouve dans un secteur cartographié en zone inondable.";
+        titre = "Un bâtiment de ce point est dans un secteur cartographié : zone inondable ou de mobilité d'un cours d'eau.";
         corps = "Un bâtiment est présent ici" +
           (bati.aire != null ? " (environ " + Math.round(parseFloat(bati.aire)).toLocaleString("fr-CA") + " m²)" : "") +
-          ", et ce secteur fait l'objet d'une cartographie des zones inondables. " +
+          ", et ce secteur fait l'objet d'une cartographie (zone inondable ou zone de mobilité d'un cours d'eau). " +
           "Cela ne veut pas dire que le bâtiment sera inondé, mais que des règles peuvent s'y appliquer.";
       } else {
-        titre = "Ce point se trouve dans un secteur cartographié en zone inondable.";
+        titre = "Ce point est dans un secteur cartographié : zone inondable ou de mobilité d'un cours d'eau.";
         corps = "Une cartographie existe pour ce secteur. Cela ne signifie pas que le terrain sera inondé, " +
           "mais que des règles particulières peuvent s'appliquer.";
       }
       quoiFaire = "Vérifiez le statut réel et la réglementation applicable auprès de votre municipalité avant tout projet (construction, rénovation, achat).";
     } else {
       cls = "carte-verdict--out";
-      titre = "Ce point ne semble pas dans un secteur cartographié en zone inondable.";
+      titre = "Ce point ne semble pas dans un secteur cartographié (zone inondable ou de mobilité d'un cours d'eau).";
       corps = "L'absence de cartographie ne garantit pas l'absence de risque : de nouvelles cartes sont publiées " +
         "progressivement dans le cadre réglementaire de 2026." +
         (zoomProche ? "" : " Zoomez davantage pour une lecture plus précise.");
@@ -520,12 +540,15 @@
 
     verdictEl.className = "carte-verdict " + cls;
     verdictEl.innerHTML =
+      '<button type="button" class="carte-verdict__close" aria-label="Fermer">&times;</button>' +
       '<strong>' + titre + "</strong>" +
       "<p>" + corps + "</p>" +
       '<p class="carte-verdict__do"><span>Que faire ?</span> ' + quoiFaire + "</p>" +
       '<p class="carte-verdict__src">Source : grille de présence des zones inondables, MRNF. ' +
       "Valeur indicative, aucune portée légale.</p>";
     verdictEl.hidden = false;
+    var vClose = verdictEl.querySelector(".carte-verdict__close");
+    if (vClose) { vClose.addEventListener("click", function () { verdictEl.hidden = true; }); }
   }
 
   function localiser(lng, lat) {
@@ -588,18 +611,41 @@
       activeIdx = idx;
     }
 
+    /* Autocomplétion. Avec un token Mapbox : géocodeur Mapbox (autocomplete natif,
+       excellent au Québec, suggère dès quelques lettres). Sinon : repli Nominatim. */
     function fetchSug(q) {
       var reqId = ++lastReq;
-      var url = "https://nominatim.openstreetmap.org/search?format=json&addressdetails=0&limit=6&countrycodes=ca&q=" +
-        encodeURIComponent(q + ", Québec");
-      fetch(url, { headers: { "Accept-Language": "fr" } })
-        .then(function (r) { return r.json(); })
-        .then(function (results) {
-          if (reqId !== lastReq) return; // réponse obsolète : une frappe plus récente a eu lieu
-          var items = (results || []).map(function (r) {
+      var url, parse;
+
+      if (USE_MAPBOX && MAPBOX_TOKEN) {
+        // Proximité = centre de la carte (résultats proches de la vue d'abord).
+        var c = map.getCenter();
+        url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" +
+          encodeURIComponent(q) + ".json?access_token=" + MAPBOX_TOKEN +
+          "&autocomplete=true&limit=6&language=fr&country=ca" +
+          "&proximity=" + c.lng + "," + c.lat +
+          "&bbox=-79.8,44.9,-57.0,62.6" + // Québec (biais fort)
+          "&types=address,place,locality,neighborhood,poi";
+        parse = function (data) {
+          return (data.features || []).map(function (f) {
+            return { display: f.place_name, lng: f.center[0], lat: f.center[1] };
+          });
+        };
+      } else {
+        url = "https://nominatim.openstreetmap.org/search?format=json&addressdetails=0&limit=6&countrycodes=ca&q=" +
+          encodeURIComponent(q + ", Québec");
+        parse = function (data) {
+          return (data || []).map(function (r) {
             return { display: r.display_name, lng: parseFloat(r.lon), lat: parseFloat(r.lat) };
           });
-          renderSug(items);
+        };
+      }
+
+      fetch(url, { headers: { "Accept-Language": "fr" } })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (reqId !== lastReq) return; // réponse obsolète : une frappe plus récente a eu lieu
+          renderSug(parse(data));
           if (msg) { msg.textContent = ""; }
         })
         .catch(function () {
@@ -612,8 +658,8 @@
     input.addEventListener("input", function () {
       var q = (input.value || "").trim();
       if (debounceT) { clearTimeout(debounceT); }
-      if (q.length < 3) { closeSug(); return; }
-      debounceT = setTimeout(function () { fetchSug(q); }, 280);
+      if (q.length < 2) { closeSug(); return; }
+      debounceT = setTimeout(function () { fetchSug(q); }, 200);
     });
 
     /* Navigation clavier dans les suggestions. */
