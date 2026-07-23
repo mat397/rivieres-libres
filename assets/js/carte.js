@@ -286,25 +286,33 @@
       map.on("mouseenter", "batiments-fill", function () { map.getCanvas().style.cursor = "pointer"; });
       map.on("mouseleave", "batiments-fill", function () { map.getCanvas().style.cursor = ""; });
 
-      /* Clic sur un bâtiment : popup avec sa superficie si l'attribut existe
-         dans le référentiel (superficie/aire/shape_area). Sinon, un message
-         neutre — on n'invente aucune donnée. */
+      /* Clic sur un bâtiment : popup avec superficie + CROISEMENT zone inondable
+         (le bâtiment tombe-t-il dans un secteur cartographié ?). Formulation
+         prudente : « cartographié » ≠ « sera inondé ». */
       map.on("click", "batiments-fill", function (e) {
         if (!e.features || !e.features.length) return;
         var p = e.features[0].properties || {};
-        /* Le référentiel PMTiles expose l'attribut « Superficie » (m², S majusc.).
-           On garde des variantes en secours, mais Superficie est le bon nom. */
         var aire = p.Superficie != null ? p.Superficie
                  : (p.superficie || p.SUPERFICIE || p.aire || p.shape_area || null);
-        var html;
-        if (aire != null && !isNaN(parseFloat(aire))) {
-          var m2 = Math.round(parseFloat(aire));
-          html = '<strong>Bâtiment</strong><br>Superficie au sol : ' +
-                 m2.toLocaleString("fr-CA") + " m&sup2;";
-        } else {
-          html = '<strong>Bâtiment</strong><br>Référentiel du Québec (MRNF).';
-        }
-        new GL.Popup({ closeButton: true, maxWidth: "220px" })
+        var superf = (aire != null && !isNaN(parseFloat(aire)))
+          ? Math.round(parseFloat(aire)).toLocaleString("fr-CA") + " m&sup2;"
+          : "Référentiel du Québec (MRNF)";
+
+        // Le bâtiment est-il en zone ? On teste la grille au point cliqué.
+        var enZone = pointDansGrille(e.lngLat.lng, e.lngLat.lat);
+        var badge = enZone
+          ? '<span class="carte-popup__zone carte-popup__zone--in">En zone inondable cartographiée</span>'
+          : '<span class="carte-popup__zone carte-popup__zone--out">Hors zone cartographiée</span>';
+
+        var html = '<strong>Bâtiment</strong>' + badge +
+          '<span class="carte-popup__sup">Superficie au sol : ' + superf + "</span>" +
+          '<span class="carte-popup__note">' +
+          (enZone
+            ? "« Cartographié » ne veut pas dire « sera inondé ». Vérifiez auprès de votre municipalité."
+            : "L'absence de cartographie ne garantit pas l'absence de risque.") +
+          "</span>";
+
+        new GL.Popup({ closeButton: true, maxWidth: "240px" })
           .setLngLat(e.lngLat)
           .setHTML('<div class="carte-popup">' + html + "</div>")
           .addTo(map);
@@ -464,23 +472,59 @@
     return feats && feats.length > 0;
   }
 
-  function afficheVerdict(dansZone) {
-    if (!verdictEl) return;
-    if (dansZone) {
-      verdictEl.className = "carte-verdict carte-verdict--in";
-      verdictEl.innerHTML =
-        '<strong>Ce point se trouve dans un secteur cartographié pour les zones inondables.</strong>' +
-        '<p>Cela signifie qu’une cartographie existe pour ce secteur, pas que le terrain sera inondé. ' +
-        'Pour connaître le statut réel et la réglementation applicable, contactez votre municipalité.</p>' +
-        '<p class="carte-verdict__src">Source : grille de présence, MRNF (valeur indicative, aucune portée légale).</p>';
-    } else {
-      verdictEl.className = "carte-verdict carte-verdict--out";
-      verdictEl.innerHTML =
-        '<strong>Ce point ne semble pas dans un secteur cartographié pour les zones inondables.</strong>' +
-        '<p>L’absence de cartographie ne garantit pas l’absence de risque : de nouvelles cartes sont publiées ' +
-        'progressivement. En cas de doute, contactez votre municipalité.</p>' +
-        '<p class="carte-verdict__src">Source : grille de présence, MRNF (valeur indicative, aucune portée légale).</p>';
+  function pointSurBatiment(lng, lat) {
+    if (!hasBatiments || !map.getLayer("batiments-fill")) return null;
+    var pt = map.project([lng, lat]);
+    var feats = map.queryRenderedFeatures(pt, { layers: ["batiments-fill"] });
+    if (feats && feats.length) {
+      var p = feats[0].properties || {};
+      var a = p.Superficie != null ? p.Superficie : null;
+      return { aire: a };
     }
+    return null;
+  }
+
+  /* Verdict citoyen enrichi : croise zone inondable + bâtiment au point.
+     Ton prudent, non alarmiste, avertissement + renvoi municipalité systématiques.
+     Encadré pédagogique « ce que ça implique / quoi faire ». */
+  function afficheVerdict(lng, lat) {
+    if (!verdictEl) return;
+    var dansZone = pointDansGrille(lng, lat);
+    var bati = pointSurBatiment(lng, lat);
+    var zoomProche = map.getZoom() >= 12; // les bâtiments n'apparaissent qu'au zoom rapproché
+
+    var titre, corps, cls, quoiFaire;
+
+    if (dansZone) {
+      cls = "carte-verdict--in";
+      if (bati) {
+        titre = "Un bâtiment de ce point se trouve dans un secteur cartographié en zone inondable.";
+        corps = "Un bâtiment est présent ici" +
+          (bati.aire != null ? " (environ " + Math.round(parseFloat(bati.aire)).toLocaleString("fr-CA") + " m²)" : "") +
+          ", et ce secteur fait l'objet d'une cartographie des zones inondables. " +
+          "Cela ne veut pas dire que le bâtiment sera inondé, mais que des règles peuvent s'y appliquer.";
+      } else {
+        titre = "Ce point se trouve dans un secteur cartographié en zone inondable.";
+        corps = "Une cartographie existe pour ce secteur. Cela ne signifie pas que le terrain sera inondé, " +
+          "mais que des règles particulières peuvent s'appliquer.";
+      }
+      quoiFaire = "Vérifiez le statut réel et la réglementation applicable auprès de votre municipalité avant tout projet (construction, rénovation, achat).";
+    } else {
+      cls = "carte-verdict--out";
+      titre = "Ce point ne semble pas dans un secteur cartographié en zone inondable.";
+      corps = "L'absence de cartographie ne garantit pas l'absence de risque : de nouvelles cartes sont publiées " +
+        "progressivement dans le cadre réglementaire de 2026." +
+        (zoomProche ? "" : " Zoomez davantage pour une lecture plus précise.");
+      quoiFaire = "En cas de doute, ou pour un projet, confirmez toujours auprès de votre municipalité.";
+    }
+
+    verdictEl.className = "carte-verdict " + cls;
+    verdictEl.innerHTML =
+      '<strong>' + titre + "</strong>" +
+      "<p>" + corps + "</p>" +
+      '<p class="carte-verdict__do"><span>Que faire ?</span> ' + quoiFaire + "</p>" +
+      '<p class="carte-verdict__src">Source : grille de présence des zones inondables, MRNF. ' +
+      "Valeur indicative, aucune portée légale.</p>";
     verdictEl.hidden = false;
   }
 
@@ -488,9 +532,9 @@
     map.flyTo({ center: [lng, lat], zoom: 15, duration: REDUCED ? 0 : 1400 });
     if (window._rlMarker) { window._rlMarker.remove(); }
     window._rlMarker = new GL.Marker({ color: "#1E8AA0" }).setLngLat([lng, lat]).addTo(map);
-    // Attendre la stabilisation de la carte avant d'interroger la grille rendue.
+    // Attendre la stabilisation de la carte avant d'interroger les couches rendues.
     map.once("idle", function () {
-      if (hasGrille) { afficheVerdict(pointDansGrille(lng, lat)); }
+      if (hasGrille) { afficheVerdict(lng, lat); }
     });
   }
 
