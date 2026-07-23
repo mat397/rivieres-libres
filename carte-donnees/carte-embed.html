@@ -9,7 +9,7 @@
   <meta name="robots" content="noindex">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <link href="/assets/vendor/mapbox-gl.css" rel="stylesheet">
   <script>
@@ -27,6 +27,21 @@
 <body class="is-embed">
     <div class="embed-map">
       <div id="carte" class="embed-map__canvas" role="application" aria-label="Carte interactive des zones inondables, milieux humides et bâtiments du Québec"></div>
+
+      <a class="embed-map__back" href="/index.html" aria-label="Retour au site Rivières Libres">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Retour au site
+      </a>
+      <script>
+        /* Le bouton retour est visible par défaut (plein écran). On le masque
+           UNIQUEMENT si la page est intégrée en iframe sur un site tiers,
+           pour ne pas polluer l'intégration. */
+        (function () {
+          try { if (window.self !== window.top) {
+            var b = document.querySelector(".embed-map__back"); if (b) b.hidden = true;
+          } } catch (e) {}
+        })();
+      </script>
 
       <div class="embed-map__panel">
         <form id="carte-recherche" class="map-search" role="search" aria-label="Rechercher une adresse">

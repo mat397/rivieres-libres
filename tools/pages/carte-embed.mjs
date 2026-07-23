@@ -29,6 +29,21 @@ export default {
   body: `    <div class="embed-map">
       <div id="carte" class="embed-map__canvas" role="application" aria-label="Carte interactive des zones inondables, milieux humides et bâtiments du Québec"></div>
 
+      <a class="embed-map__back" href="/index.html" aria-label="Retour au site Rivières Libres">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Retour au site
+      </a>
+      <script>
+        /* Le bouton retour est visible par défaut (plein écran). On le masque
+           UNIQUEMENT si la page est intégrée en iframe sur un site tiers,
+           pour ne pas polluer l'intégration. */
+        (function () {
+          try { if (window.self !== window.top) {
+            var b = document.querySelector(".embed-map__back"); if (b) b.hidden = true;
+          } } catch (e) {}
+        })();
+      </script>
+
       <div class="embed-map__panel">
         <form id="carte-recherche" class="map-search" role="search" aria-label="Rechercher une adresse">
           <label class="visually-hidden" for="carte-recherche-input">Adresse ou municipalité</label>
