@@ -974,20 +974,37 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 .carte-fond-vign.is-active { border-color: var(--color-river); }
 .carte-fonds { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: var(--space-2); }
 
-/* Panneau des couches activables */
-.carte-couches { display: grid; gap: var(--space-2); margin-top: var(--space-2); }
-.carte-couche-wrap { display: grid; gap: .3rem; }
-.carte-couche { display: flex; align-items: center; gap: .55rem; font-size: .95rem; cursor: pointer; }
+/* ===== Panneau des couches — design épuré ===== */
+.carte-couches { display: grid; gap: 2px; margin-top: var(--space-1); }
+.carte-couche-wrap { display: grid; gap: 0; border-radius: var(--radius-sm); }
+/* Ligne d'une couche : case + nom. On retire la pastille de couleur redondante
+   (la vraie symbologie vit dans la légende dépliée dessous). */
+.carte-couche {
+  display: flex; align-items: center; gap: .6rem; font-size: .9rem; line-height: 1.25;
+  cursor: pointer; padding: .5rem .55rem; border-radius: var(--radius-sm);
+  transition: background-color var(--dur-fast) ease;
+}
+.carte-couche:hover { background: var(--color-mist-2); }
+.carte-couche input {
+  width: 17px; height: 17px; accent-color: var(--color-river); flex: none; margin: 0;
+}
+.carte-couche__swatch { display: none; } /* plus de puce ronde redondante */
 
-/* Légende détaillée sous une couche (symbologie réelle) */
-.carte-legende { padding: .3rem 0 .3rem 1.6rem; }
-.carte-legende__note { margin: 0 0 .3rem; font-size: .8rem; color: var(--color-slate); font-style: italic; }
-.carte-legende__img { max-width: 100%; height: auto; border-radius: 6px; background: #fff; }
-.lg-items { display: grid; gap: .2rem; }
-.lg-item { display: flex; align-items: center; gap: .45rem; font-size: .82rem; color: var(--color-ink); }
-.lg-item i { width: 13px; height: 13px; border-radius: 3px; border: 1px solid rgba(0,0,0,.18); flex: none; }
-.carte-couche input { width: 16px; height: 16px; accent-color: var(--color-river); flex: none; }
-.carte-couche__swatch { width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(0,0,0,.2); flex: none; }
+/* Légende dépliée sous une couche : encadré léger, aligné sous le texte. */
+.carte-legende {
+  margin: 0 .55rem .3rem 2.15rem; padding: .5rem .65rem;
+  background: var(--color-mist-2); border-radius: var(--radius-sm);
+  border-left: 2px solid var(--color-border);
+}
+.carte-legende__note { margin: 0; font-size: .76rem; color: var(--color-slate); line-height: 1.4; }
+.carte-legende__img { max-width: 100%; height: auto; border-radius: 6px; background: #fff; margin-top: .4rem; }
+/* Puces de symbologie : pastilles nettes, texte aligné, hiérarchie claire. */
+.lg-items { display: grid; gap: .28rem; margin-top: .45rem; }
+.lg-item { display: flex; align-items: center; gap: .5rem; font-size: .78rem; color: var(--color-ink); line-height: 1.2; }
+.lg-item i {
+  width: 14px; height: 14px; border-radius: 4px; flex: none;
+  box-shadow: inset 0 0 0 1px rgba(10,44,63,.12);
+}
 .map-search input[type="search"] { flex: 1; font: inherit; padding: .7rem 1rem; border-radius: var(--radius-pill); border: 1px solid var(--color-border); min-width: 0; }
 .map-search input[type="search"]:focus { outline-color: var(--color-river); border-color: var(--color-river); }
 

@@ -315,21 +315,22 @@
           ? Math.round(parseFloat(aire)).toLocaleString("fr-CA") + " m&sup2;"
           : "Référentiel du Québec (MRNF)";
 
-        // Le bâtiment est-il en zone ? On teste les couches VECTEUR interrogeables
-        // au point : la grille (zones inondables + mobilité) et la BDZI si elle est
-        // servie en vecteur. La BDZI WMS raster n'est pas interrogeable ; on invite
-        // alors à activer la couche pour la lecture réglementaire détaillée.
-        var enZone = pointDansGrille(e.lngLat.lng, e.lngLat.lat);
-        var badge = enZone
-          ? '<span class="carte-popup__zone carte-popup__zone--in">En zone inondable ou de mobilité</span>'
-          : '<span class="carte-popup__zone carte-popup__zone--out">Hors zone cartographiée</span>';
+        // Croisement au point avec la GRILLE vecteur (zones inondables + mobilité).
+        // NB : la BDZI (couche réglementaire) est servie en raster et n'est pas
+        // interrogeable au point ; le badge ne reflète donc QUE la grille. On le
+        // dit explicitement pour ne pas induire en erreur si la BDZI diffère.
+        var enGrille = pointDansGrille(e.lngLat.lng, e.lngLat.lat);
+        var badge = enGrille
+          ? '<span class="carte-popup__zone carte-popup__zone--in">Dans la grille (zone inondable ou de mobilité)</span>'
+          : '<span class="carte-popup__zone carte-popup__zone--out">Hors grille cartographiée</span>';
 
         var html = '<strong>Bâtiment</strong>' + badge +
           '<span class="carte-popup__sup">Superficie au sol : ' + superf + "</span>" +
           '<span class="carte-popup__note">' +
-          (enZone
-            ? "« Cartographié » ne veut pas dire « sera inondé ». Activez la couche « Zones inondables (BDZI) » pour la cartographie réglementaire, et vérifiez auprès de votre municipalité."
-            : "L'absence de cartographie ne garantit pas l'absence de risque. Activez la couche « Zones inondables (BDZI) » pour plus de détail.") +
+          "Activez la couche « Zones inondables (BDZI) » pour la cartographie réglementaire détaillée. " +
+          (enGrille
+            ? "« Cartographié » ne veut pas dire « sera inondé » : vérifiez auprès de votre municipalité."
+            : "L'absence dans la grille ne garantit pas l'absence de risque.") +
           "</span>";
 
         new GL.Popup({ closeButton: true, maxWidth: "240px" })
@@ -414,15 +415,12 @@
       }
     }
 
-    /* Définition unifiée des couches activables. `legendHtml` = légende locale
-       (zones inondables : tes classes officielles) ; `legendImg` = légende
-       officielle GetLegendGraphic du WMS (milieux humides). */
-    var RISK_LEGEND =
-      '<span class="lg-item"><i style="background:var(--risk-faible)"></i>Faible</span>' +
-      '<span class="lg-item"><i style="background:var(--risk-moderee)"></i>Modérée</span>' +
-      '<span class="lg-item"><i style="background:var(--risk-elevee)"></i>Élevée</span>' +
-      '<span class="lg-item"><i style="background:var(--risk-tres-elevee)"></i>Très élevée</span>' +
-      '<span class="lg-item"><i style="background:var(--risk-residuel)"></i>Risque résiduel</span>';
+    /* Légende de la GRILLE : la couche est rendue en rouge UNIFORME
+       (fill-color #D64545), sans distinction de classe. On affiche donc UNE
+       seule entrée honnête — pas 5 classes que la carte ne montre pas.
+       La symbologie détaillée par intensité vit dans la couche BDZI. */
+    var GRILLE_LEGEND =
+      '<span class="lg-item"><i style="background:#D64545"></i>Secteur cartographié</span>';
 
     var toggles = [];
     if (hasGrille) toggles.push({ label: "Zones inondables et de mobilité des cours d'eau", color: "#D64545", ids: ["grille-fill", "grille-line"], on: true, note: "Secteurs où une cartographie existe." });
@@ -444,12 +442,8 @@
       var cb = document.createElement("input");
       cb.type = "checkbox"; cb.checked = t.on;
       cb.setAttribute("data-layers", t.ids.join(","));
-      var sw = document.createElement("span");
-      sw.className = "carte-couche__swatch";
-      sw.style.background = t.color;
       row.appendChild(cb);
-      row.appendChild(sw);
-      row.appendChild(document.createTextNode(" " + t.label));
+      row.appendChild(document.createTextNode(t.label));
       wrap.appendChild(row);
 
       /* Zone de légende détaillée, repliée sauf si la couche est active. */
@@ -457,7 +451,7 @@
       leg.className = "carte-legende";
       leg.hidden = !t.on;
       if (t.note) { leg.innerHTML = '<p class="carte-legende__note">' + t.note + "</p>"; }
-      if (t.ids.indexOf("grille-fill") !== -1) { leg.innerHTML += '<div class="lg-items">' + RISK_LEGEND + "</div>"; }
+      if (t.ids.indexOf("grille-fill") !== -1) { leg.innerHTML += '<div class="lg-items">' + GRILLE_LEGEND + "</div>"; }
       if (t.legendImg) {
         var img = document.createElement("img");
         img.className = "carte-legende__img";
