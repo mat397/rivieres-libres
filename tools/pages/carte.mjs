@@ -23,24 +23,18 @@ export default {
     ],
   })}
 
-    <!-- ===== CTA VERS LA CARTE PLEIN ÉCRAN ===== -->
+    <!-- ===== CARTE INTERACTIVE INTÉGRÉE (live, sous le menu) ===== -->
     <section class="section">
-      <div class="container">
-        <a class="map-launch" href="/carte-donnees/carte-embed.html" data-reveal aria-label="Ouvrir la carte interactive plein écran">
-          <span class="map-launch__media" aria-hidden="true">
-            <img src="/assets/img/apercu-carte.jpg" alt="" loading="lazy" width="1200" height="700">
-            <span class="map-launch__scrim"></span>
-            <span class="map-launch__pin"></span>
-          </span>
-          <span class="map-launch__body">
-            <span class="map-launch__label">Carte interactive</span>
-            <span class="map-launch__title">Ouvrir la carte plein écran</span>
-            <span class="map-launch__desc">Recherchez une adresse, activez les couches, explorez en 3D. La carte s'ouvre en plein écran.</span>
-            <span class="btn btn--primary map-launch__btn">Ouvrir la carte ${ICON_ARROW}</span>
-          </span>
-        </a>
+      <div class="container map-live-container">
+        <div class="map-live" data-reveal>
+          <iframe class="map-live__frame" src="/carte-donnees/carte-embed.html" title="Carte interactive des zones inondables et de mobilité du Québec" loading="lazy" allow="fullscreen; geolocation"></iframe>
+          <a class="map-live__expand btn btn--primary" href="/carte-donnees/carte-embed.html" target="_blank" rel="noopener" aria-label="Ouvrir la carte en plein écran dans un nouvel onglet">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Plein écran
+          </a>
+        </div>
         <p class="map-credit">
-          Carte réalisée par <a href="https://altogeo.ca" rel="noopener" target="_blank">Alto Géomatique</a>, à partir des données ouvertes du gouvernement du Québec. Valeur indicative, aucune portée légale.
+          Carte réalisée bénévolement par <a href="https://altogeo.ca" rel="noopener" target="_blank">Alto Géomatique</a>, à partir des données ouvertes du gouvernement du Québec. Valeur indicative, aucune portée légale.
         </p>
       </div>
     </section>

@@ -25,6 +25,8 @@
   var BATIMENTS_PMTILES_URL = CFG.batimentsPmtiles || "";
   var GRILLE_PMTILES_URL = CFG.grillePmtiles || "";
   var BDZI_PMTILES_URL = CFG.bdziPmtiles || "";
+  var MH_PMTILES_URL = CFG.mhPmtiles || "";
+  var MUNI_PMTILES_URL = CFG.muniPmtiles || "";
   var FOND_PMTILES_URL = CFG.fondPmtiles || "";
   var MAPBOX_TOKEN = CFG.mapboxToken || "";
 
@@ -48,7 +50,7 @@
     satellite: "mapbox://styles/mapbox/satellite-streets-v12",
     plein_air: "mapbox://styles/mapbox/outdoors-v12"
   };
-  var currentFond = "rues";
+  var currentFond = "clair"; /* fond clair par défaut : fait ressortir les couches de données */
 
   /* PMTiles : Mapbox GL JS v3.21+ lit nativement les sources .pmtiles (détection
      par l'extension), SANS addProtocol ni préfixe pmtiles://. MapLibre, lui,
@@ -143,34 +145,11 @@
 
   /* La couche zones inondables n'est plus en WMS raster : elle est servie en
      PMTiles vecteur (grille), donc INTERROGEABLE pour le verdict citoyen.
-     Voir plus bas (map.on load). Ici : les couches raster secondaires. */
-  var MH_WMS = "https://geo.environnement.gouv.qc.ca/donnees/services/Biodiversite/MH_potentiels/MapServer/WMSServer";
-  var SDA_WMS = "https://servicescarto.mrnf.gouv.qc.ca/pes/services/Territoire/SDA_WMS/MapServer/WMSServer";
-  /* BDZI — Base de données des zones à risque d'inondation (MELCCFP / CEHQ).
-     Servie en PMTiles VECTEUR (self-host R2), donc INTERROGEABLE (croisement
-     bâtiment × zone fiable) et colorée par classe officielle (grand courant,
-     faible courant, crue 0-100 ans). Voir addOverlays(). Donnée PRÉLIMINAIRE. */
+     Toutes les couches sont désormais en PMTiles vecteur (voir addOverlays) :
+     grille, BDZI, milieux humides détaillés, municipalités, bâtiments.
+     Plus aucune couche WMS raster (labels répétés, dépendance serveur). */
 
-  var LAYERS = [
-    {
-      id: "mh",
-      label: "Milieux humides potentiels",
-      tiles: wms(MH_WMS, "Milieux_humides_potentiels11904"),
-      opacity: 0.6,
-      on: false,
-      swatch: "#5E8C3F",
-      note: "Marais, marécages, tourbières et étangs potentiels (plusieurs types). Source : MELCCFP.",
-      simpleSwatch: "#5E8C3F"
-    },
-    {
-      id: "muni",
-      label: "Municipalités et MRC",
-      tiles: wms(SDA_WMS, "4,3"),
-      opacity: 0.9,
-      on: false,
-      swatch: "#0E3A52"
-    }
-  ];
+  var LAYERS = []; /* plus de couche WMS raster : tout est en vecteur */
 
   /* --- Carte (2D, à plat) ------------------------------------------------- */
   var map = new GL.Map({
@@ -207,6 +186,8 @@
   var hasBatiments = false;
   var hasGrille = false;
   var hasBdzi = false;
+  var hasMh = false;
+  var hasMuni = false;
   var overlaysReady = false;
 
   /* Filet de sécurité : forcer un recalcul de taille (conteneur parfois
@@ -271,7 +252,52 @@
       hasBdzi = true;
     }
 
-    /* 2) Couches raster secondaires (milieux humides, municipalités) */
+    /* 1c) Milieux humides — cartographie détaillée 2023 (PMTiles vecteur R2).
+       Remplace l'ancien WMS « potentiels ». Coloré par classe (CLASSE) :
+       marais, marécage, tourbières, prairie humide, eau peu profonde. */
+    if (MH_PMTILES_URL && typeof pmtiles !== "undefined") {
+      if (!map.getSource("mh")) {
+        map.addSource("mh", { type: "vector", url: pmUrl(MH_PMTILES_URL) });
+      }
+      /* Palette CONTRASTÉE par type de milieu humide (nomenclature MELCCFP) :
+         teintes distinctes pour que la carte et la légende soient lisibles. */
+      var MH_COLOR = ["match", ["get", "CLASSE"],
+        "EP", "#2E86AB",  /* eau peu profonde — bleu */
+        "MS", "#3FA535",  /* marais — vert franc */
+        "ME", "#1F5C1A",  /* marécage — vert très foncé (boisé) */
+        "PH", "#E0A800",  /* prairie humide — doré/ocre (bien distinct des verts) */
+        "TB", "#8B5E3C",  /* tourbière boisée — brun */
+        "BG", "#A0522D",  /* tourbière ombrotrophe — brun-roux */
+        "FN", "#C08552",  /* tourbière minérotrophe — brun clair */
+        "#5E8C3F" /* défaut */
+      ];
+      if (!map.getLayer("mh-fill")) {
+        map.addLayer({
+          id: "mh-fill", type: "fill", source: "mh", "source-layer": "mh",
+          paint: { "fill-color": MH_COLOR, "fill-opacity": 0.5 },
+          layout: { visibility: "none" }
+        });
+      }
+      hasMh = true;
+    }
+
+    /* 1d) Municipalités — limites VECTEUR (PMTiles R2), SANS étiquettes répétées
+       (contrairement au WMS). Contour seulement ; le nom s'affiche au clic. */
+    if (MUNI_PMTILES_URL && typeof pmtiles !== "undefined") {
+      if (!map.getSource("muni")) {
+        map.addSource("muni", { type: "vector", url: pmUrl(MUNI_PMTILES_URL) });
+      }
+      if (!map.getLayer("muni-line")) {
+        map.addLayer({
+          id: "muni-line", type: "line", source: "muni", "source-layer": "muni",
+          paint: { "line-color": "#0E3A52", "line-width": 1, "line-opacity": 0.7 },
+          layout: { visibility: "none" }
+        });
+      }
+      hasMuni = true;
+    }
+
+    /* 2) (aucune couche raster secondaire restante) */
     LAYERS.forEach(function (l) {
       if (!map.getSource(l.id)) {
         map.addSource(l.id, { type: "raster", tiles: [l.tiles], tileSize: 256 });
@@ -370,6 +396,23 @@
     })();
   }
 
+  /* Clic sur une limite municipale : popup avec le nom (la couche n'a PAS
+     d'étiquette rendue, donc le nom vient au clic — évite la répétition). */
+  if (MUNI_PMTILES_URL) {
+    map.on("click", "muni-line", function (e) {
+      if (!e.features || !e.features.length) return;
+      var p = e.features[0].properties || {};
+      var nom = p.MUS_NM_MUN || "Municipalité";
+      var mrc = p.MUS_NM_MRC ? ("<br><span class=\"carte-popup__note\">MRC : " + p.MUS_NM_MRC + "</span>") : "";
+      new GL.Popup({ closeButton: true, maxWidth: "220px" })
+        .setLngLat(e.lngLat)
+        .setHTML('<div class="carte-popup"><strong>' + nom + "</strong>" + mrc + "</div>")
+        .addTo(map);
+    });
+    map.on("mouseenter", "muni-line", function () { map.getCanvas().style.cursor = "pointer"; });
+    map.on("mouseleave", "muni-line", function () { map.getCanvas().style.cursor = ""; });
+  }
+
   /* Réapplique l'état visible/masqué des cases après un changement de fond. */
   function syncLayerVisibility() {
     var box = document.getElementById("carte-couches");
@@ -379,6 +422,30 @@
       var v = cb.checked ? "visible" : "none";
       ids.forEach(function (id) { if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", v); });
     });
+  }
+
+  /* --- Tooltip flottant (position: fixed) : jamais clippé par un overflow --- */
+  var tipEl = null;
+  function showTip(anchor, text) {
+    if (!tipEl) {
+      tipEl = document.createElement("div");
+      tipEl.className = "carte-tip";
+      document.body.appendChild(tipEl);
+    }
+    tipEl.textContent = text;
+    tipEl.style.display = "block";
+    var r = anchor.getBoundingClientRect();
+    // Positionner sous le « i », aligné à droite, en restant dans l'écran.
+    var w = 210;
+    var left = Math.min(r.right - w, window.innerWidth - w - 8);
+    left = Math.max(8, left);
+    tipEl.style.left = left + "px";
+    tipEl.style.top = (r.bottom + 6) + "px";
+    tipEl.style.width = w + "px";
+    requestAnimationFrame(function () { tipEl.classList.add("is-on"); });
+  }
+  function hideTip() {
+    if (tipEl) { tipEl.classList.remove("is-on"); tipEl.style.display = "none"; }
   }
 
   /* --- Panneau : sélecteur de fond + couches activables + légende --------- */
@@ -459,9 +526,20 @@
       '<span class="lg-item"><i style="background:#D64545"></i>Zone de crue 0-100 ans</span>' +
       '<span class="lg-item"><i style="background:#6B7B8C"></i>Autre zone inondable</span>';
 
+    /* Légende milieux humides (cartographie détaillée 2023) par type —
+       couleurs contrastées, identiques au rendu de la couche. */
+    var MH_LEGEND =
+      '<span class="lg-item"><i style="background:#3FA535"></i>Marais</span>' +
+      '<span class="lg-item"><i style="background:#1F5C1A"></i>Marécage</span>' +
+      '<span class="lg-item"><i style="background:#E0A800"></i>Prairie humide</span>' +
+      '<span class="lg-item"><i style="background:#8B5E3C"></i>Tourbière</span>' +
+      '<span class="lg-item"><i style="background:#2E86AB"></i>Eau peu profonde</span>';
+
     var toggles = [];
     if (hasGrille) toggles.push({ label: "Zones inondables et de mobilité des cours d'eau", color: "#D64545", ids: ["grille-fill", "grille-line"], on: true, note: "Secteurs où une cartographie existe." });
     if (hasBdzi) toggles.push({ label: "Zones inondables réglementaires (BDZI)", color: "#3E7CB1", ids: ["bdzi-fill", "bdzi-line"], on: false, bdziLegend: true, note: "Cartographie réglementaire par force du courant et récurrence (crue 0-100 ans). Donnée préliminaire, sujette à révision. Source : MELCCFP / CEHQ." });
+    if (hasMh) toggles.push({ label: "Milieux humides", color: "#5E8C3F", ids: ["mh-fill"], on: false, mhLegend: true, note: "Cartographie détaillée des milieux humides du sud du Québec (2023). Source : MELCCFP." });
+    if (hasMuni) toggles.push({ label: "Limites municipales", color: "#0E3A52", ids: ["muni-line"], on: false, simpleSwatch: "#0E3A52", note: "Limites des municipalités du Québec. Cliquez pour voir le nom. Source : SDA, MRNF." });
     LAYERS.forEach(function (l) {
       /* Les couches d'inondations par année (groupe « crues ») sont pilotées par
          le slider temporel en bas, PAS par une case ici : on les exclut du panneau
@@ -484,13 +562,31 @@
       row.appendChild(document.createTextNode(t.label));
       wrap.appendChild(row);
 
-      /* Zone de légende détaillée, repliée sauf si la couche est active. */
+      /* Petit « i » d'info à côté du titre : info SUBTILE au survol (tooltip).
+         Le tooltip est positionné en JS (position: fixed) pour ne jamais être
+         clippé par l'overflow du panneau. */
+      if (t.note) {
+        var info = document.createElement("span");
+        info.className = "carte-couche__info";
+        info.setAttribute("role", "img");
+        info.setAttribute("aria-label", t.note);
+        info.setAttribute("tabindex", "0");
+        info.textContent = "i";
+        info.setAttribute("data-tip", t.note);
+        row.appendChild(info);
+        info.addEventListener("mouseenter", function () { showTip(info, t.note); });
+        info.addEventListener("mouseleave", hideTip);
+        info.addEventListener("focus", function () { showTip(info, t.note); });
+        info.addEventListener("blur", hideTip);
+      }
+
+      /* Zone de légende (couleurs), repliée sauf si la couche est active. */
       var leg = document.createElement("div");
       leg.className = "carte-legende";
       leg.hidden = !t.on;
-      if (t.note) { leg.innerHTML = '<p class="carte-legende__note">' + t.note + "</p>"; }
       if (t.ids.indexOf("grille-fill") !== -1) { leg.innerHTML += '<div class="lg-items">' + GRILLE_LEGEND + "</div>"; }
       if (t.bdziLegend) { leg.innerHTML += '<div class="lg-items">' + BDZI_LEGEND + "</div>"; }
+      if (t.mhLegend) { leg.innerHTML += '<div class="lg-items">' + MH_LEGEND + "</div>"; }
       if (t.simpleSwatch) { leg.innerHTML += '<div class="lg-items"><span class="lg-item"><i style="background:' + t.simpleSwatch + '"></i>' + t.label + "</span></div>"; }
       if (t.legendImg) {
         var img = document.createElement("img");

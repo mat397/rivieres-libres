@@ -501,16 +501,28 @@ html.menu-open, html.menu-open body { overflow: hidden; }
 
 /* Lien café dans le HEADER : discret (pas un gros bouton), pastille fine qui
    ressort sans écraser le CTA principal « Vérifier une adresse ». */
+/* Icône café dans le header : rond par défaut, le texte se déploie au survol
+   (même pattern que le bouton « Retour au site » de la carte). */
 .header-coffee {
-  display: inline-flex; align-items: center; gap: .4rem;
-  font-size: .85rem; font-weight: 600; text-decoration: none; white-space: nowrap;
-  color: var(--color-glint); background: transparent;
+  display: inline-flex; align-items: center; white-space: nowrap; text-decoration: none;
+  font-size: .85rem; font-weight: 600; color: var(--color-glint); background: transparent;
   border: 1px solid rgba(123, 212, 228, .4);
-  padding: .5rem .9rem; border-radius: var(--radius-pill); margin-right: .2rem;
+  height: 38px; padding: 0 .55rem; border-radius: var(--radius-pill); margin-right: .2rem;
   transition: background-color var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease, transform var(--dur-fast) ease;
 }
-.header-coffee svg { width: 1.05em; height: 1.05em; flex: none; }
-.header-coffee:hover { background: #FF5E5B; border-color: #FF5E5B; color: #fff; transform: translateY(-1px); }
+.header-coffee svg { width: 1.15em; height: 1.15em; flex: none; stroke: currentColor; }
+/* Le libellé : masqué (largeur 0), révélé au survol/focus en glissant. */
+.header-coffee__txt {
+  display: inline-block; max-width: 0; overflow: hidden; opacity: 0;
+  transition: max-width var(--dur-med, .3s) var(--ease), opacity var(--dur-fast) ease, margin var(--dur-med, .3s) var(--ease);
+}
+.header-coffee:hover, .header-coffee:focus-visible {
+  background: #FF5E5B; border-color: #FF5E5B; color: #fff; transform: translateY(-1px);
+}
+.header-coffee:hover .header-coffee__txt, .header-coffee:focus-visible .header-coffee__txt {
+  max-width: 14em; opacity: 1; margin-left: .4rem; margin-right: .1rem;
+}
+@media (prefers-reduced-motion: reduce) { .header-coffee__txt { transition: none; } }
 /* Sur en-tête clair (si le header passe en scheme clair), garder du contraste. */
 .site-header[data-scheme="light"] .header-coffee { color: #C0392B; }
 .site-header[data-scheme="light"] .header-coffee:hover { color: #fff; }
@@ -794,6 +806,24 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 .map-embed__badge { background: rgba(255,255,255,.94); color: var(--color-deep); font-weight: 600; font-size: .85rem; padding: .35rem .9rem; border-radius: var(--radius-pill); }
 .map-embed__stage { position: relative; }
 .map-embed__frame { display: block; width: 100%; height: 70vh; min-height: 480px; border: 0; background: #cfe0e6; }
+/* ===== Carte interactive INTÉGRÉE (live, dans la page « Carte & données ») ===== */
+.map-live-container { max-width: min(1400px, 100% - 2 * var(--space-4)); }
+.map-live {
+  position: relative; border-radius: var(--radius-lg); overflow: hidden;
+  box-shadow: var(--shadow-lg); background: #dfe8ec;
+  height: clamp(460px, 78vh, 900px);
+}
+.map-live__frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+.map-live__expand {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  font-size: .85rem; padding: .5rem 1rem; box-shadow: 0 4px 14px rgba(10, 44, 63, .3);
+}
+.map-live__expand svg { width: 1.05em; height: 1.05em; }
+@media (max-width: 640px) {
+  .map-live { height: 70vh; }
+  .map-live__expand { top: 8px; right: 8px; font-size: .8rem; padding: .45rem .8rem; }
+}
+
 /* Conteneur MapLibre : hauteur explicite requise + surcouche de contrôles lisible */
 /* Grand CTA vers la carte plein écran (page « Carte & données ») */
 .map-launch {
@@ -1033,6 +1063,25 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 }
 .carte-couche__swatch { display: none; } /* plus de puce ronde redondante */
 
+/* Petit « i » d'info à côté du titre : info subtile au survol. */
+.carte-couche__info {
+  flex: none; width: 18px; height: 18px; margin-left: auto; border-radius: 50%;
+  border: 1px solid var(--color-border); background: #fff; color: var(--color-slate);
+  font-family: var(--font-display); font-style: italic; font-weight: 600; font-size: .8rem;
+  line-height: 1; cursor: help; display: inline-flex; align-items: center; justify-content: center;
+  transition: background-color var(--dur-fast) ease, color var(--dur-fast) ease;
+}
+.carte-couche__info:hover, .carte-couche__info:focus-visible { background: var(--color-deep); color: #fff; border-color: var(--color-deep); }
+/* Tooltip flottant (attaché au body, position fixed en JS : jamais clippé). */
+.carte-tip {
+  position: fixed; z-index: 9999; display: none; pointer-events: none;
+  padding: .5rem .65rem; border-radius: var(--radius-sm);
+  background: var(--color-deep); color: #fff; font-size: .76rem; line-height: 1.4;
+  box-shadow: var(--shadow-lg);
+  opacity: 0; transform: translateY(-4px); transition: opacity var(--dur-fast) ease, transform var(--dur-fast) ease;
+}
+.carte-tip.is-on { opacity: 1; transform: translateY(0); }
+
 /* Légende dépliée sous une couche : encadré léger, aligné sous le texte. */
 .carte-legende {
   margin: 0 .55rem .3rem 2.15rem; padding: .5rem .65rem;
@@ -1185,27 +1234,36 @@ html:has(body.is-embed), body.is-embed { height: 100%; overflow: hidden; }
   position: absolute; right: 12px; bottom: 40px; z-index: 6;
   display: flex; align-items: flex-end; gap: .5rem;
 }
-/* Bouton « Payez-moi un café » (Ko-fi) — gros, couleur qui pop, effet vivant. */
+/* Bouton « café » sur la carte : icône ronde rouge, le texte se déploie au
+   survol (même pattern reveal que le bouton « Retour au site »). */
 .carte-coffee {
-  display: inline-flex; align-items: center; gap: .45rem;
-  background: #FF5E5B; color: #fff; text-decoration: none;
-  font-weight: 700; font-size: .9rem; padding: .6rem 1.05rem;
-  border-radius: var(--radius-pill); box-shadow: 0 4px 16px rgba(255, 94, 91, .45);
+  display: inline-flex; align-items: center; white-space: nowrap; text-decoration: none;
+  background: #FF5E5B; color: #fff; font-weight: 700; font-size: .88rem;
+  height: 42px; padding: 0 .55rem; border-radius: var(--radius-pill);
+  box-shadow: 0 4px 16px rgba(255, 94, 91, .45);
   transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) ease, background-color var(--dur-fast) ease;
 }
-.carte-coffee:hover { background: #FF423F; transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 20px rgba(255, 94, 91, .55); }
-.carte-coffee__emoji { font-size: 1.15rem; line-height: 1; }
+.carte-coffee svg { width: 1.35em; height: 1.35em; flex: none; stroke: #fff; color: #fff; }
+.carte-coffee__txt {
+  display: inline-block; max-width: 0; overflow: hidden; opacity: 0;
+  transition: max-width var(--dur-med, .3s) var(--ease), opacity var(--dur-fast) ease, margin var(--dur-med, .3s) var(--ease);
+}
+.carte-coffee:hover, .carte-coffee:focus-visible {
+  background: #FF423F; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 94, 91, .55);
+}
+.carte-coffee:hover .carte-coffee__txt, .carte-coffee:focus-visible .carte-coffee__txt {
+  max-width: 12em; opacity: 1; margin-left: .45rem; margin-right: .2rem;
+}
+/* Léger pulse de l'ombre pour attirer l'œil (icône seule au repos). */
 @media (prefers-reduced-motion: no-preference) {
   .carte-coffee { animation: coffee-pulse 2.6s var(--ease) infinite; }
+  .carte-coffee__txt { transition: max-width var(--dur-med, .3s) var(--ease), opacity var(--dur-fast) ease, margin var(--dur-med, .3s) var(--ease); }
 }
 @keyframes coffee-pulse {
   0%, 100% { box-shadow: 0 4px 16px rgba(255, 94, 91, .45); }
   50% { box-shadow: 0 4px 22px rgba(255, 94, 91, .7); }
 }
-@media (max-width: 640px) {
-  /* Sur mobile, le bouton café se réduit au texte court. */
-  .carte-coffee { font-size: .82rem; padding: .5rem .8rem; }
-}
+@media (prefers-reduced-motion: reduce) { .carte-coffee { animation: none; } }
 .embed-map__badge {
   display: inline-flex; align-items: center; gap: .55rem;
   padding: 7px 14px; border-radius: var(--radius-pill);

@@ -25,6 +25,8 @@ export default {
       batimentsPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/batiments-quebec-sud.pmtiles",
       grillePmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/grille-zi.pmtiles",
       bdziPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/bdzi.pmtiles",
+      mhPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/mh-detail.pmtiles",
+      muniPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/muni.pmtiles",
       fondPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/fond-quebec.pmtiles"
     };
   </script>
@@ -169,8 +171,8 @@ export default {
       <!-- BAS-DROITE : crédit Alto + bouton Sources (popover) -->
       <div class="embed-map__br">
         <a class="carte-coffee" href="https://ko-fi.com/mathieusimardalto" rel="noopener" target="_blank" aria-label="Soutenir le projet — payez-moi un café">
-          <span class="carte-coffee__emoji" aria-hidden="true">&#9749;</span>
-          Payez-moi un café
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 8h13v5a4 4 0 01-4 4H8a4 4 0 01-4-4V8zM17 9h1.5a2.5 2.5 0 010 5H17M7 3v2M11 3v2M15 3v2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="carte-coffee__txt">Payez-moi un café&nbsp;!</span>
         </a>
         <a class="embed-map__badge" href="https://altogeo.ca" rel="noopener" target="_blank" aria-label="Carte réalisée bénévolement par Alto Géomatique">
           <span class="embed-map__badge-txt">Réalisée bénévolement par</span>
