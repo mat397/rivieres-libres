@@ -53,7 +53,7 @@ function header(active) {
       <div class="header-actions">
         <a class="header-coffee" href="/soutenir.html" aria-label="Soutenir le projet — payez-moi un café">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 8h13v5a4 4 0 01-4 4H8a4 4 0 01-4-4V8zM17 9h1.5a2.5 2.5 0 010 5H17M7 3v2M11 3v2M15 3v2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span class="header-coffee__txt">Offrir un café&nbsp;!</span>
+          <span class="header-coffee__txt">Offrez-moi un café&nbsp;!</span>
         </a>
         <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse ${ICON_ARROW}</a>
         <button class="lang-switch" type="button" disabled aria-label="Langue : Français (Anglais à venir)" title="Version anglaise à venir">FR</button>
@@ -81,7 +81,7 @@ function header(active) {
     <div class="mobile-menu__cta">
       <a class="btn btn--primary" href="/carte-donnees/carte.html">Vérifier une adresse ${ICON_ARROW}</a>
       <a class="btn btn--coffee" href="https://ko-fi.com/mathieusimardalto" rel="noopener" target="_blank" aria-label="Soutenir le projet sur Ko-fi — payez-moi un café">
-        <span aria-hidden="true">&#9749;</span> Offrir un café
+        <span aria-hidden="true">&#9749;</span> Offrez-moi un café
       </a>
     </div>
   </div>`;
