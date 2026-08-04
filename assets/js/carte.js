@@ -814,10 +814,15 @@
   /* Verdict citoyen enrichi : croise zone inondable + bâtiment au point.
      Ton prudent, non alarmiste, avertissement + renvoi municipalité systématiques.
      Encadré pédagogique « ce que ça implique / quoi faire ». */
+  var lastVerdict = null; // { zone: "in"|"out", statut: "..." } pour le partage social
   function afficheVerdict(lng, lat) {
     if (!verdictEl) return;
     var dansZone = pointDansGrille(lng, lat);
     var bati = pointSurBatiment(lng, lat);
+    lastVerdict = {
+      zone: dansZone ? "in" : "out",
+      statut: dansZone ? "Secteur en zone inondable ou de mobilité" : "Hors des secteurs cartographiés"
+    };
     var zoomProche = map.getZoom() >= 12; // les bâtiments n'apparaissent qu'au zoom rapproché
 
     var titre, corps, cls, quoiFaire;
@@ -878,8 +883,25 @@
   }
 
   /* D — Partage du résultat : copie le lien de la carte (avec la position). */
+  /* Construit l'URL de partage social. Si une adresse a été localisée, on pointe
+     vers /api/partage (aperçu social riche : image OG par adresse). Sinon on
+     partage l'URL de la carte telle quelle. */
+  function urlPartage() {
+    if (!lastLoc) { try { return window.location.href; } catch (e) { return ""; } }
+    var origin;
+    try { origin = window.location.origin; } catch (e) { origin = ""; }
+    var params = "?lat=" + encodeURIComponent(lastLoc.lat.toFixed(5)) +
+      "&lng=" + encodeURIComponent(lastLoc.lng.toFixed(5));
+    if (lastLoc.label) params += "&adresse=" + encodeURIComponent(lastLoc.label);
+    if (lastVerdict) {
+      params += "&zone=" + encodeURIComponent(lastVerdict.zone);
+      if (lastVerdict.statut) params += "&statut=" + encodeURIComponent(lastVerdict.statut);
+    }
+    return origin + "/api/partage" + params;
+  }
+
   function partagerResultat(btn) {
-    var url = window.location.href;
+    var url = urlPartage();
     var done = function () { var t = btn.textContent; btn.textContent = "Lien copié !"; setTimeout(function () { btn.textContent = t; }, 1800); };
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(url).then(done).catch(done);
@@ -1435,8 +1457,9 @@
     if (!btn || !menu) return;
 
     function pageUrl() {
-      // Lien vers la carte (canonique portail si en iframe, sinon URL courante).
-      try { return window.location.href; } catch (e) { return ""; }
+      // Lien de partage : aperçu social riche si une adresse est localisée
+      // (via /api/partage), sinon l'URL de la carte.
+      try { return urlPartage(); } catch (e) { return window.location.href; }
     }
     function toggleMenu(open) {
       menu.hidden = (open === undefined) ? !menu.hidden : !open;
