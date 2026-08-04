@@ -967,14 +967,12 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 .carte-welcome__alto img { width: 88px; height: auto; flex: none; }
 .carte-welcome__alto span { font-size: .82rem; color: var(--color-slate); line-height: 1.3; }
 .carte-welcome__alto strong { color: var(--color-river); }
-/* Actions du pop-up d'accueil : « Ouvrir la carte » + « Offrir un café ». */
-.carte-welcome__actions { display: flex; gap: .6rem; flex-wrap: wrap; }
-.carte-welcome__cta { flex: 1 1 auto; justify-content: center; }
-.carte-welcome__coffee { flex: 0 0 auto; justify-content: center; }
-@media (max-width: 420px) {
-  .carte-welcome__actions { flex-direction: column; }
-  .carte-welcome__coffee { width: 100%; }
-}
+/* Actions du pop-up d'accueil : café (au-dessus) + ouvrir la carte, empilés
+   pleine largeur. */
+.carte-welcome__actions { display: flex; flex-direction: column; gap: .6rem; }
+.carte-welcome__cta,
+.carte-welcome__coffee { width: 100%; justify-content: center; gap: .45rem; }
+.carte-welcome__coffee svg { width: 1.2em; height: 1.2em; flex: none; stroke: #fff; }
 
 #carte .maplibregl-ctrl-attrib { font-size: 11px; }
 #carte .maplibregl-ctrl-attrib a { color: var(--color-link); }
@@ -1119,18 +1117,28 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 /* ===== Panneau des couches — design épuré ===== */
 .carte-couches { display: grid; gap: 2px; margin-top: var(--space-1); }
 .carte-couche-wrap { display: grid; gap: 0; border-radius: var(--radius-sm); }
-/* Ligne d'une couche : case + nom. On retire la pastille de couleur redondante
-   (la vraie symbologie vit dans la légende dépliée dessous). */
+/* Ligne d'une couche : interrupteur (toggle) + nom. Plus élégant qu'une case. */
 .carte-couche {
-  display: flex; align-items: center; gap: .6rem; font-size: .9rem; line-height: 1.25;
+  display: flex; align-items: center; gap: .65rem; font-size: .9rem; line-height: 1.25;
   cursor: pointer; padding: .5rem .55rem; border-radius: var(--radius-sm);
   transition: background-color var(--dur-fast) ease;
 }
 .carte-couche:hover { background: var(--color-mist-2); }
+/* Interrupteur (switch) à partir de la checkbox native. */
 .carte-couche input {
-  width: 17px; height: 17px; accent-color: var(--color-river); flex: none; margin: 0;
+  appearance: none; -webkit-appearance: none; flex: none; margin: 0; cursor: pointer;
+  position: relative; width: 38px; height: 22px; border-radius: 999px;
+  background: var(--color-border); transition: background-color var(--dur-fast) ease;
 }
-.carte-couche__swatch { display: none; } /* plus de puce ronde redondante */
+.carte-couche input::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px;
+  border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(10,44,63,.3);
+  transition: transform var(--dur-fast) var(--ease);
+}
+.carte-couche input:checked { background: var(--color-river); }
+.carte-couche input:checked::after { transform: translateX(16px); }
+.carte-couche input:focus-visible { outline: 2px solid var(--color-river); outline-offset: 2px; }
+.carte-couche__swatch { display: none; }
 
 /* Petit « i » d'info à côté du titre : info subtile au survol. */
 .carte-couche__info {
