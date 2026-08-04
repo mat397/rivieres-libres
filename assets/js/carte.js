@@ -50,7 +50,7 @@
     satellite: "mapbox://styles/mapbox/satellite-streets-v12",
     plein_air: "mapbox://styles/mapbox/outdoors-v12"
   };
-  var currentFond = "clair"; /* fond clair par défaut : fait ressortir les couches de données */
+  var currentFond = "rues"; /* fond « Rues » par défaut */
 
   /* PMTiles : Mapbox GL JS v3.21+ lit nativement les sources .pmtiles (détection
      par l'extension), SANS addProtocol ni préfixe pmtiles://. MapLibre, lui,
@@ -945,6 +945,47 @@
       .to(path, { duration: 0.25, ease: "sine.in", attr: { d: WIPE_PATHS.inBetween } })
       .to(path, { duration: 1, ease: "power4", attr: { d: WIPE_PATHS.unfilled } });
   }
+
+  /* ======================================================================
+     OVERLAY KO-FI (don en superposition, pas de redirection)
+     Les boutons café (data-kofi-open) ouvrent un modal contenant l'iframe
+     Ko-fi. L'iframe n'est chargée qu'à la première ouverture (lazy).
+     ====================================================================== */
+  (function initKofi() {
+    var overlay = document.getElementById("kofi-overlay");
+    var holder = document.getElementById("kofi-iframe-holder");
+    if (!overlay || !holder) return;
+    var loaded = false;
+
+    function openKofi() {
+      if (!loaded) {
+        var src = holder.getAttribute("data-kofi-src");
+        var f = document.createElement("iframe");
+        f.id = "kofiframe";
+        f.src = src;
+        f.title = "Soutenir sur Ko-fi";
+        f.style.cssText = "border:none;width:100%;height:100%;background:#f9f9f9;border-radius:12px;";
+        holder.appendChild(f);
+        loaded = true;
+      }
+      overlay.hidden = false;
+      document.body.style.overflow = "hidden";
+    }
+    function closeKofi() {
+      overlay.hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    document.addEventListener("click", function (e) {
+      var opener = e.target.closest ? e.target.closest("[data-kofi-open]") : null;
+      if (opener) { e.preventDefault(); openKofi(); return; }
+      var closer = e.target.closest ? e.target.closest("[data-kofi-close]") : null;
+      if (closer) { e.preventDefault(); closeKofi(); }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !overlay.hidden) { closeKofi(); }
+    });
+  })();
 
   /* ======================================================================
      PARTAGE (copier le lien + réseaux sociaux)

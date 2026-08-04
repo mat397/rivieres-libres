@@ -55,7 +55,12 @@ export default {
             <img src="/assets/img/logo-alto-couleur.png" alt="Alto Géomatique" width="1280" height="714">
             <span>Une carte gratuite, <strong>réalisée bénévolement par Alto Géomatique</strong>. Un café pour encourager le projet&nbsp;? &#9749;</span>
           </a>
-          <button type="button" class="btn btn--primary carte-welcome__cta" data-cw-close>Merci Alto&nbsp;! Ouvrir la carte</button>
+          <div class="carte-welcome__actions">
+            <button type="button" class="btn btn--primary carte-welcome__cta" data-cw-close>Ouvrir la carte</button>
+            <button type="button" class="btn btn--coffee carte-welcome__coffee" data-kofi-open>
+              <span aria-hidden="true">&#9749;</span> Offrir un café
+            </button>
+          </div>
         </div>
       </div>
 
@@ -170,10 +175,10 @@ export default {
 
       <!-- BAS-DROITE : crédit Alto + bouton Sources (popover) -->
       <div class="embed-map__br">
-        <a class="carte-coffee" href="https://ko-fi.com/mathieusimardalto" rel="noopener" target="_blank" aria-label="Soutenir le projet — payez-moi un café">
+        <button class="carte-coffee" type="button" data-kofi-open aria-label="Soutenir le projet — offrir un café">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 8h13v5a4 4 0 01-4 4H8a4 4 0 01-4-4V8zM17 9h1.5a2.5 2.5 0 010 5H17M7 3v2M11 3v2M15 3v2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span class="carte-coffee__txt">Payez-moi un café&nbsp;!</span>
-        </a>
+          <span class="carte-coffee__txt">Offrir un café&nbsp;!</span>
+        </button>
         <a class="embed-map__badge" href="https://altogeo.ca" rel="noopener" target="_blank" aria-label="Carte réalisée bénévolement par Alto Géomatique">
           <span class="embed-map__badge-txt">Réalisée bénévolement par</span>
           <img src="/assets/img/logo-alto-couleur.png" alt="Alto Géomatique" width="1280" height="714" loading="lazy">
@@ -205,5 +210,16 @@ export default {
       </div>
 
       <div id="carte-etapes" hidden></div>
+
+      <!-- Overlay Ko-fi : formulaire de don en superposition (pas de redirection).
+           Ouvert par les boutons café (data-kofi-open), fermé par le backdrop /
+           la croix / Échap. L'iframe n'est chargée qu'à la première ouverture. -->
+      <div id="kofi-overlay" class="kofi-overlay" role="dialog" aria-modal="true" aria-label="Soutenir le projet sur Ko-fi" hidden>
+        <div class="kofi-overlay__backdrop" data-kofi-close></div>
+        <div class="kofi-overlay__panel">
+          <button type="button" class="kofi-overlay__close" data-kofi-close aria-label="Fermer">&times;</button>
+          <div id="kofi-iframe-holder" data-kofi-src="https://ko-fi.com/mathieusimardalto/?hidefeed=true&widget=true&embed=true&preview=true"></div>
+        </div>
+      </div>
     </div>`,
 };

@@ -54,10 +54,10 @@ export default {
       <div class="container">
         <div class="support-cta" data-reveal>
           <div class="support-cta__body">
-            <h2 class="mt-0">Payez-moi un café&nbsp;!</h2>
+            <h2 class="mt-0">Offrir un café&nbsp;!</h2>
             <p>Si ce projet vous est utile, un café fait une vraie différence. Merci d'y croire avec moi.</p>
             <a class="btn btn--coffee support-cta__btn" href="${KOFI}" rel="noopener" target="_blank">
-              <span aria-hidden="true">&#9749;</span> Payez-moi un café sur Ko-fi
+              <span aria-hidden="true">&#9749;</span> Offrir un café sur Ko-fi
             </a>
           </div>
           <a class="support-cta__credit" href="https://altogeo.ca" rel="noopener" target="_blank" aria-label="Alto Géomatique">
