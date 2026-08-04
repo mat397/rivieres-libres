@@ -493,6 +493,7 @@
       var date = p.dern_date_prise_valeur_utc ? p.dern_date_prise_valeur_utc.replace("T", " ").slice(0, 16) : "";
       var lien = p.url_vigilance || p.fournisseur_url || "";
       var html = '<strong>' + (p.plan_deau || "Station hydrométrique") + "</strong>" +
+        (p.station ? '<span class="carte-popup__note">Station n&deg; ' + p.station + "</span>" : "") +
         '<span class="carte-popup__note">' + (p.description || "") + "</span>" +
         '<span class="carte-popup__sup">Débit : ' + deb + " &middot; Niveau : " + niv + "</span>" +
         (p.etat ? '<span class="carte-popup__zone ' + (p.etat.indexOf("lerte") !== -1 ? "carte-popup__zone--in" : "carte-popup__zone--out") + '">État : ' + p.etat + "</span>" : "") +
@@ -505,6 +506,27 @@
     });
     map.on("mouseenter", "stations-pt", function () { map.getCanvas().style.cursor = "pointer"; });
     map.on("mouseleave", "stations-pt", function () { map.getCanvas().style.cursor = ""; });
+  }
+
+  /* Clic sur un milieu humide : popup avec le type (CLASSE) traduit. */
+  if (MH_PMTILES_URL) {
+    var MH_LABELS = {
+      EP: "Eau peu profonde", MS: "Marais", ME: "Marécage",
+      PH: "Prairie humide", TB: "Tourbière boisée",
+      BG: "Tourbière ombrotrophe (bog)", FN: "Tourbière minérotrophe (fen)"
+    };
+    map.on("click", "mh-fill", function (e) {
+      if (!e.features || !e.features.length) return;
+      var p = e.features[0].properties || {};
+      var type = MH_LABELS[p.CLASSE] || "Milieu humide";
+      var html = '<strong>' + type + "</strong>" +
+        '<span class="carte-popup__note">Milieu humide cartographié (MELCCFP, 2023). ' +
+        "Ces milieux sont protégés et peuvent limiter certaines activités.</span>";
+      new GL.Popup({ closeButton: true, maxWidth: "230px" })
+        .setLngLat(e.lngLat).setHTML('<div class="carte-popup">' + html + "</div>").addTo(map);
+    });
+    map.on("mouseenter", "mh-fill", function () { map.getCanvas().style.cursor = "pointer"; });
+    map.on("mouseleave", "mh-fill", function () { map.getCanvas().style.cursor = ""; });
   }
 
   /* Clic sur une limite municipale : popup avec le nom (la couche n'a PAS
@@ -650,13 +672,13 @@
     if (hasGrille) toggles.push({ label: "Zones inondables et de mobilité des cours d'eau", color: "#D64545", ids: ["grille-fill", "grille-line"], on: true, note: "Secteurs où une cartographie existe." });
     if (hasBdzi) toggles.push({ label: "Zones inondables réglementaires (BDZI)", color: "#3E7CB1", ids: ["bdzi-fill", "bdzi-line"], on: false, bdziLegend: true, note: "Cartographie réglementaire par force du courant et récurrence (crue 0-100 ans). Donnée préliminaire, sujette à révision. Source : MELCCFP / CEHQ." });
     if (hasMh) toggles.push({ label: "Milieux humides", color: "#5E8C3F", ids: ["mh-fill"], on: false, mhLegend: true, note: "Cartographie détaillée des milieux humides du sud du Québec (2023). Source : MELCCFP." });
-    if (hasMuni) toggles.push({ label: "Limites municipales", color: "#0E3A52", ids: ["muni-line"], on: false, simpleSwatch: "#0E3A52", note: "Limites des municipalités du Québec. Cliquez pour voir le nom. Source : SDA, MRNF." });
+    if (hasMuni) toggles.push({ label: "Limites municipales", color: "#0E3A52", ids: ["muni-line"], on: false, lineSwatch: "#0E3A52", note: "Limites des municipalités du Québec. Cliquez une limite pour voir le nom. Source : SDA, MRNF." });
     LAYERS.forEach(function (l) {
       /* Les couches d'inondations par année (groupe « crues ») sont pilotées par
          le slider temporel en bas, PAS par une case ici : on les exclut du panneau
          pour l'alléger. */
       if (l.groupe === "crues") { return; }
-      toggles.push({ label: l.label, color: l.swatch, ids: [l.id], on: l.on, legendImg: l.legend || "", note: l.note || "", groupe: l.groupe || "", simpleSwatch: l.simpleSwatch || "" });
+      toggles.push({ label: l.label, color: l.swatch, ids: [l.id], on: l.on, legendImg: l.legend || "", note: l.note || "", groupe: l.groupe || "", simpleSwatch: l.simpleSwatch || "", lineSwatch: l.lineSwatch || "" });
     });
     if (hasBatiments) toggles.push({ label: "Bâtiments", color: "#0E3A52", ids: ["batiments-fill", "batiments-line"], on: true, note: "Visibles à partir d'un zoom rapproché." });
 
@@ -698,6 +720,7 @@
       if (t.mhLegend) { leg.innerHTML += '<div class="lg-items">' + MH_LEGEND + "</div>"; }
       if (t.stationsLegend) { leg.innerHTML += '<div class="lg-items">' + STATIONS_LEGEND + "</div>"; }
       if (t.simpleSwatch) { leg.innerHTML += '<div class="lg-items"><span class="lg-item"><i style="background:' + t.simpleSwatch + '"></i>' + t.label + "</span></div>"; }
+      if (t.lineSwatch) { leg.innerHTML += '<div class="lg-items"><span class="lg-item"><i class="lg-line" style="background:' + t.lineSwatch + '"></i>' + t.label + "</span></div>"; }
       if (t.legendImg) {
         var img = document.createElement("img");
         img.className = "carte-legende__img";
@@ -1473,6 +1496,50 @@
       });
     });
     if (saved > 0) { paint(saved); }
+  })();
+
+  /* ======================================================================
+     POP-UP AVIS AUTOMATIQUE (après ~45s de navigation, 1 seule fois)
+     ====================================================================== */
+  (function initFeedbackAuto() {
+    var fb = document.getElementById("carte-feedback");
+    if (!fb) return;
+    var SEEN = "rl-feedback-vu";
+    var seen = false;
+    try { seen = localStorage.getItem(SEEN) === "1"; } catch (e) {}
+    if (seen) return;
+
+    var stars = fb.querySelectorAll(".carte-feedback__star");
+    var msg = fb.querySelector(".carte-feedback__msg");
+    var note = 0;
+    function paint(n) { stars.forEach(function (s, i) { s.classList.toggle("is-on", i < n); }); }
+    stars.forEach(function (s, i) {
+      s.addEventListener("mouseenter", function () { paint(i + 1); });
+      s.addEventListener("mouseleave", function () { paint(note); });
+      s.addEventListener("click", function () {
+        note = i + 1; paint(note);
+        try { localStorage.setItem("rl-carte-note", String(note)); } catch (e) {}
+        if (msg) { msg.textContent = note >= 4 ? "Merci ! Un café pour encourager le projet ?" : "Merci pour votre avis !"; }
+      });
+    });
+
+    function fermer() {
+      try { localStorage.setItem(SEEN, "1"); } catch (e) {}
+      fb.hidden = true;
+    }
+    fb.querySelectorAll("[data-fb-close]").forEach(function (b) { b.addEventListener("click", fermer); });
+    /* Le clic sur « café » ouvre l'overlay Ko-fi (géré ailleurs) et ferme l'avis. */
+    var coffee = fb.querySelector(".carte-feedback__coffee");
+    if (coffee) { coffee.addEventListener("click", function () { setTimeout(fermer, 100); }); }
+
+    /* Déclenchement : ~45s après le chargement, seulement si le pop-up d'accueil
+       est déjà fermé (on ne superpose pas). */
+    setTimeout(function () {
+      var welcome = document.getElementById("carte-welcome");
+      if (welcome && !welcome.hidden) { return; } // encore sur l'accueil : on n'affiche pas
+      var seen2 = false; try { seen2 = localStorage.getItem(SEEN) === "1"; } catch (e) {}
+      if (!seen2) { fb.hidden = false; }
+    }, 45000);
   })();
 
   /* ======================================================================

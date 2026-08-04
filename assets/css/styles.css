@@ -974,6 +974,43 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 .carte-welcome__coffee { width: 100%; justify-content: center; gap: .45rem; }
 .carte-welcome__coffee svg { width: 1.2em; height: 1.2em; flex: none; stroke: #fff; }
 
+/* ===== Pop-up d'accueil 2 colonnes (branding + instructions) ===== */
+.carte-welcome__card--split {
+  width: min(720px, 100%); display: grid; grid-template-columns: 240px 1fr; gap: 0;
+  padding: 0; overflow: hidden; position: relative;
+}
+.carte-welcome__aside {
+  background: linear-gradient(160deg, var(--color-mist-2), #eef4f6);
+  padding: var(--space-5) var(--space-4); text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: .55rem;
+}
+.carte-welcome__photo {
+  width: 96px; height: 96px; border-radius: 50%; overflow: hidden; flex: none;
+  border: 3px solid #fff; box-shadow: 0 3px 12px rgba(10,44,63,.2); background: var(--color-border);
+}
+.carte-welcome__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.carte-welcome__by { margin: .2rem 0 0; font-size: .86rem; color: var(--color-ink); }
+.carte-welcome__by strong { color: var(--color-deep); }
+.carte-welcome__altologo img { width: 88px; height: auto; }
+.carte-welcome__pitch { margin: 0; font-size: .78rem; color: var(--color-slate); line-height: 1.4; }
+.carte-welcome__aside .carte-welcome__coffee { width: 100%; margin-top: .2rem; }
+.carte-welcome__social { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem; margin-top: .3rem; }
+.carte-welcome__social a {
+  width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  color: var(--color-slate); background: rgba(255,255,255,.7); border: 1px solid var(--color-border);
+  transition: background-color var(--dur-fast) ease, color var(--dur-fast) ease, transform var(--dur-fast) ease;
+}
+.carte-welcome__social a:hover { background: var(--color-deep); color: #fff; border-color: var(--color-deep); transform: translateY(-1px); }
+.carte-welcome__social svg { width: 15px; height: 15px; }
+.carte-welcome__main { padding: var(--space-5); position: relative; }
+.carte-welcome__main .carte-welcome__title { font-size: clamp(1.3rem, 3vw, 1.7rem); margin: .2rem 0 var(--space-2); }
+.carte-welcome__intro { font-size: .95rem; margin-bottom: var(--space-3); }
+.carte-welcome__card--split .carte-signup__close { z-index: 3; }
+@media (max-width: 560px) {
+  .carte-welcome__card--split { grid-template-columns: 1fr; max-width: 400px; max-height: 92vh; overflow-y: auto; }
+  .carte-welcome__aside { padding: var(--space-4); }
+}
+
 #carte .maplibregl-ctrl-attrib { font-size: 11px; }
 #carte .maplibregl-ctrl-attrib a { color: var(--color-link); }
 /* Modal d'inscription (mur freemium avant le rapport) */
@@ -1006,6 +1043,36 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 .carte-signup__msg--err { color: #C0392B; }
 .carte-signup__submit { width: 100%; justify-content: center; }
 .carte-signup__fine { font-size: .72rem; color: var(--color-slate); font-style: italic; margin: var(--space-3) 0 0; line-height: 1.4; }
+
+/* Pop-up avis automatique (après ~45s) — encart bas-centre discret */
+.carte-feedback {
+  position: absolute; left: 50%; bottom: 84px; transform: translateX(-50%);
+  z-index: 47; width: min(300px, calc(100% - 24px));
+  background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+  padding: var(--space-4) var(--space-4) var(--space-3); text-align: center;
+  border: 1px solid var(--color-border);
+}
+.carte-feedback[hidden] { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  html.js .carte-feedback:not([hidden]) { animation: cw-pop .45s var(--ease) both; }
+}
+.carte-feedback__close {
+  position: absolute; top: .5rem; right: .5rem; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--color-mist-2); border: 0; cursor: pointer; font-size: 1.2rem; line-height: 1; color: var(--color-slate);
+}
+.carte-feedback__close:hover { background: var(--color-deep); color: #fff; }
+.carte-feedback__photo {
+  width: 56px; height: 56px; border-radius: 50%; overflow: hidden; display: inline-block;
+  border: 2.5px solid #fff; box-shadow: 0 2px 8px rgba(10,44,63,.2); background: var(--color-border); margin-bottom: .4rem;
+}
+.carte-feedback__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.carte-feedback__title { margin: 0 0 .3rem; font-weight: 700; color: var(--color-deep); font-size: 1rem; }
+.carte-feedback__stars { display: flex; justify-content: center; gap: .1rem; }
+.carte-feedback__star { background: none; border: 0; cursor: pointer; font-size: 1.6rem; line-height: 1; color: var(--color-border); padding: 0 .05rem; transition: color var(--dur-fast) ease; }
+.carte-feedback__star.is-on { color: #F2B705; }
+.carte-feedback__msg { min-height: 1em; font-size: .82rem; color: var(--color-river); margin: .3rem 0; }
+.carte-feedback__coffee { width: 100%; justify-content: center; gap: .4rem; margin-top: .3rem; }
+.carte-feedback__coffee svg { stroke: #fff; width: 1.15em; height: 1.15em; }
 
 /* Marqueur d'adresse avec halo pulsant (F) */
 .carte-marker { position: relative; width: 20px; height: 20px; }
@@ -1207,6 +1274,8 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
   width: 14px; height: 14px; border-radius: 4px; flex: none;
   box-shadow: inset 0 0 0 1px rgba(10,44,63,.12);
 }
+/* Puce « ligne » (pour les couches de type contour, ex. limites municipales). */
+.lg-item i.lg-line { width: 16px; height: 3px; border-radius: 2px; box-shadow: none; }
 .map-search input[type="search"] { flex: 1; font: inherit; padding: .7rem 1rem; border-radius: var(--radius-pill); border: 1px solid var(--color-border); min-width: 0; }
 .map-search input[type="search"]:focus { outline-color: var(--color-river); border-color: var(--color-river); }
 

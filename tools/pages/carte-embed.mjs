@@ -39,28 +39,47 @@ export default {
   body: `    <div class="embed-map">
       <div id="carte" class="embed-map__canvas" role="application" aria-label="Carte interactive des zones inondables, milieux humides et bâtiments du Québec"></div>
 
-      <!-- Pop-up de bienvenue (fondu + léger zoom, affiché une fois). -->
+      <!-- Pop-up de bienvenue (2 colonnes : à propos + café / instructions). -->
       <div id="carte-welcome" class="carte-welcome" role="dialog" aria-modal="true" aria-labelledby="cw-title" hidden>
         <div class="carte-welcome__backdrop" data-cw-close></div>
-        <div class="carte-welcome__card" role="document">
-          <span class="carte-welcome__kicker">Rivières Libres</span>
-          <h2 id="cw-title" class="carte-welcome__title">Votre secteur est-il en zone inondable&nbsp;?</h2>
-          <p>Recherchez une adresse, activez les couches et explorez les zones inondables, les milieux humides et les bâtiments du Québec.</p>
-          <ol class="carte-welcome__steps carte-welcome__steps--num">
-            <li><strong>Cherchez votre adresse</strong> (en haut à gauche) ou utilisez votre position.</li>
-            <li><strong>Activez des couches</strong> (à droite) : zones inondables, milieux humides, niveau des rivières…</li>
-            <li><strong>Cliquez un bâtiment</strong> pour savoir s'il est en zone et voir sa superficie.</li>
-          </ol>
-          <p class="carte-welcome__legal">Information à valeur indicative, sans portée légale. Pour le statut réel d'un terrain, consultez votre municipalité.</p>
-          <a class="carte-welcome__alto" href="https://altogeo.ca" rel="noopener" target="_blank">
-            <img src="/assets/img/logo-alto-couleur.png" alt="Alto Géomatique" width="1280" height="714">
-            <span>Une carte gratuite, <strong>réalisée bénévolement par Alto Géomatique</strong>. Un café pour encourager le projet&nbsp;? &#9749;</span>
-          </a>
-          <div class="carte-welcome__actions">
+        <div class="carte-welcome__card carte-welcome__card--split" role="document">
+          <button type="button" class="carte-signup__close" data-cw-close aria-label="Fermer">&times;</button>
+
+          <!-- Colonne GAUCHE : qui je suis + café -->
+          <div class="carte-welcome__aside">
+            <span class="carte-welcome__photo">
+              <img src="/assets/img/mathieu.png" alt="Mathieu Simard" width="200" height="200" onerror="this.style.opacity=0">
+            </span>
+            <p class="carte-welcome__by">Une initiative de <strong>Mathieu Simard</strong></p>
+            <a class="carte-welcome__altologo" href="https://altogeo.ca" rel="noopener" target="_blank" aria-label="Alto Géomatique">
+              <img src="/assets/img/logo-alto-couleur.png" alt="Alto Géomatique" width="1280" height="714">
+            </a>
+            <p class="carte-welcome__pitch">Carte gratuite, réalisée bénévolement pour aider les citoyens à comprendre les zones inondables du Québec.</p>
             <button type="button" class="btn btn--coffee carte-welcome__coffee" data-kofi-open>
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 8h13v5a4 4 0 01-4 4H8a4 4 0 01-4-4V8zM17 9h1.5a2.5 2.5 0 010 5H17M7 3v2M11 3v2M15 3v2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Offrez-moi un café
             </button>
+            <nav class="carte-welcome__social" aria-label="Réseaux sociaux d'Alto Géomatique">
+              <a href="https://www.altogeo.ca/" rel="noopener" target="_blank" aria-label="Site web altogeo.ca" title="Site web"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.5 3.5 6 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-6-3.5-9s1-6.5 3.5-9z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a>
+              <a href="https://www.linkedin.com/in/mathieusimard26/" rel="noopener" target="_blank" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2 2 0 100 4 2 2 0 000-4zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C21 8.65 22 10.9 22 14v7h-4v-6.2c0-1.48-.03-3.4-2.07-3.4-2.07 0-2.39 1.62-2.39 3.29V21h-4z" fill="currentColor"/></svg></a>
+              <a href="https://www.facebook.com/profile.php?id=61587075343051" rel="noopener" target="_blank" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.5V7c0-.8.2-1.2 1.4-1.2H17V3h-2.6C11.6 3 10.5 4.5 10.5 6.7V8.5H8.5V12h2v9H14v-9h2.4l.4-3.5z" fill="currentColor"/></svg></a>
+              <a href="https://www.instagram.com/alto.geo360/" rel="noopener" target="_blank" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="7" r="1.2" fill="currentColor"/></svg></a>
+              <a href="https://www.youtube.com/@altogeo" rel="noopener" target="_blank" aria-label="YouTube" title="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg></a>
+              <a href="https://www.tiktok.com/@altogeomatique" rel="noopener" target="_blank" aria-label="TikTok" title="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v10.5a3.5 3.5 0 11-3-3.46V13a1.5 1.5 0 101.5 1.5V3H14c.2 1.9 1.6 3.4 3.5 3.6V9C16 8.9 14.8 8.2 14 7.2" fill="currentColor"/></svg></a>
+            </nav>
+          </div>
+
+          <!-- Colonne DROITE : instructions + ouvrir -->
+          <div class="carte-welcome__main">
+            <span class="carte-welcome__kicker">Rivières Libres</span>
+            <h2 id="cw-title" class="carte-welcome__title">Votre secteur est-il en zone inondable&nbsp;?</h2>
+            <p class="carte-welcome__intro">En quelques clics, vérifiez une adresse et explorez les zones inondables, les milieux humides et le niveau des rivières au Québec.</p>
+            <ol class="carte-welcome__steps carte-welcome__steps--num">
+              <li><strong>Cherchez votre adresse</strong> (en haut à gauche) ou utilisez votre position.</li>
+              <li><strong>Activez des couches</strong> (à droite) : zones inondables, milieux humides, niveau des rivières…</li>
+              <li><strong>Cliquez un bâtiment</strong> pour savoir s'il est en zone et obtenir un rapport.</li>
+            </ol>
+            <p class="carte-welcome__legal">Information à valeur indicative, sans portée légale. Pour le statut réel d'un terrain, consultez votre municipalité.</p>
             <button type="button" class="btn btn--primary carte-welcome__cta" data-cw-close>Ouvrir la carte</button>
           </div>
         </div>
@@ -104,6 +123,27 @@ export default {
           <button type="submit" class="btn btn--primary carte-signup__submit">Activer les alertes</button>
           <p class="carte-signup__fine">Nous surveillons les stations hydrométriques officielles (MSP/CEHQ) près de cette adresse. Information indicative, sans portée légale. Désinscription en un clic dans chaque courriel.</p>
         </form>
+      </div>
+
+      <!-- Pop-up automatique « Aimez-vous la carte ? » (après ~45s, 1 fois). -->
+      <div id="carte-feedback" class="carte-feedback" role="dialog" aria-modal="false" aria-labelledby="fb-title" hidden>
+        <button type="button" class="carte-feedback__close" data-fb-close aria-label="Fermer">&times;</button>
+        <span class="carte-feedback__photo">
+          <img src="/assets/img/mathieu.png" alt="Mathieu Simard" width="120" height="120" onerror="this.style.opacity=0">
+        </span>
+        <p id="fb-title" class="carte-feedback__title">Aimez-vous la carte&nbsp;?</p>
+        <div class="carte-feedback__stars" role="group" aria-label="Note de 1 à 5 étoiles">
+          <button type="button" class="carte-feedback__star" aria-label="1 étoile">&#9733;</button>
+          <button type="button" class="carte-feedback__star" aria-label="2 étoiles">&#9733;</button>
+          <button type="button" class="carte-feedback__star" aria-label="3 étoiles">&#9733;</button>
+          <button type="button" class="carte-feedback__star" aria-label="4 étoiles">&#9733;</button>
+          <button type="button" class="carte-feedback__star" aria-label="5 étoiles">&#9733;</button>
+        </div>
+        <p class="carte-feedback__msg" role="status" aria-live="polite"></p>
+        <a class="btn btn--coffee carte-feedback__coffee" href="https://ko-fi.com/mathieusimardalto" data-kofi-open>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 8h13v5a4 4 0 01-4 4H8a4 4 0 01-4-4V8zM17 9h1.5a2.5 2.5 0 010 5H17M7 3v2M11 3v2M15 3v2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Offrir un café à Mathieu
+        </a>
       </div>
 
       <!-- Rideau de transition SVG (bord courbe qui balaie, inspiration Codrops).
