@@ -28,6 +28,7 @@ export default {
       mhPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/mh-detail.pmtiles",
       muniPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/muni.pmtiles",
       stationsUrl: "https://geoegl.msp.gouv.qc.ca/apis/mapserver-vigilance/ws/vigilance.fcgi?service=wfs&version=1.1.0&request=getfeature&typename=stations_igo2_public&outputformat=geojson&srsName=epsg:4326",
+      grhqWms: "https://servicescarto.mrnf.gouv.qc.ca/pes/services/Territoire/GRHQ_simple_WMS/MapServer/WMSServer",
       fondPmtiles: "https://pub-5f67940718c04ef687da8ea84e84a4c8.r2.dev/fond-quebec.pmtiles"
     };
   </script>
@@ -289,6 +290,7 @@ export default {
               <li>Zones inondables et de mobilité (grille) — MRNF</li>
               <li>Zones inondables réglementaires (BDZI, préliminaire) — MELCCFP / CEHQ</li>
               <li>Milieux humides potentiels — MELCCFP</li>
+              <li>Réseau hydrographique (GRHQ) — MRNF</li>
               <li>Bâtiments — Référentiel du Québec (MRNF)</li>
             </ul>
             <p class="map-src__list">Fond de carte :</p>

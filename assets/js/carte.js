@@ -29,6 +29,7 @@
   var MUNI_PMTILES_URL = CFG.muniPmtiles || "";
   var STATIONS_URL = CFG.stationsUrl || "";
   var FOND_PMTILES_URL = CFG.fondPmtiles || "";
+  var GRHQ_WMS_URL = CFG.grhqWms || "";
   var MAPBOX_TOKEN = CFG.mapboxToken || "";
 
   /* Moteur : Mapbox GL JS natif si token + lib présents (fonds riches, 3D),
@@ -189,6 +190,7 @@
   var hasBdzi = false;
   var hasMh = false;
   var hasMuni = false;
+  var hasGrhq = false;
   var hasStations = false;
   var stationsRequested = false;
   var stationsInPanel = false;
@@ -354,6 +356,24 @@
         });
       }
     });
+
+    /* 2b) Réseau hydrographique GRHQ (cours d'eau) — WMS raster gouvernemental,
+       déjà stylé (traits bleus). Aucune donnée à héberger : le serveur MRNF rend
+       les tuiles à la demande. On l'insère sous les bâtiments (qui restent
+       cliquables au-dessus). */
+    if (GRHQ_WMS_URL && !map.getSource("grhq")) {
+      var grhqTiles = GRHQ_WMS_URL +
+        "?service=WMS&version=1.3.0&request=GetMap&layers=0&styles=" +
+        "&crs=EPSG:3857&bbox={bbox-epsg-3857}&width=256&height=256" +
+        "&format=image/png&transparent=true";
+      map.addSource("grhq", { type: "raster", tiles: [grhqTiles], tileSize: 256 });
+      map.addLayer({
+        id: "grhq", type: "raster", source: "grhq",
+        paint: { "raster-opacity": 0.85 },
+        layout: { visibility: "none" }
+      });
+      hasGrhq = true;
+    }
 
     /* 3) Bâtiments (PMTiles R2) — PAR-DESSUS les zones inondables. */
     if (BATIMENTS_PMTILES_URL && typeof pmtiles !== "undefined") {
@@ -673,6 +693,7 @@
     if (hasBdzi) toggles.push({ label: "Zones inondables réglementaires (BDZI)", color: "#3E7CB1", ids: ["bdzi-fill", "bdzi-line"], on: false, bdziLegend: true, note: "Cartographie réglementaire par force du courant et récurrence (crue 0-100 ans). Donnée préliminaire, sujette à révision. Source : MELCCFP / CEHQ." });
     if (hasMh) toggles.push({ label: "Milieux humides", color: "#5E8C3F", ids: ["mh-fill"], on: false, mhLegend: true, note: "Cartographie détaillée des milieux humides du sud du Québec (2023). Source : MELCCFP." });
     if (hasMuni) toggles.push({ label: "Limites municipales", color: "#0E3A52", ids: ["muni-line"], on: false, lineSwatch: "#0E3A52", note: "Limites des municipalités du Québec. Cliquez une limite pour voir le nom. Source : SDA, MRNF." });
+    if (hasGrhq) toggles.push({ label: "Réseau hydrographique (cours d'eau)", color: "#2B6CB0", ids: ["grhq"], on: false, lineSwatch: "#2B6CB0", note: "Rivières, ruisseaux et lacs du Québec (GRHQ simple). Source : MRNF." });
     LAYERS.forEach(function (l) {
       /* Les couches d'inondations par année (groupe « crues ») sont pilotées par
          le slider temporel en bas, PAS par une case ici : on les exclut du panneau
