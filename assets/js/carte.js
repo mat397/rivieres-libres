@@ -819,9 +819,11 @@
       acts.className = "carte-verdict__actions";
       acts.innerHTML =
         '<button type="button" class="carte-verdict__btn carte-verdict__btn--primary" data-verdict-report>Rapport complet</button>' +
+        '<button type="button" class="carte-verdict__btn" data-verdict-alert>Alertes</button>' +
         '<button type="button" class="carte-verdict__btn" data-verdict-share>Partager</button>';
       vSrc.parentNode.insertBefore(acts, vSrc);
       acts.querySelector("[data-verdict-share]").addEventListener("click", function (e) { partagerResultat(e.currentTarget); });
+      acts.querySelector("[data-verdict-alert]").addEventListener("click", function () { ouvrirAlerte(lng, lat); });
       acts.querySelector("[data-verdict-report]").addEventListener("click", function () {
         /* Mur freemium : si déjà inscrit (cette session), rapport direct ;
            sinon on ouvre le formulaire d'inscription d'abord. */
@@ -931,6 +933,57 @@
       .catch(function () {
         if (submitBtn) submitBtn.disabled = false;
         if (msg) { msg.textContent = "Impossible de vous inscrire pour le moment. Réessayez plus tard."; msg.className = "carte-signup__msg carte-signup__msg--err"; }
+      });
+    });
+  })();
+
+  /* --- Alertes : « Surveiller mon adresse » ------------------------------ */
+  var alerteLngLat = null;
+  function ouvrirAlerte(lng, lat) {
+    var m = document.getElementById("carte-alerte");
+    if (!m) return;
+    alerteLngLat = { lng: lng, lat: lat };
+    m.hidden = false;
+    var em = document.getElementById("alerte-email");
+    if (em) { setTimeout(function () { em.focus(); }, 60); }
+  }
+  (function initAlerte() {
+    var m = document.getElementById("carte-alerte");
+    var form = document.getElementById("carte-alerte-form");
+    if (!m || !form) return;
+    m.querySelectorAll("[data-alerte-close]").forEach(function (b) {
+      b.addEventListener("click", function () { m.hidden = true; });
+    });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (!alerteLngLat) return;
+      var email = (document.getElementById("alerte-email").value || "").trim();
+      var consent = document.getElementById("alerte-consent").checked;
+      var msg = document.getElementById("carte-alerte-msg");
+      var btn = form.querySelector(".carte-signup__submit");
+      if (!consent) { if (msg) msg.textContent = "Veuillez cocher la case de consentement."; return; }
+      if (msg) { msg.textContent = "Activation en cours…"; msg.className = "carte-signup__msg"; }
+      if (btn) btn.disabled = true;
+      fetch("/api/surveiller", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email, lat: alerteLngLat.lat, lng: alerteLngLat.lng,
+          adresse: (lastLoc && lastLoc.label) ? lastLoc.label : "", consentement: true
+        })
+      })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (btn) btn.disabled = false;
+        if (res.ok) {
+          if (msg) { msg.textContent = "C'est fait ! Vous serez alerté en cas de vigilance."; msg.className = "carte-signup__msg"; }
+          setTimeout(function () { m.hidden = true; }, 1800);
+        } else {
+          if (msg) { msg.textContent = (res.d && res.d.error) ? res.d.error : "Une erreur est survenue."; msg.className = "carte-signup__msg carte-signup__msg--err"; }
+        }
+      })
+      .catch(function () {
+        if (btn) btn.disabled = false;
+        if (msg) { msg.textContent = "Impossible d'activer les alertes pour le moment."; msg.className = "carte-signup__msg carte-signup__msg--err"; }
       });
     });
   })();

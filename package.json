@@ -1,0 +1,9 @@
+{
+  "name": "portail-zoneinondable",
+  "private": true,
+  "type": "module",
+  "description": "Rivières Libres — portail civique et carte des zones inondables (site statique + fonctions serverless Vercel).",
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
+  }
+}
