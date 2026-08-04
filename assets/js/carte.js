@@ -192,6 +192,7 @@
   var hasStations = false;
   var stationsRequested = false;
   var stationsInPanel = false;
+  var stationsData = null; /* GeoJSON des stations (pour le rapport) */
   var overlaysReady = false;
 
   /* Filet de sécurité : forcer un recalcul de taille (conteneur parfois
@@ -311,6 +312,7 @@
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (geojson) {
           if (!geojson || !geojson.features || !map) return;
+          stationsData = geojson; /* gardé pour trouver la station la plus proche (rapport) */
           if (!map.getSource("stations")) {
             map.addSource("stations", { type: "geojson", data: geojson });
           }
@@ -816,11 +818,16 @@
       var acts = document.createElement("div");
       acts.className = "carte-verdict__actions";
       acts.innerHTML =
-        '<button type="button" class="carte-verdict__btn" data-verdict-share>Partager ce résultat</button>' +
-        '<button type="button" class="carte-verdict__btn" data-verdict-print>Imprimer</button>';
+        '<button type="button" class="carte-verdict__btn carte-verdict__btn--primary" data-verdict-report>Rapport complet</button>' +
+        '<button type="button" class="carte-verdict__btn" data-verdict-share>Partager</button>';
       vSrc.parentNode.insertBefore(acts, vSrc);
       acts.querySelector("[data-verdict-share]").addEventListener("click", function (e) { partagerResultat(e.currentTarget); });
-      acts.querySelector("[data-verdict-print]").addEventListener("click", function () { imprimerVerdict(titre, corps, quoiFaire); });
+      acts.querySelector("[data-verdict-report]").addEventListener("click", function () {
+        /* Mur freemium : si déjà inscrit (cette session), rapport direct ;
+           sinon on ouvre le formulaire d'inscription d'abord. */
+        if (dejaInscrit) { genererRapport(lng, lat, titre, corps, quoiFaire, dansZone, bati); }
+        else { ouvrirSignup(function () { genererRapport(lng, lat, titre, corps, quoiFaire, dansZone, bati); }); }
+      });
     }
   }
 
@@ -836,27 +843,174 @@
     }
   }
 
-  /* G — Impression du verdict : ouvre une fenetre imprimable propre. */
-  function imprimerVerdict(titre, corps, quoiFaire) {
-    var adr = (lastLoc && lastLoc.label) ? lastLoc.label : "";
-    var w = window.open("", "_blank", "width=680,height=800");
+  /* --- Helpers pour le rapport ------------------------------------------- */
+  /* Distance approximative (km) entre 2 points lon/lat (Haversine). */
+  function distanceKm(lng1, lat1, lng2, lat2) {
+    var R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLng = (lng2 - lng1) * Math.PI / 180;
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+  /* Station hydrométrique la plus proche du point (via le GeoJSON en mémoire). */
+  function stationProche(lng, lat) {
+    if (!stationsData || !stationsData.features) return null;
+    var best = null, bestD = Infinity;
+    stationsData.features.forEach(function (f) {
+      if (!f.geometry || f.geometry.type !== "Point") return;
+      var c = f.geometry.coordinates;
+      var d = distanceKm(lng, lat, c[0], c[1]);
+      if (d < bestD) { bestD = d; best = f; }
+    });
+    return best ? { props: best.properties || {}, dist: bestD } : null;
+  }
+  /* Municipalité au point (query sur la couche muni si chargée). */
+  function muniAuPoint(lng, lat) {
+    if (!hasMuni || !map.getLayer("muni-line")) return null;
+    var pt = map.project([lng, lat]);
+    // On interroge un petit rectangle autour du point pour attraper le polygone.
+    var box = [[pt.x - 2, pt.y - 2], [pt.x + 2, pt.y + 2]];
+    var feats = map.queryRenderedFeatures(box, { layers: ["muni-line"] });
+    if (feats && feats.length) { return (feats[0].properties || {}).MUS_NM_MUN || null; }
+    return null;
+  }
+
+  /* --- Mur freemium : formulaire d'inscription avant le rapport ----------- */
+  var dejaInscrit = false;
+  try { dejaInscrit = localStorage.getItem("rl-inscrit") === "1"; } catch (e) {}
+  var signupOnSuccess = null;
+
+  function ouvrirSignup(onSuccess) {
+    var m = document.getElementById("carte-signup");
+    if (!m) { if (onSuccess) onSuccess(); return; }
+    signupOnSuccess = onSuccess;
+    m.hidden = false;
+    var em = document.getElementById("signup-email");
+    if (em) { setTimeout(function () { em.focus(); }, 60); }
+  }
+  function fermerSignup() {
+    var m = document.getElementById("carte-signup");
+    if (m) { m.hidden = true; }
+  }
+  (function initSignup() {
+    var m = document.getElementById("carte-signup");
+    var form = document.getElementById("carte-signup-form");
+    if (!m || !form) return;
+    m.querySelectorAll("[data-signup-close]").forEach(function (b) {
+      b.addEventListener("click", fermerSignup);
+    });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var email = (document.getElementById("signup-email").value || "").trim();
+      var consent = document.getElementById("signup-consent").checked;
+      var msg = document.getElementById("carte-signup-msg");
+      var submitBtn = form.querySelector(".carte-signup__submit");
+      if (!consent) { if (msg) msg.textContent = "Veuillez cocher la case de consentement."; return; }
+      if (msg) { msg.textContent = "Envoi en cours…"; msg.className = "carte-signup__msg"; }
+      if (submitBtn) submitBtn.disabled = true;
+
+      fetch("/api/inscription", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          adresse: (lastLoc && lastLoc.label) ? lastLoc.label : "",
+          consentement: true
+        })
+      })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (submitBtn) submitBtn.disabled = false;
+        if (res.ok) {
+          dejaInscrit = true;
+          try { localStorage.setItem("rl-inscrit", "1"); } catch (e) {}
+          fermerSignup();
+          if (signupOnSuccess) { signupOnSuccess(); signupOnSuccess = null; }
+        } else {
+          if (msg) { msg.textContent = (res.d && res.d.error) ? res.d.error : "Une erreur est survenue. Réessayez."; msg.className = "carte-signup__msg carte-signup__msg--err"; }
+        }
+      })
+      .catch(function () {
+        if (submitBtn) submitBtn.disabled = false;
+        if (msg) { msg.textContent = "Impossible de vous inscrire pour le moment. Réessayez plus tard."; msg.className = "carte-signup__msg carte-signup__msg--err"; }
+      });
+    });
+  })();
+
+  /* RAPPORT D'ADRESSE complet : page imprimable riche (mini-carte + statut +
+     station proche + municipalité + cadre 2026 + démarches). */
+  function genererRapport(lng, lat, titre, corps, quoiFaire, dansZone, bati) {
+    var adr = (lastLoc && lastLoc.label) ? lastLoc.label : (lat.toFixed(5) + ", " + lng.toFixed(5));
+    var muni = muniAuPoint(lng, lat);
+    var st = stationProche(lng, lat);
+    var dateStr = new Date().toLocaleDateString("fr-CA", { year: "numeric", month: "long", day: "numeric" });
+
+    /* Mini-carte statique Mapbox (marqueur sur l'adresse). */
+    var carteImg = "";
+    if (MAPBOX_TOKEN) {
+      var mk = "pin-l-marker+1E8AA0(" + lng.toFixed(5) + "," + lat.toFixed(5) + ")";
+      carteImg = "https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/" + mk + "/" +
+        lng.toFixed(5) + "," + lat.toFixed(5) + ",14,0/560x300@2x?access_token=" + MAPBOX_TOKEN + "&logo=false";
+    }
+
+    /* Bloc station. */
+    var stationHtml = "";
+    if (st) {
+      var p = st.props;
+      stationHtml = '<div class="box"><h3>Station de suivi la plus proche</h3>' +
+        "<p><strong>" + (p.plan_deau || "Cours d'eau") + "</strong> — à environ " + st.dist.toFixed(1) + " km" +
+        (p.dern_valeur_niv != null ? "<br>Niveau actuel : " + p.dern_valeur_niv + " m" : "") +
+        (p.dern_valeur_deb != null ? "<br>Débit actuel : " + p.dern_valeur_deb + " m³/s" : "") +
+        (p.etat ? "<br>État : " + p.etat : "") +
+        (p.url_vigilance ? '<br><a href="' + p.url_vigilance + '">Fiche officielle de la station</a>' : "") +
+        "</p></div>";
+    }
+
+    var muniLigne = muni
+      ? "Contactez la municipalité de <strong>" + muni + "</strong> pour connaître le statut réel et la réglementation applicable."
+      : "Contactez votre municipalité pour connaître le statut réel et la réglementation applicable.";
+
+    var w = window.open("", "_blank", "width=760,height=900");
     if (!w) return;
     w.document.write(
-      '<!doctype html><html lang="fr-CA"><head><meta charset="utf-8"><title>Rivieres Libres</title>' +
-      '<style>body{font-family:Georgia,serif;max-width:600px;margin:40px auto;padding:0 20px;color:#0E3A52;line-height:1.5}' +
-      'h1{font-size:1.1rem;color:#1E8AA0;letter-spacing:.1em;text-transform:uppercase}' +
-      'h2{font-size:1.4rem}.do{background:#f0f5ea;padding:12px 16px;border-radius:8px}' +
-      '.src{color:#667;font-style:italic;font-size:.85rem;margin-top:24px}</style></head><body>' +
-      "<h1>Rivieres Libres</h1>" +
-      (adr ? "<p><strong>Adresse :</strong> " + adr + "</p>" : "") +
-      "<h2>" + titre + "</h2><p>" + corps + "</p>" +
-      '<p class="do"><strong>Que faire ?</strong> ' + quoiFaire + "</p>" +
-      '<p class="src">Source : grille de presence des zones inondables, MRNF. Valeur indicative, aucune portee legale. ' +
-      "Carte realisee benevolement par Alto Geomatique.</p>" +
+      '<!doctype html><html lang="fr-CA"><head><meta charset="utf-8">' +
+      "<title>Rapport - " + adr.replace(/</g, "") + "</title>" +
+      "<style>" +
+      "*{box-sizing:border-box}" +
+      "body{font-family:Georgia,'Times New Roman',serif;max-width:680px;margin:0 auto;padding:32px 28px;color:#0E3A52;line-height:1.55}" +
+      ".kicker{font-family:Arial,sans-serif;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#1E8AA0;font-weight:bold;margin:0}" +
+      "h1{font-size:1.5rem;margin:.2rem 0 .1rem}" +
+      ".meta{font-family:Arial,sans-serif;font-size:.82rem;color:#667;margin:0 0 20px}" +
+      "img.map{width:100%;border-radius:10px;margin:8px 0 20px;border:1px solid #d6e0e4}" +
+      "h2{font-size:1.05rem;border-bottom:2px solid #1E8AA0;padding-bottom:4px;margin:26px 0 10px}" +
+      "h3{font-size:.95rem;margin:0 0 6px}" +
+      ".verdict{padding:14px 18px;border-radius:10px;border-left:5px solid " + (dansZone ? "#D64545;background:#fbeded" : "#5E8C3F;background:#f0f5ea") + "}" +
+      ".box{background:#f4f8fa;border-radius:10px;padding:12px 16px;margin:12px 0}" +
+      ".do{background:#f0f5ea;border-radius:10px;padding:12px 16px}" +
+      "a{color:#14708A}" +
+      ".src{font-family:Arial,sans-serif;font-size:.75rem;color:#778;font-style:italic;margin-top:26px;border-top:1px solid #e0e6ea;padding-top:12px}" +
+      "@media print{body{padding:0}a{color:#0E3A52;text-decoration:none}}" +
+      "</style></head><body>" +
+      '<p class="kicker">Rivières Libres — Rapport de situation</p>' +
+      "<h1>" + adr + "</h1>" +
+      '<p class="meta">Généré le ' + dateStr + (muni ? " · Municipalité : " + muni : "") + "</p>" +
+      (carteImg ? '<img class="map" src="' + carteImg + '" alt="Carte de l\'adresse">' : "") +
+      "<h2>1. Votre situation</h2>" +
+      '<div class="verdict"><strong>' + titre + "</strong><p style=\"margin:.4rem 0 0\">" + corps + "</p></div>" +
+      stationHtml +
+      "<h2>2. Ce que le cadre 2026 implique</h2>" +
+      "<p>Depuis mars 2026, le Québec encadre les <strong>zones inondables et les zones de mobilité des cours d'eau</strong>. " +
+      "Dans un secteur cartographié, certaines activités (construction, agrandissement, remblai, ouvrages) peuvent être " +
+      "restreintes ou soumises à des conditions. Les cartes de nouvelle génération sont publiées progressivement.</p>" +
+      "<h2>3. Vos démarches</h2>" +
+      '<div class="do"><p style="margin:0"><strong>Que faire ?</strong> ' + quoiFaire + "</p>" +
+      "<p style=\"margin:.5rem 0 0\">" + muniLigne + "</p></div>" +
+      '<p class="src">Sources : grille des zones inondables et de mobilité (MRNF), BDZI (MELCCFP/CEHQ), ' +
+      "milieux humides (MELCCFP), stations hydrométriques (MSP/CEHQ), référentiel des bâtiments (MRNF). " +
+      "Ce rapport a une valeur indicative et n'a aucune portée légale. Il ne remplace pas les cartes officielles, " +
+      "les règlements ni l'avis des autorités compétentes. Carte réalisée bénévolement par Alto Géomatique — altogeo.ca.</p>" +
       "</body></html>"
     );
     w.document.close();
-    setTimeout(function () { w.print(); }, 350);
+    setTimeout(function () { w.print(); }, 700);
   }
 
   var lastLoc = null; // dernière position localisée (pour le partage)

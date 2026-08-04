@@ -65,6 +65,26 @@
         </div>
       </div>
 
+      <!-- Modal d'inscription (mur freemium) avant le rapport d'adresse complet. -->
+      <div id="carte-signup" class="carte-signup" role="dialog" aria-modal="true" aria-labelledby="signup-title" hidden>
+        <div class="carte-signup__backdrop" data-signup-close></div>
+        <form id="carte-signup-form" class="carte-signup__card" role="document">
+          <button type="button" class="carte-signup__close" data-signup-close aria-label="Fermer">&times;</button>
+          <span class="carte-welcome__kicker">Rapport gratuit</span>
+          <h2 id="signup-title" class="carte-signup__title">Recevez votre rapport de situation</h2>
+          <p class="carte-signup__lead">Entrez votre courriel pour obtenir le rapport complet de cette adresse (statut, cadre 2026, démarches). C'est gratuit.</p>
+          <label class="carte-signup__label" for="signup-email">Votre courriel</label>
+          <input id="signup-email" name="email" type="email" required autocomplete="email" placeholder="vous@exemple.com" class="carte-signup__input">
+          <label class="carte-signup__consent">
+            <input type="checkbox" id="signup-consent" name="consentement" required>
+            <span>J'accepte de recevoir par courriel mon rapport et, occasionnellement, des nouvelles et offres d'Alto Géomatique. Je peux me désinscrire en tout temps.</span>
+          </label>
+          <p id="carte-signup-msg" class="carte-signup__msg" role="status" aria-live="polite"></p>
+          <button type="submit" class="btn btn--primary carte-signup__submit">Obtenir mon rapport</button>
+          <p class="carte-signup__fine">Vos données servent à vous transmettre le rapport et, avec votre consentement, des communications d'Alto Géomatique (altogeo.ca). Aucune revente. Désinscription en un clic.</p>
+        </form>
+      </div>
+
       <!-- Rideau de transition SVG (bord courbe qui balaie, inspiration Codrops).
            Couvre l'écran au départ ; au clic « Explorer », le path s'anime vers
            le bas et révèle la carte. Retiré du DOM après l'animation. -->
