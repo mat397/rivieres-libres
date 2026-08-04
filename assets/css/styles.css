@@ -392,8 +392,8 @@ html.menu-open, html.menu-open body { overflow: hidden; }
    ========================================================================== */
 .hero {
   position: relative; color: #fff; background: var(--color-deep-2);
-  overflow: hidden; display: flex; align-items: flex-end;
-  min-height: 100svh; min-height: 100dvh;
+  overflow: hidden; display: flex; align-items: center;
+  min-height: 88svh; min-height: 88dvh;
 }
 .hero__media { position: absolute; inset: 0; }
 .hero__media img { width: 100%; height: 100%; object-fit: cover; }
@@ -406,7 +406,9 @@ html.menu-open, html.menu-open body { overflow: hidden; }
 .hero__inner {
   position: relative; z-index: 1; width: 100%;
   max-width: var(--maxw); margin-inline: auto;
-  padding: calc(var(--nav-h) + var(--space-5)) var(--space-4) var(--space-7);
+  /* Contenu centre verticalement : padding haut = hauteur nav (protege du menu
+     fixe), padding bas equilibre pour ne pas coller le titre au bas. */
+  padding: calc(var(--nav-h) + var(--space-4)) var(--space-4) var(--space-4);
 }
 .hero__title {
   font-size: var(--fs-display); color: #fff; line-height: 1.06;
@@ -1005,6 +1007,7 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 .carte-welcome__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .carte-welcome__by { margin: .2rem 0 0; font-size: .86rem; color: var(--color-ink); }
 .carte-welcome__by strong { color: var(--color-deep); }
+.carte-welcome__tagline { margin: .15rem 0 0; font-family: var(--font-display); font-style: italic; font-size: .84rem; color: var(--color-slate); }
 .carte-welcome__altologo img { width: 88px; height: auto; }
 .carte-welcome__pitch { margin: 0; font-size: .78rem; color: var(--color-slate); line-height: 1.4; }
 .carte-welcome__aside .carte-welcome__coffee { width: 100%; margin-top: .2rem; }
