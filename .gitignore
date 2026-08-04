@@ -21,3 +21,4 @@ npm-debug.log*
 _range-server.mjs
 
 .vercel
+err*.txt
