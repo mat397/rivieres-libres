@@ -944,6 +944,18 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 .carte-welcome__title { font-size: clamp(1.4rem, 3vw, 1.9rem); margin-bottom: var(--space-3); }
 .carte-welcome__steps { margin: 0 0 var(--space-3); padding-left: 1.2em; }
 .carte-welcome__steps li { margin-bottom: var(--space-1); font-size: .96rem; }
+/* Étapes numérotées visuelles (badge rond) — E, guide de première visite. */
+.carte-welcome__steps--num { list-style: none; padding-left: 0; counter-reset: step; margin-bottom: var(--space-4); }
+.carte-welcome__steps--num li {
+  position: relative; padding-left: 2.2rem; margin-bottom: var(--space-2); counter-increment: step;
+  font-size: .92rem; line-height: 1.4;
+}
+.carte-welcome__steps--num li::before {
+  content: counter(step); position: absolute; left: 0; top: 0;
+  width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  background: var(--color-river); color: #fff; font-weight: 700; font-size: .85rem;
+  display: flex; align-items: center; justify-content: center;
+}
 .carte-welcome__legal { font-size: .85rem; color: var(--color-slate); font-style: italic; margin-bottom: var(--space-3); }
 /* Notice « offert par Alto » avec logo, dans le pop-up d'entrée. */
 .carte-welcome__alto {
@@ -966,6 +978,36 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 
 #carte .maplibregl-ctrl-attrib { font-size: 11px; }
 #carte .maplibregl-ctrl-attrib a { color: var(--color-link); }
+/* Marqueur d'adresse avec halo pulsant (F) */
+.carte-marker { position: relative; width: 20px; height: 20px; }
+.carte-marker__dot {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 14px; height: 14px; border-radius: 50%; background: var(--color-river);
+  border: 2.5px solid #fff; box-shadow: 0 1px 4px rgba(10,44,63,.4); z-index: 2;
+}
+.carte-marker__pulse {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 14px; height: 14px; border-radius: 50%; background: var(--color-river); z-index: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .carte-marker__pulse { animation: marker-pulse 1.8s ease-out infinite; }
+}
+@keyframes marker-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(30,138,160,.5); opacity: .8; }
+  70% { box-shadow: 0 0 0 18px rgba(30,138,160,0); opacity: 0; }
+  100% { box-shadow: 0 0 0 0 rgba(30,138,160,0); opacity: 0; }
+}
+
+/* Boutons d'action du verdict (partager / imprimer) — D, G */
+.carte-verdict__actions { display: flex; gap: .5rem; margin-top: var(--space-2); flex-wrap: wrap; }
+.carte-verdict__btn {
+  font: inherit; font-size: .82rem; font-weight: 600; cursor: pointer;
+  background: #fff; color: var(--color-deep); border: 1px solid var(--color-border);
+  padding: .4rem .8rem; border-radius: var(--radius-pill);
+  transition: background-color var(--dur-fast) ease, color var(--dur-fast) ease;
+}
+.carte-verdict__btn:hover { background: var(--color-deep); color: #fff; border-color: var(--color-deep); }
+
 /* Popup au clic sur un bâtiment (croisement zone inondable) */
 .carte-popup { font-size: .88rem; line-height: 1.4; color: var(--color-ink); display: grid; gap: .35rem; }
 .carte-popup strong { color: var(--color-deep); font-size: .95rem; }

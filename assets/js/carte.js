@@ -27,6 +27,7 @@
   var BDZI_PMTILES_URL = CFG.bdziPmtiles || "";
   var MH_PMTILES_URL = CFG.mhPmtiles || "";
   var MUNI_PMTILES_URL = CFG.muniPmtiles || "";
+  var STATIONS_URL = CFG.stationsUrl || "";
   var FOND_PMTILES_URL = CFG.fondPmtiles || "";
   var MAPBOX_TOKEN = CFG.mapboxToken || "";
 
@@ -188,6 +189,9 @@
   var hasBdzi = false;
   var hasMh = false;
   var hasMuni = false;
+  var hasStations = false;
+  var stationsRequested = false;
+  var stationsInPanel = false;
   var overlaysReady = false;
 
   /* Filet de sécurité : forcer un recalcul de taille (conteneur parfois
@@ -297,6 +301,44 @@
       hasMuni = true;
     }
 
+    /* 1e) Stations hydrométriques temps réel (GeoJSON MSP Vigilance) — points
+       du niveau/débit ACTUEL des rivières. Chargé en direct (données fraîches),
+       avec garde : si le serveur gouvernemental échoue, la carte n'est pas
+       cassée. Ajouté une seule fois (drapeau). */
+    if (STATIONS_URL && !stationsRequested) {
+      stationsRequested = true;
+      fetch(STATIONS_URL)
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (geojson) {
+          if (!geojson || !geojson.features || !map) return;
+          if (!map.getSource("stations")) {
+            map.addSource("stations", { type: "geojson", data: geojson });
+          }
+          /* Couleur du point selon l'état de vigilance. */
+          var STATION_COLOR = ["match", ["get", "etat"],
+            "Surveillance", "#E8923A",
+            "Alerte", "#D64545",
+            "Alerte majeure", "#9B2C2C",
+            "#1E8AA0" /* normal / inconnu : turquoise */
+          ];
+          if (!map.getLayer("stations-pt")) {
+            map.addLayer({
+              id: "stations-pt", type: "circle", source: "stations", minzoom: 6,
+              paint: {
+                "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 3.5, 12, 7],
+                "circle-color": STATION_COLOR,
+                "circle-stroke-color": "#fff", "circle-stroke-width": 1.5,
+                "circle-opacity": 0.9
+              },
+              layout: { visibility: "none" }
+            });
+          }
+          hasStations = true;
+          if (overlaysReady && !stationsInPanel) { addStationToggle(); }
+        })
+        .catch(function () { /* serveur gouv indisponible : on ignore silencieusement */ });
+    }
+
     /* 2) (aucune couche raster secondaire restante) */
     LAYERS.forEach(function (l) {
       if (!map.getSource(l.id)) {
@@ -330,6 +372,19 @@
           paint: { "line-color": "#0A2C3F", "line-width": 0.5 }
         });
       }
+      /* F — Couche de survol : le bâtiment sous la souris ressort (turquoise +
+         contour épais). Pilotée par feature-state au mousemove. */
+      if (!map.getLayer("batiments-hover")) {
+        map.addLayer({
+          id: "batiments-hover", type: "line", source: "batiments", "source-layer": "batiments",
+          minzoom: 12,
+          paint: {
+            "line-color": "#1E8AA0",
+            "line-width": ["case", ["boolean", ["feature-state", "hover"], false], 2.4, 0],
+            "line-opacity": 0.95
+          }
+        });
+      }
       hasBatiments = true;
     }
 
@@ -345,11 +400,40 @@
     if (overlaysReady) { addOverlays(); syncLayerVisibility(); }
   });
 
+  /* D — Si l'URL contient une position (lien partagé), on y va au chargement. */
+  map.on("load", function () {
+    try {
+      var q = new URL(window.location.href).searchParams;
+      var lat = parseFloat(q.get("lat")), lng = parseFloat(q.get("lng"));
+      if (!isNaN(lat) && !isNaN(lng)) {
+        // Léger délai pour laisser les couches s'attacher (verdict fiable).
+        setTimeout(function () { localiser(lng, lat); }, 300);
+      }
+    } catch (e) {}
+  });
+
   /* Interactions bâtiments (attachées une seule fois, indépendantes du style) */
   if (BATIMENTS_PMTILES_URL) {
     (function () {
+      var hoveredId = null;
       map.on("mouseenter", "batiments-fill", function () { map.getCanvas().style.cursor = "pointer"; });
-      map.on("mouseleave", "batiments-fill", function () { map.getCanvas().style.cursor = ""; });
+      map.on("mousemove", "batiments-fill", function (e) {
+        if (!e.features || !e.features.length) return;
+        var id = e.features[0].id;
+        if (id == null) return;
+        if (hoveredId !== null && hoveredId !== id) {
+          map.setFeatureState({ source: "batiments", sourceLayer: "batiments", id: hoveredId }, { hover: false });
+        }
+        hoveredId = id;
+        map.setFeatureState({ source: "batiments", sourceLayer: "batiments", id: hoveredId }, { hover: true });
+      });
+      map.on("mouseleave", "batiments-fill", function () {
+        map.getCanvas().style.cursor = "";
+        if (hoveredId !== null) {
+          map.setFeatureState({ source: "batiments", sourceLayer: "batiments", id: hoveredId }, { hover: false });
+          hoveredId = null;
+        }
+      });
 
       /* Clic sur un bâtiment : popup avec superficie + CROISEMENT zone inondable
          (le bâtiment tombe-t-il dans un secteur cartographié ?). Formulation
@@ -394,6 +478,31 @@
           .addTo(map);
       });
     })();
+  }
+
+  /* Clic sur une station hydrométrique : popup avec débit/niveau actuels,
+     l'état de vigilance et un lien vers la fiche officielle. */
+  if (STATIONS_URL) {
+    map.on("click", "stations-pt", function (e) {
+      if (!e.features || !e.features.length) return;
+      var p = e.features[0].properties || {};
+      var deb = (p.dern_valeur_deb != null) ? (p.dern_valeur_deb + " m&sup3;/s") : "n.d.";
+      var niv = (p.dern_valeur_niv != null) ? (p.dern_valeur_niv + " m") : "n.d.";
+      var date = p.dern_date_prise_valeur_utc ? p.dern_date_prise_valeur_utc.replace("T", " ").slice(0, 16) : "";
+      var lien = p.url_vigilance || p.fournisseur_url || "";
+      var html = '<strong>' + (p.plan_deau || "Station hydrométrique") + "</strong>" +
+        '<span class="carte-popup__note">' + (p.description || "") + "</span>" +
+        '<span class="carte-popup__sup">Débit : ' + deb + " &middot; Niveau : " + niv + "</span>" +
+        (p.etat ? '<span class="carte-popup__zone ' + (p.etat.indexOf("lerte") !== -1 ? "carte-popup__zone--in" : "carte-popup__zone--out") + '">État : ' + p.etat + "</span>" : "") +
+        (date ? '<span class="carte-popup__note">Mesure : ' + date + " (UTC)</span>" : "") +
+        (lien ? '<span class="carte-popup__note"><a href="' + lien + '" target="_blank" rel="noopener">Fiche officielle</a></span>' : "");
+      new GL.Popup({ closeButton: true, maxWidth: "250px" })
+        .setLngLat(e.lngLat)
+        .setHTML('<div class="carte-popup">' + html + "</div>")
+        .addTo(map);
+    });
+    map.on("mouseenter", "stations-pt", function () { map.getCanvas().style.cursor = "pointer"; });
+    map.on("mouseleave", "stations-pt", function () { map.getCanvas().style.cursor = ""; });
   }
 
   /* Clic sur une limite municipale : popup avec le nom (la couche n'a PAS
@@ -549,7 +658,9 @@
     });
     if (hasBatiments) toggles.push({ label: "Bâtiments", color: "#0E3A52", ids: ["batiments-fill", "batiments-line"], on: true, note: "Visibles à partir d'un zoom rapproché." });
 
-    toggles.forEach(function (t) {
+    /* Construit et ajoute une ligne de couche au panneau. Réutilisable (aussi
+       pour les stations qui arrivent en asynchrone après le build). */
+    makeToggle = function (t) {
       var wrap = document.createElement("div");
       wrap.className = "carte-couche-wrap";
 
@@ -562,9 +673,6 @@
       row.appendChild(document.createTextNode(t.label));
       wrap.appendChild(row);
 
-      /* Petit « i » d'info à côté du titre : info SUBTILE au survol (tooltip).
-         Le tooltip est positionné en JS (position: fixed) pour ne jamais être
-         clippé par l'overflow du panneau. */
       if (t.note) {
         var info = document.createElement("span");
         info.className = "carte-couche__info";
@@ -580,13 +688,13 @@
         info.addEventListener("blur", hideTip);
       }
 
-      /* Zone de légende (couleurs), repliée sauf si la couche est active. */
       var leg = document.createElement("div");
       leg.className = "carte-legende";
       leg.hidden = !t.on;
       if (t.ids.indexOf("grille-fill") !== -1) { leg.innerHTML += '<div class="lg-items">' + GRILLE_LEGEND + "</div>"; }
       if (t.bdziLegend) { leg.innerHTML += '<div class="lg-items">' + BDZI_LEGEND + "</div>"; }
       if (t.mhLegend) { leg.innerHTML += '<div class="lg-items">' + MH_LEGEND + "</div>"; }
+      if (t.stationsLegend) { leg.innerHTML += '<div class="lg-items">' + STATIONS_LEGEND + "</div>"; }
       if (t.simpleSwatch) { leg.innerHTML += '<div class="lg-items"><span class="lg-item"><i style="background:' + t.simpleSwatch + '"></i>' + t.label + "</span></div>"; }
       if (t.legendImg) {
         var img = document.createElement("img");
@@ -605,6 +713,29 @@
       });
 
       box.appendChild(wrap);
+    };
+
+    toggles.forEach(makeToggle);
+
+    /* Si les stations sont déjà chargées au moment du build, on ajoute leur
+       toggle ici ; sinon addStationToggle() s'en charge à l'arrivée du fetch. */
+    if (hasStations && !stationsInPanel) { addStationToggle(); }
+  }
+
+  /* Légende + toggle des stations (défini au niveau IIFE pour être appelable
+     depuis le fetch asynchrone comme depuis buildControls). */
+  var makeToggle = null;
+  var STATIONS_LEGEND =
+    '<span class="lg-item"><i style="background:#1E8AA0;border-radius:50%"></i>Niveau normal / inconnu</span>' +
+    '<span class="lg-item"><i style="background:#E8923A;border-radius:50%"></i>Surveillance</span>' +
+    '<span class="lg-item"><i style="background:#D64545;border-radius:50%"></i>Alerte</span>';
+  function addStationToggle() {
+    if (stationsInPanel || !makeToggle) return;
+    stationsInPanel = true;
+    makeToggle({
+      label: "Niveau des rivières (temps réel)", ids: ["stations-pt"], on: false,
+      stationsLegend: true,
+      note: "Stations hydrométriques : débit et niveau actuels des rivières, avec état de vigilance. Cliquez une station. Source : MSP / CEHQ (temps réel)."
     });
   }
 
@@ -679,12 +810,72 @@
     verdictEl.hidden = false;
     var vClose = verdictEl.querySelector(".carte-verdict__close");
     if (vClose) { vClose.addEventListener("click", function () { verdictEl.hidden = true; }); }
+    /* Injecter les boutons d'action (partager / imprimer) avant la source. */
+    var vSrc = verdictEl.querySelector(".carte-verdict__src");
+    if (vSrc) {
+      var acts = document.createElement("div");
+      acts.className = "carte-verdict__actions";
+      acts.innerHTML =
+        '<button type="button" class="carte-verdict__btn" data-verdict-share>Partager ce résultat</button>' +
+        '<button type="button" class="carte-verdict__btn" data-verdict-print>Imprimer</button>';
+      vSrc.parentNode.insertBefore(acts, vSrc);
+      acts.querySelector("[data-verdict-share]").addEventListener("click", function (e) { partagerResultat(e.currentTarget); });
+      acts.querySelector("[data-verdict-print]").addEventListener("click", function () { imprimerVerdict(titre, corps, quoiFaire); });
+    }
   }
 
-  function localiser(lng, lat) {
+  /* D — Partage du résultat : copie le lien de la carte (avec la position). */
+  function partagerResultat(btn) {
+    var url = window.location.href;
+    var done = function () { var t = btn.textContent; btn.textContent = "Lien copié !"; setTimeout(function () { btn.textContent = t; }, 1800); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done).catch(done);
+    } else {
+      var ta = document.createElement("textarea"); ta.value = url; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); } catch (e) {} document.body.removeChild(ta); done();
+    }
+  }
+
+  /* G — Impression du verdict : ouvre une fenetre imprimable propre. */
+  function imprimerVerdict(titre, corps, quoiFaire) {
+    var adr = (lastLoc && lastLoc.label) ? lastLoc.label : "";
+    var w = window.open("", "_blank", "width=680,height=800");
+    if (!w) return;
+    w.document.write(
+      '<!doctype html><html lang="fr-CA"><head><meta charset="utf-8"><title>Rivieres Libres</title>' +
+      '<style>body{font-family:Georgia,serif;max-width:600px;margin:40px auto;padding:0 20px;color:#0E3A52;line-height:1.5}' +
+      'h1{font-size:1.1rem;color:#1E8AA0;letter-spacing:.1em;text-transform:uppercase}' +
+      'h2{font-size:1.4rem}.do{background:#f0f5ea;padding:12px 16px;border-radius:8px}' +
+      '.src{color:#667;font-style:italic;font-size:.85rem;margin-top:24px}</style></head><body>' +
+      "<h1>Rivieres Libres</h1>" +
+      (adr ? "<p><strong>Adresse :</strong> " + adr + "</p>" : "") +
+      "<h2>" + titre + "</h2><p>" + corps + "</p>" +
+      '<p class="do"><strong>Que faire ?</strong> ' + quoiFaire + "</p>" +
+      '<p class="src">Source : grille de presence des zones inondables, MRNF. Valeur indicative, aucune portee legale. ' +
+      "Carte realisee benevolement par Alto Geomatique.</p>" +
+      "</body></html>"
+    );
+    w.document.close();
+    setTimeout(function () { w.print(); }, 350);
+  }
+
+  var lastLoc = null; // dernière position localisée (pour le partage)
+  function localiser(lng, lat, label) {
+    lastLoc = { lng: lng, lat: lat, label: label || "" };
     map.flyTo({ center: [lng, lat], zoom: 15, duration: REDUCED ? 0 : 1400 });
     if (window._rlMarker) { window._rlMarker.remove(); }
-    window._rlMarker = new GL.Marker({ color: "#1E8AA0" }).setLngLat([lng, lat]).addTo(map);
+    /* Marqueur avec un halo pulsant (élément DOM custom) — F. */
+    var elMark = document.createElement("div");
+    elMark.className = "carte-marker";
+    elMark.innerHTML = '<span class="carte-marker__pulse"></span><span class="carte-marker__dot"></span>';
+    window._rlMarker = new GL.Marker({ element: elMark, anchor: "center" }).setLngLat([lng, lat]).addTo(map);
+    /* Met à jour l'URL avec la position (partageable) sans recharger — D. */
+    try {
+      var u = new URL(window.location.href);
+      u.searchParams.set("lat", lat.toFixed(5));
+      u.searchParams.set("lng", lng.toFixed(5));
+      window.history.replaceState(null, "", u.toString());
+    } catch (e) {}
     // Attendre la stabilisation de la carte avant d'interroger les couches rendues.
     map.once("idle", function () {
       if (hasGrille) { afficheVerdict(lng, lat); }
