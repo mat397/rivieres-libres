@@ -154,8 +154,13 @@
         <path class="carte-wipe__path" fill="url(#wipeGrad)" d="M 0 0 V 100 Q 50 100 100 100 V 0 z" />
       </svg>
 
+      <!-- Burger mobile : ouvre/ferme la barre d'actions (masqué sur desktop). -->
+      <button id="carte-burger" class="carte-burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="carte-actions">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+
       <!-- HAUT-DROITE : barre d'actions (aide, partage, notation, plein écran, retour) -->
-      <div class="embed-map__actions">
+      <div id="carte-actions" class="embed-map__actions">
         <button id="carte-help" class="map-act" type="button" aria-label="Revoir le message d'accueil" title="Aide">
           <span class="map-act__i">i</span>
         </button>
@@ -236,7 +241,10 @@
       </div>
 
       <!-- HAUT-DROITE (sous la barre d'actions) : couches et filtres REPLIABLES -->
+      <!-- Fond sombre du bottom sheet (mobile seulement) -->
+      <div id="carte-layers-backdrop" class="carte-layers-backdrop"></div>
       <div class="embed-map__layers">
+        <span class="carte-sheet-handle" aria-hidden="true"></span>
         <button type="button" class="embed-map__layers-toggle" aria-expanded="true" aria-controls="carte-couches-body">
           <span>Couches et filtres</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -244,6 +252,16 @@
         <div id="carte-couches-body" class="embed-map__layers-body">
           <div id="carte-couches" class="carte-couches"></div>
         </div>
+      </div>
+
+      <!-- FABs mobiles (bas-droite) : ma position + couches. Masqués sur desktop. -->
+      <div class="carte-fabs">
+        <button id="carte-fab-pos" class="carte-fab" type="button" aria-label="Utiliser ma position">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M12 5a7 7 0 100 14 7 7 0 000-14z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        </button>
+        <button id="carte-fab-couches" class="carte-fab carte-fab--primary" type="button" aria-label="Couches et fond de carte" aria-expanded="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5M3 17l9 5 9-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
 
       <!-- BAS-GAUCHE : sélecteur de fond dépliable (vignettes) -->

@@ -1495,57 +1495,102 @@ html:has(body.is-embed), body.is-embed { height: 100%; overflow: hidden; }
 .map-src__portail { margin: 0; font-size: .84rem; }
 .map-src__portail a { color: var(--color-link); font-weight: 600; }
 
-/* ===== CARTE MOBILE : layout empile, aucun chevauchement (<= 600px) ===== */
+/* ===== Elements mobiles (burger, FABs, sheet) : caches sur desktop ===== */
+.carte-burger, .carte-fabs, .carte-layers-backdrop, .carte-sheet-handle { display: none; }
+
+/* ==========================================================================
+   CARTE MOBILE (<= 600px) — architecture repensee (audit UX) :
+   - haut : SEULE la barre de recherche (pleine largeur)
+   - burger haut-droite : ouvre la barre d'actions (aide/partage/note/plein-ecran/retour)
+   - FABs bas-droite : ma position + couches
+   - couches = BOTTOM SHEET (glisse du bas), le reste de l'ecran = carte
+   ========================================================================== */
 @media (max-width: 600px) {
-  /* Barre d'actions haut-droite : boutons compacts, le « retour » = icone seule. */
-  .embed-map__actions { top: 8px; right: 8px; gap: .3rem; }
-  .map-act { width: 36px; height: 36px; }
-  .map-act svg { width: 18px; height: 18px; }
-  .map-act--src { width: 32px; height: 32px; }
-  .map-act--back-txt { display: none; }
-  .embed-map__back.map-act--back { width: 36px; height: 36px; padding: 0; justify-content: center; border-radius: 50%; }
-
-  /* Recherche haut-gauche : laisse la place aux actions a droite. */
+  /* -- Recherche : seul element permanent en haut, pleine largeur -- */
   .embed-map__search {
-    top: 8px; left: 8px;
-    width: auto; right: calc(8px + 5 * 36px + 4 * .3rem + 6px);
-    max-width: none;
+    top: 8px; left: 8px; right: calc(8px + 44px + 8px); /* place pour le burger */
+    width: auto; max-width: none;
   }
-  .embed-map__search .map-search input[type="search"] { font-size: 16px; } /* evite le zoom iOS */
-  .carte-navctrls { gap: .3rem; }
-  .carte-navbtn { width: 36px; height: 36px; }
+  .embed-map__search .map-search input[type="search"] { font-size: 16px; } /* pas de zoom iOS */
+  /* La rangee home/zoom/position sous la recherche disparait : pinch + FAB position */
+  .carte-navctrls { display: none; }
 
-  /* Panneau couches : replie par defaut (JS), pleine largeur, SOUS la recherche
-     et sa rangee de controles (home/zoom/position) pour ne rien recouvrir. */
+  /* -- Burger haut-droite -- */
+  .carte-burger {
+    display: inline-flex; align-items: center; justify-content: center;
+    position: absolute; top: 8px; right: 8px; z-index: 10;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,.96); color: var(--color-deep); border: 1px solid var(--color-border);
+    box-shadow: 0 2px 8px rgba(10,44,63,.18); cursor: pointer;
+  }
+  .carte-burger svg { width: 22px; height: 22px; }
+  .carte-burger[aria-expanded="true"] { background: var(--color-deep); color: #fff; }
+
+  /* -- Barre d'actions : cachee par defaut, deployee en colonne sous le burger -- */
+  .embed-map__actions {
+    top: 60px; right: 8px; z-index: 9;
+    flex-direction: column; align-items: flex-end; gap: .4rem;
+    opacity: 0; transform: translateY(-6px); pointer-events: none;
+    transition: opacity var(--dur-fast) ease, transform var(--dur-fast) ease;
+  }
+  .embed-map__actions.is-open { opacity: 1; transform: none; pointer-events: auto; }
+  .map-act { width: 44px; height: 44px; }
+  .map-act--back-txt { display: none; }
+  .embed-map__back.map-act--back { width: 44px; height: 44px; padding: 0; justify-content: center; border-radius: 50%; }
+  /* Les menus (partage/note) s'ouvrent VERS LA GAUCHE pour rester a l'ecran. */
+  .embed-map__actions .map-menu { right: calc(100% + 6px); top: 0; left: auto; }
+
+  /* -- FABs bas-droite : ma position + couches -- */
+  .carte-fabs {
+    display: flex; flex-direction: column; gap: .6rem;
+    position: absolute; right: 12px; bottom: 68px; z-index: 7;
+  }
+  .carte-fab {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.97); color: var(--color-deep); border: 1px solid var(--color-border);
+    box-shadow: 0 3px 12px rgba(10,44,63,.24); cursor: pointer;
+  }
+  .carte-fab svg { width: 24px; height: 24px; }
+  .carte-fab--primary { background: var(--color-deep); color: #fff; border-color: var(--color-deep); }
+
+  /* -- Panneau couches en BOTTOM SHEET -- */
+  .carte-layers-backdrop {
+    display: block; position: absolute; inset: 0; z-index: 40;
+    background: rgba(7,30,42,.35); opacity: 0; pointer-events: none;
+    transition: opacity var(--dur-fast) ease;
+  }
+  .carte-layers-backdrop.is-open { opacity: 1; pointer-events: auto; }
   .embed-map__layers {
-    top: 104px; left: 8px; right: 8px; width: auto;
+    top: auto; left: 0; right: 0; bottom: 0; width: auto; z-index: 41;
+    border-radius: 18px 18px 0 0; max-height: 78vh;
+    transform: translateY(100%); transition: transform .32s var(--ease);
+    box-shadow: 0 -6px 24px rgba(10,44,63,.28);
   }
-  .embed-map__layers-body { max-height: 40vh; }
+  .embed-map__layers.is-open { transform: none; }
+  .carte-sheet-handle {
+    display: block; width: 40px; height: 4px; border-radius: 999px;
+    background: var(--color-border); margin: .5rem auto .1rem;
+  }
+  /* Le bandeau « Couches et filtres » sert d'entete du sheet ; un clic le referme.
+     Son chevron est masque (la poignee au-dessus suffit visuellement). */
+  .embed-map__layers-toggle svg { display: none; }
+  .embed-map__layers-body { max-height: 62vh; }
+  .embed-map__layers-body[hidden] { display: block !important; } /* toujours ouvert dans le sheet */
 
-  /* Bas-gauche fond + bas-droite (cafe/alto/sources) : compacts, memes lignes. */
-  .embed-map .carte-fonds { left: 8px; bottom: 34px; }
+  /* -- Bas-gauche : fond compact ; cafe petit et discret -- */
+  .embed-map .carte-fonds { left: 8px; bottom: 30px; }
   .carte-fonds__trigger { font-size: .78rem; padding: .25rem .55rem .25rem .3rem; }
   .carte-fonds__trigger img { width: 28px; height: 21px; }
-  .embed-map__br { right: 8px; bottom: 34px; gap: .35rem; }
-  .embed-map__badge-txt { display: none; }
-  .embed-map__badge { padding: 6px 9px; }
-  .embed-map__badge img { width: 46px; }
-  .carte-coffee { height: 38px; }
+  /* Cafe : petit, bas-gauche AU-DESSUS du fond, ne gene pas la carte. */
+  .embed-map__br { right: auto; left: 8px; bottom: 72px; flex-direction: column; align-items: flex-start; gap: .4rem; }
+  .embed-map__badge, .map-act-wrap--src { display: none; } /* alto + sources -> dans le sheet/attribution */
+  .carte-coffee { height: 44px; }
 
   /* Menus deroulants : jamais hors ecran. */
   .map-menu { max-width: calc(100vw - 24px); }
   .map-menu--src { min-width: 0; width: calc(100vw - 24px); max-width: 300px; }
-
-  /* Verdict citoyen : ne depasse pas la largeur de la recherche. */
   .carte-verdict { font-size: .9rem; }
-}
-
-/* Ecrans tres etroits (<= 380px) : encore un cran plus serre. */
-@media (max-width: 380px) {
-  .embed-map__search { right: calc(8px + 5 * 34px + 4 * .25rem + 4px); }
-  .map-act, .embed-map__back.map-act--back { width: 34px; height: 34px; }
-  .carte-navbtn { width: 34px; height: 34px; }
-  .carte-fonds__trigger b { display: none; } /* garde juste la vignette + « Fond » */
 }
 .map-fallback { font-size: .9rem; color: var(--color-slate); padding: var(--space-2) var(--space-4); background: var(--color-mist-2); border-top: 1px solid var(--color-border); margin: 0; }
 .map-fallback a { font-weight: 600; }

@@ -1550,17 +1550,65 @@
     var toggle = document.querySelector(".embed-map__layers-toggle");
     var body = document.getElementById("carte-couches-body");
     if (!toggle || !body) return;
-    /* Sur petit écran, le panneau des couches est replié par défaut pour ne pas
-       recouvrir la carte ni les autres contrôles (il se déplie au clic). */
-    if (window.matchMedia && window.matchMedia("(max-width: 600px)").matches) {
-      toggle.setAttribute("aria-expanded", "false");
-      body.hidden = true;
-    }
+    /* Sur DESKTOP le bandeau « Couches et filtres » se replie/déplie au clic.
+       Sur MOBILE le panneau est un bottom sheet piloté par le FAB (voir
+       initMobileUI) : on ne touche pas au collapse. */
+    var isMobile = window.matchMedia && window.matchMedia("(max-width: 600px)").matches;
+    if (isMobile) return;
     toggle.addEventListener("click", function () {
       var open = toggle.getAttribute("aria-expanded") === "true";
       toggle.setAttribute("aria-expanded", open ? "false" : "true");
       body.hidden = open;
     });
+  })();
+
+  /* ======================================================================
+     UI MOBILE : burger (actions) + FABs (position, couches) + bottom sheet
+     ====================================================================== */
+  (function initMobileUI() {
+    var burger = document.getElementById("carte-burger");
+    var actions = document.getElementById("carte-actions");
+    var fabPos = document.getElementById("carte-fab-pos");
+    var fabCouches = document.getElementById("carte-fab-couches");
+    var sheet = document.querySelector(".embed-map__layers");
+    var backdrop = document.getElementById("carte-layers-backdrop");
+    var geoloc = document.getElementById("carte-geoloc");
+
+    /* -- Burger : ouvre/ferme la barre d'actions -- */
+    if (burger && actions) {
+      function toggleActions(open) {
+        var willOpen = (open === undefined) ? !actions.classList.contains("is-open") : open;
+        actions.classList.toggle("is-open", willOpen);
+        burger.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      }
+      burger.addEventListener("click", function (e) { e.stopPropagation(); toggleActions(); });
+      document.addEventListener("click", function (e) {
+        if (actions.classList.contains("is-open") &&
+            !actions.contains(e.target) && e.target !== burger && !burger.contains(e.target)) {
+          toggleActions(false);
+        }
+      });
+    }
+
+    /* -- FAB « ma position » : délègue au bouton de géolocalisation existant -- */
+    if (fabPos && geoloc) {
+      fabPos.addEventListener("click", function () { geoloc.click(); });
+    }
+
+    /* -- FAB « couches » : ouvre/ferme le bottom sheet -- */
+    if (fabCouches && sheet && backdrop) {
+      function openSheet(open) {
+        var willOpen = (open === undefined) ? !sheet.classList.contains("is-open") : open;
+        sheet.classList.toggle("is-open", willOpen);
+        backdrop.classList.toggle("is-open", willOpen);
+        fabCouches.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      }
+      fabCouches.addEventListener("click", function () { openSheet(); });
+      backdrop.addEventListener("click", function () { openSheet(false); });
+      /* La poignée / le bandeau d'entête referme aussi le sheet. */
+      var handleZone = sheet.querySelector(".embed-map__layers-toggle");
+      if (handleZone) { handleZone.addEventListener("click", function () { openSheet(false); }); }
+    }
   })();
 
   /* ======================================================================
