@@ -929,6 +929,17 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 /* Backdrop léger : on devine la carte derrière le pop-up (le rideau wipe est
    par-dessus, aussi semi-transparent). */
 .carte-welcome__backdrop { position: absolute; inset: 0; background: rgba(7, 30, 42, .3); -webkit-backdrop-filter: blur(1px); backdrop-filter: blur(1px); }
+/* Titre-signature en filigrane, centré en haut, visible seulement pendant
+   l'accueil (il disparaît avec le pop-up). Semi-transparent, non cliquable. */
+.carte-welcome__banner {
+  position: absolute; top: clamp(3vh, 6vh, 8vh); left: 50%; transform: translateX(-50%);
+  z-index: 1; margin: 0; width: min(92%, 780px); text-align: center;
+  font-family: var(--font-display); font-style: italic; font-weight: 500;
+  font-size: clamp(1.4rem, 4vw, 2.4rem); line-height: 1.15;
+  color: rgba(255, 255, 255, .82); text-shadow: 0 2px 18px rgba(7, 30, 42, .5);
+  pointer-events: none; letter-spacing: -.01em;
+}
+@media (max-height: 620px) { .carte-welcome__banner { display: none; } }
 .carte-welcome__card {
   position: relative; z-index: 1; width: min(440px, 100%);
   background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
@@ -976,7 +987,7 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 
 /* ===== Pop-up d'accueil 2 colonnes (branding + instructions) ===== */
 .carte-welcome__card--split {
-  width: min(720px, 100%); display: grid; grid-template-columns: 240px 1fr; gap: 0;
+  width: min(800px, 100%); display: grid; grid-template-columns: 270px 1fr; gap: 0;
   padding: 0; overflow: hidden; position: relative;
 }
 .carte-welcome__aside {
@@ -994,6 +1005,7 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 .carte-welcome__altologo img { width: 88px; height: auto; }
 .carte-welcome__pitch { margin: 0; font-size: .78rem; color: var(--color-slate); line-height: 1.4; }
 .carte-welcome__aside .carte-welcome__coffee { width: 100%; margin-top: .2rem; }
+.carte-welcome__coffee-note { font-size: .72rem; line-height: 1.3; color: var(--color-slate); font-style: italic; margin: .3rem 0 0; opacity: .85; }
 .carte-welcome__social { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem; margin-top: .3rem; }
 .carte-welcome__social a {
   width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;

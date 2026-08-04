@@ -42,6 +42,7 @@ export default {
       <!-- Pop-up de bienvenue (2 colonnes : à propos + café / instructions). -->
       <div id="carte-welcome" class="carte-welcome" role="dialog" aria-modal="true" aria-labelledby="cw-title" hidden>
         <div class="carte-welcome__backdrop" data-cw-close></div>
+        <p class="carte-welcome__banner" aria-hidden="true">Votre rivière a-t-elle son espace de liberté&nbsp;?</p>
         <div class="carte-welcome__card carte-welcome__card--split" role="document">
           <button type="button" class="carte-signup__close" data-cw-close aria-label="Fermer">&times;</button>
 
@@ -57,8 +58,9 @@ export default {
             <p class="carte-welcome__pitch">Carte gratuite, réalisée bénévolement pour aider les citoyens à comprendre les zones inondables du Québec.</p>
             <button type="button" class="btn btn--coffee carte-welcome__coffee" data-kofi-open>
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 8h13v5a4 4 0 01-4 4H8a4 4 0 01-4-4V8zM17 9h1.5a2.5 2.5 0 010 5H17M7 3v2M11 3v2M15 3v2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Offrez-moi un café
+              Offrir un café à Mathieu
             </button>
+            <p class="carte-welcome__coffee-note">Ce projet carbure au café, pas aux subventions.</p>
             <nav class="carte-welcome__social" aria-label="Réseaux sociaux d'Alto Géomatique">
               <a href="https://www.altogeo.ca/" rel="noopener" target="_blank" aria-label="Site web altogeo.ca" title="Site web"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.5 3.5 6 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-6-3.5-9s1-6.5 3.5-9z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a>
               <a href="https://www.linkedin.com/in/mathieusimard26/" rel="noopener" target="_blank" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2 2 0 100 4 2 2 0 000-4zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C21 8.65 22 10.9 22 14v7h-4v-6.2c0-1.48-.03-3.4-2.07-3.4-2.07 0-2.39 1.62-2.39 3.29V21h-4z" fill="currentColor"/></svg></a>

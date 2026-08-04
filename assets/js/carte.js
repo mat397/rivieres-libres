@@ -1320,15 +1320,15 @@
       }
     }
 
-    /* À la première visite : le rideau couvre l'écran sous le pop-up, et le wipe
-       le retire au clic « Explorer ». */
-    if (!seen) {
-      if (!REDUCED) {
-        var wsvg = document.getElementById("carte-wipe");
-        if (wsvg) { wsvg.hidden = false; }
-      }
-      openWelcome();
-    } else if (helpBtn) { helpBtn.hidden = false; }
+    /* Le pop-up d'accueil est la PREMIÈRE chose visible, à chaque visite : on
+       l'ouvre tout de suite, sans attendre le chargement de la carte. Le rideau
+       de wipe couvre l'écran sous le pop-up et se retire au clic « Ouvrir ». */
+    if (!REDUCED) {
+      var wsvg = document.getElementById("carte-wipe");
+      if (wsvg) { wsvg.hidden = false; }
+    }
+    openWelcome();
+    if (helpBtn) { helpBtn.hidden = false; }
 
     /* Le bouton « Explorer la carte » déclenche le wipe ; le fond/Échap non. */
     var cta = welcome.querySelector(".carte-welcome__cta");
