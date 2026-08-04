@@ -1330,14 +1330,11 @@
     openWelcome();
     if (helpBtn) { helpBtn.hidden = false; }
 
-    /* Le bouton « Explorer la carte » déclenche le wipe ; le fond/Échap non. */
+    /* Sortie UNIQUE : le bouton « Ouvrir la carte » (data-cw-open). Ni clic sur
+       le fond, ni Échap, ni croix : on veut que la personne passe par le CTA
+       pour accéder à la carte. */
     var cta = welcome.querySelector(".carte-welcome__cta");
-    welcome.querySelectorAll("[data-cw-close]").forEach(function (b) {
-      b.addEventListener("click", function () { closeWelcome(b === cta); });
-    });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && !welcome.hidden) { closeWelcome(false); }
-    });
+    if (cta) { cta.addEventListener("click", function () { closeWelcome(true); }); }
     if (helpBtn) { helpBtn.addEventListener("click", openWelcome); }
   }
 
@@ -1509,20 +1506,6 @@
     try { seen = localStorage.getItem(SEEN) === "1"; } catch (e) {}
     if (seen) return;
 
-    var stars = fb.querySelectorAll(".carte-feedback__star");
-    var msg = fb.querySelector(".carte-feedback__msg");
-    var note = 0;
-    function paint(n) { stars.forEach(function (s, i) { s.classList.toggle("is-on", i < n); }); }
-    stars.forEach(function (s, i) {
-      s.addEventListener("mouseenter", function () { paint(i + 1); });
-      s.addEventListener("mouseleave", function () { paint(note); });
-      s.addEventListener("click", function () {
-        note = i + 1; paint(note);
-        try { localStorage.setItem("rl-carte-note", String(note)); } catch (e) {}
-        if (msg) { msg.textContent = note >= 4 ? "Merci ! Un café pour encourager le projet ?" : "Merci pour votre avis !"; }
-      });
-    });
-
     function fermer() {
       try { localStorage.setItem(SEEN, "1"); } catch (e) {}
       fb.hidden = true;
@@ -1567,6 +1550,12 @@
     var toggle = document.querySelector(".embed-map__layers-toggle");
     var body = document.getElementById("carte-couches-body");
     if (!toggle || !body) return;
+    /* Sur petit écran, le panneau des couches est replié par défaut pour ne pas
+       recouvrir la carte ni les autres contrôles (il se déplie au clic). */
+    if (window.matchMedia && window.matchMedia("(max-width: 600px)").matches) {
+      toggle.setAttribute("aria-expanded", "false");
+      body.hidden = true;
+    }
     toggle.addEventListener("click", function () {
       var open = toggle.getAttribute("aria-expanded") === "true";
       toggle.setAttribute("aria-expanded", open ? "false" : "true");

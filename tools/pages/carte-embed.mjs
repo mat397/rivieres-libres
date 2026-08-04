@@ -41,17 +41,16 @@ export default {
 
       <!-- Pop-up de bienvenue (2 colonnes : à propos + café / instructions). -->
       <div id="carte-welcome" class="carte-welcome" role="dialog" aria-modal="true" aria-labelledby="cw-title" hidden>
-        <div class="carte-welcome__backdrop" data-cw-close></div>
+        <div class="carte-welcome__backdrop"></div>
         <p class="carte-welcome__banner" aria-hidden="true">Votre rivière a-t-elle son espace de liberté&nbsp;?</p>
         <div class="carte-welcome__card carte-welcome__card--split" role="document">
-          <button type="button" class="carte-signup__close" data-cw-close aria-label="Fermer">&times;</button>
 
           <!-- Colonne GAUCHE : qui je suis + café -->
           <div class="carte-welcome__aside">
             <span class="carte-welcome__photo">
               <img src="/assets/img/mathieu.png" alt="Mathieu Simard" width="200" height="200" onerror="this.style.opacity=0">
             </span>
-            <p class="carte-welcome__by">Fait à la main (et au café) par <strong>Mathieu Simard</strong></p>
+            <p class="carte-welcome__by">Bricolé avec soin par <strong>Mathieu Simard</strong></p>
             <a class="carte-welcome__altologo" href="https://altogeo.ca" rel="noopener" target="_blank" aria-label="Alto Géomatique">
               <img src="/assets/img/logo-alto-couleur.png" alt="Alto Géomatique" width="1280" height="714">
             </a>
@@ -60,7 +59,7 @@ export default {
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 8h13v5a4 4 0 01-4 4H8a4 4 0 01-4-4V8zM17 9h1.5a2.5 2.5 0 010 5H17M7 3v2M11 3v2M15 3v2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Offrir un café à Mathieu
             </button>
-            <p class="carte-welcome__coffee-note">Aucune subvention derrière tout ça. Juste de l'entêtement (et de la caféine).</p>
+            <p class="carte-welcome__coffee-note">Parce que quelqu'un devait le faire.</p>
             <nav class="carte-welcome__social" aria-label="Réseaux sociaux d'Alto Géomatique">
               <a href="https://www.altogeo.ca/" rel="noopener" target="_blank" aria-label="Site web altogeo.ca" title="Site web"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.5 3.5 6 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-6-3.5-9s1-6.5 3.5-9z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a>
               <a href="https://www.linkedin.com/in/mathieusimard26/" rel="noopener" target="_blank" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2 2 0 100 4 2 2 0 000-4zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C21 8.65 22 10.9 22 14v7h-4v-6.2c0-1.48-.03-3.4-2.07-3.4-2.07 0-2.39 1.62-2.39 3.29V21h-4z" fill="currentColor"/></svg></a>
@@ -129,23 +128,16 @@ export default {
 
       <!-- Pop-up automatique « Aimez-vous la carte ? » (après ~45s, 1 fois). -->
       <div id="carte-feedback" class="carte-feedback" role="dialog" aria-modal="false" aria-labelledby="fb-title" hidden>
-        <button type="button" class="carte-feedback__close" data-fb-close aria-label="Fermer">&times;</button>
         <span class="carte-feedback__photo">
           <img src="/assets/img/mathieu.png" alt="Mathieu Simard" width="120" height="120" onerror="this.style.opacity=0">
         </span>
-        <p id="fb-title" class="carte-feedback__title">Aimez-vous la carte&nbsp;?</p>
-        <div class="carte-feedback__stars" role="group" aria-label="Note de 1 à 5 étoiles">
-          <button type="button" class="carte-feedback__star" aria-label="1 étoile">&#9733;</button>
-          <button type="button" class="carte-feedback__star" aria-label="2 étoiles">&#9733;</button>
-          <button type="button" class="carte-feedback__star" aria-label="3 étoiles">&#9733;</button>
-          <button type="button" class="carte-feedback__star" aria-label="4 étoiles">&#9733;</button>
-          <button type="button" class="carte-feedback__star" aria-label="5 étoiles">&#9733;</button>
-        </div>
-        <p class="carte-feedback__msg" role="status" aria-live="polite"></p>
+        <p id="fb-title" class="carte-feedback__title">Cette carte est 100&nbsp;% bénévole.</p>
+        <p class="carte-feedback__lead">Aucun financement, aucune subvention. Juste un géomaticien qui trouvait que les citoyens méritaient mieux. Si elle vous a été utile, un café aide à la garder en vie.</p>
         <a class="btn btn--coffee carte-feedback__coffee" href="https://ko-fi.com/mathieusimardalto" data-kofi-open>
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 8h13v5a4 4 0 01-4 4H8a4 4 0 01-4-4V8zM17 9h1.5a2.5 2.5 0 010 5H17M7 3v2M11 3v2M15 3v2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Offrir un café à Mathieu
         </a>
+        <button type="button" class="carte-feedback__decline" data-fb-close>Non merci, je continue sans</button>
       </div>
 
       <!-- Rideau de transition SVG (bord courbe qui balaie, inspiration Codrops).
