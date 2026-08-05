@@ -44,8 +44,9 @@ export default async function handler(req) {
   const accent = zone === "in" ? "#C4443B" : zone === "out" ? "#3D7A34" : "#1E8AA0";
 
   const token = process.env.MAPBOX_TOKEN || "";
+  const noCarte = q.get("debug") === "1"; // diagnostic : saute le fetch Mapbox
   let carte = "";
-  if (token && isFinite(lat) && isFinite(lng)) {
+  if (!noCarte && token && isFinite(lat) && isFinite(lng)) {
     const mk = "pin-l+" + accent.replace("#", "") + "(" + lng.toFixed(5) + "," + lat.toFixed(5) + ")";
     /* Sans @2x : image ~4x plus légère à télécharger/décoder par Satori, ce qui
        évite les timeouts de la fonction. La résolution reste nette pour de l'OG. */
