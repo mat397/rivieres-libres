@@ -127,6 +127,10 @@ export default async function handler(req, res) {
 
     // 2) Surveillances actives
     var sql = neon(conn);
+    /* Colonnes de l'alerte réglementaire : créées au besoin (le cron peut tourner
+       avant toute nouvelle inscription qui les aurait ajoutées). Idempotent. */
+    await sql`ALTER TABLE surveillances ADD COLUMN IF NOT EXISTS dernier_statut_zone TEXT DEFAULT NULL`;
+    await sql`ALTER TABLE surveillances ADD COLUMN IF NOT EXISTS statut_notifie_le TIMESTAMPTZ`;
     var rows = await sql`SELECT id, email, adresse, lat, lng, dernier_etat, dernier_statut_zone, token FROM surveillances WHERE actif = TRUE`;
 
     var envois = 0;
