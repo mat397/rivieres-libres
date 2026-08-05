@@ -115,16 +115,20 @@ export default {
           <button type="button" class="carte-signup__close" data-alerte-close aria-label="Fermer">&times;</button>
           <span class="carte-welcome__kicker">Alertes gratuites</span>
           <h2 id="alerte-title" class="carte-signup__title">Surveiller cette adresse</h2>
-          <p class="carte-signup__lead">Recevez un courriel si une station de suivi proche passe en état de vigilance (crue). Gratuit, sans engagement.</p>
+          <p class="carte-signup__lead">Un courriel vous avertit dans deux cas&nbsp;:</p>
+          <ul class="carte-signup__list">
+            <li><strong>Changement réglementaire</strong> — si une nouvelle cartographie place votre adresse en zone inondable (ou en change le classement). Personne d'autre ne vous prévient.</li>
+            <li><strong>Vigilance de crue</strong> — si une station de suivi proche passe en état de vigilance.</li>
+          </ul>
           <label class="carte-signup__label" for="alerte-email">Votre courriel</label>
           <input id="alerte-email" name="email" type="email" required autocomplete="email" placeholder="vous@exemple.com" class="carte-signup__input">
           <label class="carte-signup__consent">
             <input type="checkbox" id="alerte-consent" name="consentement" required>
-            <span>J'accepte de recevoir des alertes de vigilance pour cette adresse et, occasionnellement, des nouvelles d'Alto Géomatique. Désinscription en tout temps.</span>
+            <span>J'accepte de recevoir ces alertes pour cette adresse et, occasionnellement, des nouvelles d'Alto Géomatique. Désinscription en tout temps.</span>
           </label>
           <p id="carte-alerte-msg" class="carte-signup__msg" role="status" aria-live="polite"></p>
           <button type="submit" class="btn btn--primary carte-signup__submit">Activer les alertes</button>
-          <p class="carte-signup__fine">Nous surveillons les stations hydrométriques officielles (MSP/CEHQ) près de cette adresse. Information indicative, sans portée légale. Désinscription en un clic dans chaque courriel.</p>
+          <p class="carte-signup__fine">Sources officielles&nbsp;: cartographie des zones inondables (BDZI, gouvernement du Québec) et stations hydrométriques (MSP/CEHQ). Information indicative, sans portée légale. Désinscription en un clic dans chaque courriel.</p>
         </form>
       </div>
 

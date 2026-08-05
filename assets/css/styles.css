@@ -1048,7 +1048,10 @@ html.js .accordion__panel.is-open { grid-template-rows: 1fr; }
 }
 .carte-signup__close:hover { background: var(--color-deep); color: #fff; }
 .carte-signup__title { font-size: clamp(1.3rem, 3vw, 1.7rem); margin: .2rem 0 var(--space-2); }
-.carte-signup__lead { font-size: .95rem; color: var(--color-ink); margin-bottom: var(--space-4); }
+.carte-signup__lead { font-size: .95rem; color: var(--color-ink); margin-bottom: var(--space-2); }
+.carte-signup__list { margin: 0 0 var(--space-4); padding-left: 1.1em; display: grid; gap: .5rem; }
+.carte-signup__list li { font-size: .9rem; line-height: 1.4; color: var(--color-ink); }
+.carte-signup__list strong { color: var(--color-deep); }
 .carte-signup__label { display: block; font-size: .85rem; font-weight: 600; color: var(--color-deep); margin-bottom: .3rem; }
 .carte-signup__input {
   width: 100%; font: inherit; padding: .7rem .9rem; border-radius: var(--radius-sm);

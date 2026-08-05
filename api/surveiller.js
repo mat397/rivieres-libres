@@ -7,6 +7,7 @@
    - STORAGE_URL  (ou POSTGRES_URL / DATABASE_URL selon le préfixe choisi)
    ========================================================================== */
 import { neon } from "@neondatabase/serverless";
+import { statutZone } from "./_bdzi.js";
 
 function getConn() {
   return process.env.STORAGE_URL || process.env.STORAGE_POSTGRES_URL ||
@@ -47,6 +48,16 @@ export default async function handler(req, res) {
   var ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "";
   var token = makeToken();
 
+  /* Statut réglementaire actuel de l'adresse (BDZI), capturé comme référence :
+     le cron comparera plus tard pour détecter un changement de cartographie.
+     Si le service gouvernemental est indisponible, on n'échoue pas l'inscription
+     (le cron établira la référence au prochain passage). */
+  var statutZ = "";
+  try {
+    var sz = await statutZone(lng, lat);
+    statutZ = (sz && sz.statut) || "";
+  } catch (e) { statutZ = ""; }
+
   try {
     var sql = neon(conn);
     /* Table créée au besoin (idempotent). */
@@ -57,15 +68,19 @@ export default async function handler(req, res) {
       actif BOOLEAN NOT NULL DEFAULT TRUE, consentement_ip TEXT,
       cree_le TIMESTAMPTZ NOT NULL DEFAULT NOW(), notifie_le TIMESTAMPTZ)`;
     await sql`CREATE UNIQUE INDEX IF NOT EXISTS surveillances_email_pos ON surveillances (email, lat, lng)`;
+    /* Colonnes ajoutées pour l'alerte réglementaire (idempotent). */
+    await sql`ALTER TABLE surveillances ADD COLUMN IF NOT EXISTS dernier_statut_zone TEXT DEFAULT NULL`;
+    await sql`ALTER TABLE surveillances ADD COLUMN IF NOT EXISTS statut_notifie_le TIMESTAMPTZ`;
 
-    /* Upsert : réactive si déjà présent, insère sinon. */
+    /* Upsert : réactive si déjà présent, insère sinon. On (re)pose la référence
+       de statut réglementaire à l'inscription. */
     await sql`
-      INSERT INTO surveillances (email, adresse, lat, lng, token, consentement_ip, actif)
-      VALUES (${email}, ${adresse}, ${lat}, ${lng}, ${token}, ${ip}, TRUE)
+      INSERT INTO surveillances (email, adresse, lat, lng, token, consentement_ip, actif, dernier_statut_zone)
+      VALUES (${email}, ${adresse}, ${lat}, ${lng}, ${token}, ${ip}, TRUE, ${statutZ})
       ON CONFLICT (email, lat, lng)
-      DO UPDATE SET actif = TRUE, adresse = ${adresse}`;
+      DO UPDATE SET actif = TRUE, adresse = ${adresse}, dernier_statut_zone = ${statutZ}`;
 
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({ ok: true, statut: statutZ });
   } catch (e) {
     return res.status(502).json({ error: "Impossible d'enregistrer la surveillance.", detail: String(e).slice(0, 200) });
   }
