@@ -1,17 +1,4 @@
 import { ImageResponse } from "@vercel/og";
-import { readFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
-
-/* Police embarquée localement : sans elle, Satori tente de télécharger sa police
-   par défaut depuis un CDN au cold start, ce qui faisait pendre la fonction
-   (504). On la lit une seule fois et on la met en cache module. */
-const FONT_PATH = join(dirname(fileURLToPath(import.meta.url)), "_fonts", "Inter-Regular.ttf");
-let fontData = null;
-async function getFont() {
-  if (!fontData) fontData = await readFile(FONT_PATH);
-  return fontData;
-}
 
 /* Image de prévisualisation sociale (Open Graph) générée à la volée pour une
    adresse. Facebook / LinkedIn / X la récupèrent quand un lien /api/partage est
@@ -23,9 +10,13 @@ async function getFont() {
 
    Écrit SANS JSX (via le helper `h`) pour ne dépendre d'aucune étape de
    compilation : `h` produit la même structure {type, props} qu'un ReactElement,
-   que Satori (moteur de @vercel/og) sait rendre. */
+   que Satori (moteur de @vercel/og) sait rendre.
 
-export const config = { runtime: "nodejs" };
+   IMPORTANT : runtime EDGE. `ImageResponse` retourne un objet `Response` (Web
+   API), que le runtime Node de Vercel refuse — d'où les timeouts 504. En edge,
+   c'est le format attendu, et le fetch réseau (police, mini-carte) fonctionne. */
+
+export const config = { runtime: "edge" };
 
 /* createElement minimal : renvoie un noeud au format ReactElement. */
 function h(type, props, ...children) {
@@ -88,10 +79,6 @@ export default async function handler(req) {
     )
   );
 
-  const font = await getFont();
-  return new ImageResponse(tree, {
-    width: 1200,
-    height: 630,
-    fonts: [{ name: "Inter", data: font, weight: 400, style: "normal" }]
-  });
+  // Police par défaut de @vercel/og (Noto Sans), chargée par la lib en edge.
+  return new ImageResponse(tree, { width: 1200, height: 630 });
 }
