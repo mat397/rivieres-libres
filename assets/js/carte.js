@@ -510,14 +510,26 @@
       var p = e.features[0].properties || {};
       var deb = (p.dern_valeur_deb != null) ? (p.dern_valeur_deb + " m&sup3;/s") : "n.d.";
       var niv = (p.dern_valeur_niv != null) ? (p.dern_valeur_niv + " m") : "n.d.";
-      var date = p.dern_date_prise_valeur_utc ? p.dern_date_prise_valeur_utc.replace("T", " ").slice(0, 16) : "";
+      /* Horodatage de la dernière mesure : converti de l'UTC vers l'heure locale
+         du Québec, format lisible (ex. « 5 août 2026, 14 h 15 »). C'est la donnée
+         honnête sur la fraîcheur : chaque station porte sa propre date. */
+      var date = "";
+      if (p.dern_date_prise_valeur_utc) {
+        var dt = new Date(p.dern_date_prise_valeur_utc + "Z"); // le service donne de l'UTC sans suffixe
+        if (!isNaN(dt.getTime())) {
+          date = dt.toLocaleString("fr-CA", {
+            timeZone: "America/Toronto", day: "numeric", month: "long",
+            year: "numeric", hour: "2-digit", minute: "2-digit"
+          });
+        }
+      }
       var lien = p.url_vigilance || p.fournisseur_url || "";
       var html = '<strong>' + (p.plan_deau || "Station hydrométrique") + "</strong>" +
         (p.station ? '<span class="carte-popup__note">Station n&deg; ' + p.station + "</span>" : "") +
         '<span class="carte-popup__note">' + (p.description || "") + "</span>" +
         '<span class="carte-popup__sup">Débit : ' + deb + " &middot; Niveau : " + niv + "</span>" +
         (p.etat ? '<span class="carte-popup__zone ' + (p.etat.indexOf("lerte") !== -1 ? "carte-popup__zone--in" : "carte-popup__zone--out") + '">État : ' + p.etat + "</span>" : "") +
-        (date ? '<span class="carte-popup__note">Mesure : ' + date + " (UTC)</span>" : "") +
+        (date ? '<span class="carte-popup__note">Dernière mesure : ' + date + "</span>" : "") +
         (lien ? '<span class="carte-popup__note"><a href="' + lien + '" target="_blank" rel="noopener">Fiche officielle</a></span>' : "");
       new GL.Popup({ closeButton: true, maxWidth: "250px" })
         .setLngLat(e.lngLat)
@@ -781,7 +793,7 @@
     makeToggle({
       label: "Niveau des rivières (temps réel)", ids: ["stations-pt"], on: false,
       stationsLegend: true,
-      note: "Stations hydrométriques : débit et niveau actuels des rivières, avec état de vigilance. Cliquez une station. Source : MSP / CEHQ (temps réel)."
+      note: "Stations hydrométriques : débit, niveau et état de vigilance des rivières, en temps réel. Mises à jour ≈ aux 15 à 30 minutes sur les stations actives (certaines sont saisonnières ou hors service). Chaque pop-up indique la date et l'heure exactes de la dernière mesure. Cliquez une station. Source : MSP / CEHQ."
     });
   }
 
