@@ -1,4 +1,17 @@
 import { ImageResponse } from "@vercel/og";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
+/* Police embarquée localement : sans elle, Satori tente de télécharger sa police
+   par défaut depuis un CDN au cold start, ce qui faisait pendre la fonction
+   (504). On la lit une seule fois et on la met en cache module. */
+const FONT_PATH = join(dirname(fileURLToPath(import.meta.url)), "_fonts", "Inter-Regular.ttf");
+let fontData = null;
+async function getFont() {
+  if (!fontData) fontData = await readFile(FONT_PATH);
+  return fontData;
+}
 
 /* Image de prévisualisation sociale (Open Graph) générée à la volée pour une
    adresse. Facebook / LinkedIn / X la récupèrent quand un lien /api/partage est
@@ -75,5 +88,10 @@ export default async function handler(req) {
     )
   );
 
-  return new ImageResponse(tree, { width: 1200, height: 630 });
+  const font = await getFont();
+  return new ImageResponse(tree, {
+    width: 1200,
+    height: 630,
+    fonts: [{ name: "Inter", data: font, weight: 400, style: "normal" }]
+  });
 }
