@@ -28,7 +28,9 @@ function esc(s) {
 }
 
 export default async function handler(req) {
-  const url = new URL(req.url);
+  // req.url est relatif ("/api/og?...") en runtime Node Vercel : on fournit une
+  // base absolue pour que le parsing d'URL réussisse.
+  const url = new URL(req.url, "https://local");
   const q = url.searchParams;
   const lat = parseFloat(q.get("lat"));
   const lng = parseFloat(q.get("lng"));
