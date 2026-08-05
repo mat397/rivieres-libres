@@ -7,6 +7,9 @@
   "crons": [
     { "path": "/api/cron-alertes", "schedule": "0 12 * * *" }
   ],
+  "functions": {
+    "api/og.js": { "memory": 1024, "maxDuration": 30 }
+  },
   "headers": [
     {
       "source": "/carte-donnees/carte-embed(.html)?",

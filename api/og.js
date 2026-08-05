@@ -47,8 +47,10 @@ export default async function handler(req) {
   let carte = "";
   if (token && isFinite(lat) && isFinite(lng)) {
     const mk = "pin-l+" + accent.replace("#", "") + "(" + lng.toFixed(5) + "," + lat.toFixed(5) + ")";
+    /* Sans @2x : image ~4x plus légère à télécharger/décoder par Satori, ce qui
+       évite les timeouts de la fonction. La résolution reste nette pour de l'OG. */
     carte = "https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/" + mk +
-      "/" + lng.toFixed(5) + "," + lat.toFixed(5) + ",13,0/1200x430@2x?access_token=" +
+      "/" + lng.toFixed(5) + "," + lat.toFixed(5) + ",13,0/1200x430?access_token=" +
       token + "&logo=false&attribution=false";
   }
 
